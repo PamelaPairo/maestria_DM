@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>01_clase.utf8</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":2,"eraser_size":20}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <script src="libs/xaringanExtra-webcam/webcam.js"></script>
+    <script id="xaringanExtra-webcam-options" type="application/json">{"width":"210","height":"220","margin":"1em"}</script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/xaringanExtra-extra-styles/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: title-slide, center, middle
+background-image: url(images/portada.jpg)
+background-size: cover
+
+#Práctica 3: 
+#Árboles de Decisión
+
+
+
+
+
+
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 110px;
+height: 128px;
+z-index: 0;
+background-image: url(images/logo.png);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+top:1em;right:1em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+
+
+
+---
+## Repaso: Árboles de decisión
+
+.pull-left[
+&lt;img src="images/arbol.png" width="100%"/&gt;
+]
+
+--
+
+.pull-right[
+- Cada nodo interno compara un atributo xi
+
+- Una rama por cada valor de atributo xi=v
+
+- Cada hoja asigna una clase y
+
+- ¡Modelo interpretable!
+
+]
+
+---
+
+## ¿Con qué atributo comenzar?
+
+.center[
+&lt;img src="images/arbol2.png" width="70%"/&gt;
+]
+
+--
+
+.bg-washed-light-purple.b--light-purple.ba.bw2.br2.shadow-5.ph2.mt2[
+Una partición es buena si estamos “más seguros” de la clasificación después de haberla realizado
+]
+
+---
+#¿Qué atributo es el mejor?
+
+### **.purple[Entropía]**
+
+Medida de incertidumbre de una variable aleatoria
+.center[
+
+`\(\LARGE H(Y) = -\sum_{i=1}^{k}p(Y=y_i)log_2 p(Y=y_i)\)`
+
+]
+
+--
+
+.center[
+
+### .black[A mayor incertidumbre, mayor entropía.]
+]
+
+### **.purple[Entropía Condicional]**
+
+`\(H(Y|X) = -\sum_{j=1}^{v}p(X=x_j)\sum_{i=1}^{k}p(Y=y_i|X=x_j)log_2 p(Y=y_i| X=x_j)\)`
+
+---
+#¿Qué atributo es el mejor?
+
+### **.purple[Ganancia de Información]**
+
+Decrecimiento de entropía (incertidumbre) luego de la partición
+
+--
+
+.center[
+`\(\LARGE IG(X)= H(Y)- H(Y|X)\)`
+]
+
+.center[**Elijo el atributo que me de mayor ganancia de información**]
+---
+#Impureza de Gini
+
+.center[
+`\(\LARGE G(x) = \sum_{i=0}^{N}p_x(x_i)(1-p_x(x_i))\)`
+]
+---
+
+class: inverse, middle, center
+
+#💻
+#Parte 2
+
+---
+#Aprendizaje en Árboles de decisión
+
+- Comenzar con un árbol vacío
+
+--
+
+- Generar una partición usando siguiente mejor atributo
+
+--
+- Usar, por ejemplo, ganancia de información y realizar el paso anterior de manera recursiva
+
+---
+
+## Hiperparámetro
+
+.bg-washed-light-purple.b--light-purple.ba.bw2.br3.shadow-5.ph4.mt4[
+Valores no aprendidos por el algoritmo desde los datos y por ende deben ser seteados antes de entrenar el algoritmo.
+
+]
+
+--
+
+### En árboles de decisión:
+
+Funcionan bien para datos no linealmente separables.
+
+- `max_depth` : máxima profundidad del árbol
+
+- `min_samples_split`: El número mínimo de muestras requeridas para dividir un nodo interno
+
+- `min_samples_leaf`: El número mínimo de muestras requeridas para estar en un nodo hoja.
+
+- `criterion`: Gini o Entropy
+---
+class: inverse, middle, center
+
+#💻
+#Parte 3 y 4
+
+---
+# Sobreajuste
+
+- El error de entrenamiento es siempre cero 
+
+- Poca capacidad de generalización.
+
+.center[
+&lt;img src="images/overfitting.png" width="90%"/&gt;
+]
+
+--
+
+.footnote[Imagen extraída de [aquí](https://bookdown.org/content/2031/arboles-de-decision-parte-i.html)]
+.bg-washed-light-purple.b--light-purple.ba.bw2.br2.shadow-5.ph3.mt2[
+El objetivo de un modelo de Machine Learning es que generalice bien frente a nuevos datos o datos no vistos por el modelo (set de testeo)
+]
+
+---
+## Ventajas 💡
+
+- Fácil de entender
+- Util en exploración de datos:identificar importancia de variables a partir de cientos de variables.
+- El tipo de datos no es una restricción
+- Es un método no paramétrico (i.e., no hay suposición acerca del espacio de distribución y la estructura del clasificador)
+
+## Desventajas 💡
+
+- Sobreajuste
+- Pérdida de información al categorizar variables continuas
+- Inestables debido a que pequeñas variaciones en el dataset pueden generar modelos muy diferentes.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": false,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
