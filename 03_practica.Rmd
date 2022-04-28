@@ -85,7 +85,7 @@ colors = c(
 
 ### En la primera parte:
 
-- Repaso sobre los conceptos importantes en los árboles de decisión (Entropía, Gini)
+- Repaso sobre los conceptos importantes en los árboles de decisión (Entropía, Gini, etc)
 - Actividades: Parte 1, 2, 3 del Colab.
 
 --
@@ -215,7 +215,7 @@ def dataset_sintetico_gausianas(means,covs,points,labels,seed=1234):
 class: inverse, middle, center
 
 #`r emo::ji("computer")`
-#Parte 2
+#Parte 2 y 3
 
 ---
 #Aprendizaje en Árboles de decisión
@@ -231,10 +231,11 @@ class: inverse, middle, center
 
 ---
 
-## Hiperparámetro
+##¿Hasta cuando dejo de "partir" un nodo?
 
+--
 .bg-washed-light-purple.b--light-purple.ba.bw2.br3.shadow-5.ph4.mt4[
-Valores no aprendidos por el algoritmo desde los datos y por ende deben ser seteados antes de entrenar el algoritmo.
+.orange[Hiperparámetro] : Valores no aprendidos por el algoritmo desde los datos y por ende deben ser seteados antes de entrenar el algoritmo.
 
 ]
 
@@ -255,7 +256,7 @@ Funcionan bien para datos no linealmente separables.
 class: inverse, middle, center
 
 #`r emo::ji("computer")`
-#Parte 3 y 4
+#Parte 4
 
 ---
 # Sobreajuste
