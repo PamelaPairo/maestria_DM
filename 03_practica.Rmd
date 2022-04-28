@@ -79,6 +79,27 @@ colors = c(
 ```
 
 ---
+## Hoja de ruta de la clase de hoy
+
+--
+
+### En la primera parte:
+
+- Repaso sobre los conceptos importantes en los árboles de decisión (Entropía, Gini)
+- Actividades: Parte 1, 2, 3 del Colab.
+
+--
+
+### **.orange[Recreo]** `r emo::ji("coffee")`🧉
+
+--
+
+### En la segunda parte:
+
+- Sobreajuste en árboles de decisión y formas de evitarlo
+- Parte 4 del Colab y uso de Scikit Learn.
+
+---
 ## Repaso: Árboles de decisión
 
 .pull-left[
@@ -156,7 +177,41 @@ $\LARGE IG(X)= H(Y)- H(Y|X)$
 $\LARGE G(x) = \sum_{i=0}^{N}p_x(x_i)(1-p_x(x_i))$
 ]
 ---
+class: inverse, middle, center
 
+#`r emo::ji("computer")`
+#Parte 1
+
+---
+
+## Construcción de dataset de juguete
+Definir una función que genere N puntos con M atributos siguiendo una distribución gaussiana.
+
+
+```python
+def dataset_sintetico_gausianas(medias,covs,n_puntos,etiquetas)
+
+```
+ Tip: Usar `numpy.random.multivariate_normal`
+
+--
+
+Posible solución:
+
+``` python
+def dataset_sintetico_gausianas(means,covs,points,labels,seed=1234):
+  all_dfs = []
+  np.random.seed(seed) #Importante setear la semilla
+
+  for mean_i,cov_i,points_i,label_i in zip(means,covs,points,labels):
+    features_i = np.random.multivariate_normal(mean=mean_i, cov=cov_i,size=points_i)
+    dataset_i = pd.DataFrame(features_i) # paso a DF para agregar la etiqueta como una nueva columna
+    dataset_i['Clase'] = label_i
+    all_dfs.append(dataset_i) #lista de DFs
+  
+  return pd.concat(all_dfs) #para que devuelva un solo DF
+```
+---
 class: inverse, middle, center
 
 #`r emo::ji("computer")`
