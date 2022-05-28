@@ -26,7 +26,7 @@ library(reshape2)
 ```{r, echo = FALSE}
 
 download_link(
-  link = "https://github.com/PamelaPairo/maestria_DM/raw/main/AID/03_pca_robusto.Rmd",
+  link = "https://github.com/PamelaPairo/maestria_DM/raw/main/AID/PCA/03_pca_robusto.Rmd",
   button_label = "Download .Rmd",
   button_type = "danger",
   has_icon = TRUE,
