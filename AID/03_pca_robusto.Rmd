@@ -1,7 +1,6 @@
 ---
 title: "PCA Robusto"
 author: "Pamela E. Pairo- AID 2022"
-date: "28/05/2022"
 output:
   html_document:
     toc: yes
@@ -21,12 +20,13 @@ library(ggfortify)
 library(factoextra)
 library(ggpubr)
 library(downloadthis)
+library(reshape2)
 ```
 
 
 ```{r, echo = FALSE}
 download_link(
-  link = "https://raw.githubusercontent.com/PamelaPairo/maestria_DM/main/AID/03_pca_robusto.Rmd",
+  link = "https://github.com/PamelaPairo/maestria_DM/raw/main/AID/03_pca_robusto.Rmd",
   button_label = "Download .Rmd",
   button_type = "danger",
   has_icon = TRUE,
@@ -60,6 +60,25 @@ out_numericas <-vinos_out %>%
       select(where(is.numeric))
 ```
 
+## Boxplots
+
+```{r}
+data_long <- melt(vinos_out)
+
+ggplot(data_long, aes(x=variable, y=value)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+Incluyendo la `variedad`
+
+```{r}
+
+ggplot(data_long, aes(x=variable, y=value, fill= variedad)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
 # Comparando PCAs
 
 ## PCA **NO** robusto
@@ -68,9 +87,13 @@ out_numericas <-vinos_out %>%
 pca <- prcomp(out_numericas,scale = TRUE)# con datos estandarizados
 summary(pca)
 ```
+
+Varianza explicada por cada componente
+
 ```{r}
 fviz_eig(pca, ncp =12, addlabels = TRUE, main="")
 ```
+
 ## Biplot
 
 ```{r}
@@ -97,6 +120,7 @@ pca_mcd <-princomp(out_numericas, cor=TRUE, scores=TRUE,
 covmat=MASS::cov.mcd(out_numericas))#se especifica MCD
 summary(pca_mcd)
 ```
+
 ### 2- MVE
 
 ```{r}
@@ -104,6 +128,7 @@ pca_mve <-princomp(out_numericas, cor=TRUE, scores=TRUE,
 covmat=MASS::cov.mve(out_numericas))#se especifica MVE
 summary(pca_mve)
 ```
+
 ## Comparando la varianza explicada de las técnicas robustas
 
 ```{r}
@@ -114,14 +139,30 @@ p2<- fviz_eig(pca_mcd, ncp =12, addlabels = TRUE, main="MCD")
 ggarrange(p1,p2, nrow = 1, ncol = 2)
 ```
 
-## Biplot
+## Comparando la varianza explicada entre PCA no robusto y MVE
 
 ```{r}
-autoplot(pca_mve, 
-         data = vinos_out, 
-         colour = 'variedad',
-         loadings = TRUE, 
-         loadings.colour = 'black',
-         loadings.label = TRUE, 
-         loadings.label.size = 3)
+p3 <-fviz_eig(pca, ncp =12, addlabels = TRUE, main="No robusto")
+ggarrange(p1,p3, nrow = 1, ncol = 2)
 ```
+
+## Scree plot del PCA NO robusto
+
+```{r}
+screeplot(pca, type = "l", npcs = 12)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+col=c("red"), lty=5, cex=0.6)
+```
+
+## Scree plot del PCA MVE
+
+```{r}
+screeplot(pca_mve, type = "l", npcs = 12)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+col=c("red"), lty=5, cex=0.6)
+
+```
+
+
