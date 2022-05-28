@@ -16,21 +16,30 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 library(tidyverse)
-library(corrplot)
-library(rgl)
-library(GGally)
 library(readxl)
-library(reshape2)
+library(ggfortify)
 library(factoextra)
+library(ggpubr)
+library(downloadthis)
+```
+
+
+```{r, echo = FALSE}
+download_link(
+  link = "https://raw.githubusercontent.com/PamelaPairo/maestria_DM/main/AID/03_pca_robusto.Rmd",
+  button_label = "Download .Rmd",
+  button_type = "danger",
+  has_icon = TRUE,
+  icon = "fa fa-save",
+  self_contained = FALSE
+)
 ```
 
 # Continuamos con la base de datos `vinos.xlsx`
 
-
 ```{r}
 df_vinos <- read_excel("vino.xlsx") %>% 
   mutate_at('variedad', as.factor)
-  
 ```
 
 Quitamos la variable `variedad`
@@ -51,38 +60,20 @@ out_numericas <-vinos_out %>%
       select(where(is.numeric))
 ```
 
-```{r}
-pca_out <-princomp(out_numericas, cor=TRUE, scores=TRUE,
-covmat=MASS::cov.mcd(out_numericas))
-summary(pca_out)
+# Comparando PCAs
 
-```
-
-```{r}
-fviz_eig(pca_out, ncp =12, addlabels = TRUE, main="")
-```
-```{r}
-library(ggfortify)
-
-autoplot(pca_out, 
-         data = vinos_out, 
-         colour = 'variedad',
-         loadings = TRUE, 
-         loadings.colour = 'black',
-         loadings.label = TRUE, 
-         loadings.label.size = 3)
-```
+## PCA **NO** robusto
 
 ```{r}
 pca <- prcomp(out_numericas,scale = TRUE)# con datos estandarizados
+summary(pca)
 ```
-
 ```{r}
 fviz_eig(pca, ncp =12, addlabels = TRUE, main="")
 ```
+## Biplot
 
 ```{r}
-
 autoplot(pca, 
          data = vinos_out, 
          colour = 'variedad',
@@ -92,7 +83,45 @@ autoplot(pca,
          loadings.label.size = 3)
 ```
 
+## PCA robusto
+
+**Técnicas robustas**
+
+Una de las alternativas robustas propuestas es _Minimun Covariance Determinant_
+(MCD), y otra es el _Minimum volume ellipsoid_ (MVE).
+
+### 1- MCD
+
 ```{r}
-autoplot(pca, data = vinos_out, shape = F, label.size = 3, scale = 0)
+pca_mcd <-princomp(out_numericas, cor=TRUE, scores=TRUE,
+covmat=MASS::cov.mcd(out_numericas))#se especifica MCD
+summary(pca_mcd)
+```
+### 2- MVE
+
+```{r}
+pca_mve <-princomp(out_numericas, cor=TRUE, scores=TRUE,
+covmat=MASS::cov.mve(out_numericas))#se especifica MVE
+summary(pca_mve)
+```
+## Comparando la varianza explicada de las técnicas robustas
+
+```{r}
+par(mfrow=c(2,1))
+p1 <-fviz_eig(pca_mve, ncp =12, addlabels = TRUE, main="MVE")
+p2<- fviz_eig(pca_mcd, ncp =12, addlabels = TRUE, main="MCD")
+
+ggarrange(p1,p2, nrow = 1, ncol = 2)
 ```
 
+## Biplot
+
+```{r}
+autoplot(pca_mve, 
+         data = vinos_out, 
+         colour = 'variedad',
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 3)
+```
