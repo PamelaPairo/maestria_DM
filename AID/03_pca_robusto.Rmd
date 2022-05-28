@@ -1,10 +1,11 @@
 ---
-title: "PCA-Parte 3"
+title: "PCA Robusto"
 author: "Pamela E. Pairo- AID 2022"
 date: "28/05/2022"
 output:
   html_document:
     toc: yes
+    code_folding: show
     toc_float: yes
     df_print: paged
     theme: united
@@ -36,9 +37,10 @@ Quitamos la variable `variedad`
 
 ```{r}
 df_numericas <-df_vinos %>% 
-      select(is.numeric)
+      select(where(is.numeric))
 ```
 
+Se agregan _outliers_ a la base de datos
 
 ```{r}
 vinos_out<-rbind(df_vinos, c (5 , 0.1 , 0.05, 1.1, 5.5, 15, 9, 0.5, 2.5, 0.4, 8.7, 5, 2) , c (5.5 , 0.3 , 0.03, 1.2, 5.9, 16, 8, 0.4, 2.2, 0.45, 8.1, 4, 2) , c ( 8.6 , 0.55, 0.6, 0.6, 20, 140, 240, 0.95, 2.7, 0.27, 13, 8, 1))
@@ -46,15 +48,16 @@ vinos_out<-rbind(df_vinos, c (5 , 0.1 , 0.05, 1.1, 5.5, 15, 9, 0.5, 2.5, 0.4, 8.
 
 ```{r}
 out_numericas <-vinos_out %>% 
-      select(is.numeric)
+      select(where(is.numeric))
 ```
 
 ```{r}
-pca_out=princomp(out_numericas, cor=TRUE, scores=TRUE,
+pca_out <-princomp(out_numericas, cor=TRUE, scores=TRUE,
 covmat=MASS::cov.mcd(out_numericas))
 summary(pca_out)
 
 ```
+
 ```{r}
 fviz_eig(pca_out, ncp =12, addlabels = TRUE, main="")
 ```
@@ -69,6 +72,7 @@ autoplot(pca_out,
          loadings.label = TRUE, 
          loadings.label.size = 3)
 ```
+
 ```{r}
 pca <- prcomp(out_numericas,scale = TRUE)# con datos estandarizados
 ```
