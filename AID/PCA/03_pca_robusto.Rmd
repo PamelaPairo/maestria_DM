@@ -8,6 +8,7 @@ output:
     toc_float: yes
     df_print: paged
     theme: united
+    code_download: true
 ---
 
 ```{r setup, include=FALSE}
@@ -51,7 +52,7 @@ df_numericas <-df_vinos %>%
       select(where(is.numeric))
 ```
 
-Se agregan _outliers_ a la base de datos
+Se agregan *outliers* a la base de datos
 
 ```{r}
 vinos_out<-rbind(df_vinos, c (5 , 0.1 , 0.05, 1.1, 5.5, 15, 9, 0.5, 2.5, 0.4, 8.7, 5, 2) , c (5.5 , 0.3 , 0.03, 1.2, 5.9, 16, 8, 0.4, 2.2, 0.45, 8.1, 4, 2) , c ( 8.6 , 0.55, 0.6, 0.6, 20, 140, 240, 0.95, 2.7, 0.27, 13, 8, 1))
@@ -103,7 +104,7 @@ fviz_eig(pca,
 
 ## Biplot
 
-Visualizamos los _outliers_ en el biplot.
+Visualizamos los *outliers* en el biplot.
 
 ```{r}
 autoplot(pca, 
@@ -119,8 +120,7 @@ autoplot(pca,
 
 **Técnicas robustas**
 
-Una de las alternativas robustas propuestas es _Minimun Covariance Determinant_
-(MCD), y otra es el _Minimum volume ellipsoid_ (MVE).
+Una de las alternativas robustas propuestas es *Minimun Covariance Determinant* (MCD), y otra es el *Minimum volume ellipsoid* (MVE).
 
 ### 1- MCD
 
@@ -179,5 +179,3 @@ legend("topright", legend=c("Eigenvalue = 1"),
 col=c("red"), lty=5, cex=0.6)
 
 ```
-
-
