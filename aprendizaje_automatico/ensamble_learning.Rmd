@@ -16,7 +16,7 @@ background-image: url(images/portada.jpg)
 background-size: cover
 
 #Práctica 5: 
-Ensamble learning y Naive Bayes
+## Ensamble learning y Naive Bayes
 
 ```{r setup, include = FALSE}
 options(htmltools.dir.version = FALSE)
@@ -85,7 +85,7 @@ colors = c(
 
 ### En la primera parte:
 
-- Métodos de ensable: Bagging y Boosting
+- Métodos de ensamble: Bagging y Boosting
 
 --
 
@@ -104,8 +104,20 @@ class: inverse, middle, center
 
 ---
 
-## Basados en Bagging
+## Ensamble Learning: Motivación
 
+Se basan en la idea de que el trabajo en conjunto debería dar mejores resultados.
+
+--
+
+Habitualmente, un modelo "ensemble" es más preciso que los modelos que lo constituyen. Intuitivamente, esto se debe a que "dos aprenden mejor que uno".
+
+--
+
+.bg-washed-light-purple.b--light-purple.ba.bw2.br3.shadow-5.ph4.mt4[
+Con los métodos de ensemble se pueden combinar múltiples modelos en uno nuevo y así lograr un equilibro entre **.orange[sesgo y varianza]**, y por ende conseguir mejores predicciones que cualquiera de los modelos individuales originales.
+]
+---
 # Ensamble learning: Bagging
 
 Los **.orange[árboles de decisión]** son algoritmos inestables debido a que pequeñas variaciones en el dataset pueden generar modelos muy diferentes.
@@ -119,8 +131,19 @@ Consiste en realizar K subsets del dataset aleatoriamente y con reemplazo, resul
 ]
 ---
 
-# Bagging para árboles de decisión
+## Bagging para árboles de decisión
 
 .center[
 <img src="images/bagging.png" width="100%"/>
 ]
+
+.footnote[Imagen de Hendrik Blockeel]
+
+---
+# Random Forest
+
+Es una modificación a Bagging para Árboles de Decisión. 
+
+En cada árbol se consideran sólo **M atributos** elegidos aleatoriamente y sin reposición.
+
+El algoritmo es sencillo, fácil de implementar, fácil de usar y requiere de poco ajuste de parámetros.
