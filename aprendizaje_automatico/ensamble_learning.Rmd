@@ -166,3 +166,18 @@ class: inverse, middle, center
 
 # Ensamble learning: Boosting
 
+.center[
+<img src="images/boosting.png" width="100%"/>
+]
+
+.footnote[Imagen extraída de [aquí](https://datascience.eu/machine-learning/gradient-boosting-what-you-need-to-know/)]
+
+---
+# Bagging vs Boosting
+
+.center[
+<img src="images/bag_vs_boost.jpeg" width="100%"/>
+]
+
+.footnote[Imagen extraída de [aquí](https://towardsdatascience.com/ensemble-learning-bagging-boosting-3098079e5422)]
+
