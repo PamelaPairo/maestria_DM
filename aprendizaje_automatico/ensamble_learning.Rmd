@@ -181,3 +181,76 @@ class: inverse, middle, center
 
 .footnote[Imagen extraída de [aquí](https://towardsdatascience.com/ensemble-learning-bagging-boosting-3098079e5422)]
 
+---
+class: inverse, middle, center
+
+#`r emo::ji("computer")`
+### Ejemplo en Colab!
+
+---
+class: inverse, middle, center
+
+## Descanso `r emo::ji("party")` `r emo::ji("coffee")`🧉
+
+```{r}
+library(countdown)
+countdown(minutes = 15, seconds = 0, font_size="7em", color_background = "white")
+```
+
+---
+class: inverse, middle, center
+
+# Naive Bayes
+
+---
+
+# Teorema de Bayes
+
+.bg-washed-light-purple.b--light-purple.ba.bw2.br2.shadow-5.ph3.mt2[
+.center[
+$\LARGE P(A|B)= \frac{P(B|A) * P(A)}{P(B)}$
+]
+]
+
+El teorema establece que se puede encontrar la probabilidad de **A** (e.g. una clase objetivo) dada la ocurrencia de B (e.g. un conjunto de features). Es decir, B es la evidencia y A es la hipótesis.
+
+--
+
+_.orange[Dada nuestras variables predictoras, ¿cuál es la probabilidad de cada clase?
+]_
+
+.center[
+$\ P(Clase|Predictores)= \LARGE \frac{P(Predictores|Clase) * P(Clase)}{P(Predictores)}$
+
+$\LARGE = \frac{Prior * Likelihood}{Evidencia}$
+
+$\ Predictores= \LARGE (x_1, x_2, x_3...x_n)$
+]
+
+---
+
+#¿Porqué Naive?
+
+La principal asunción es que **.purple[los atributos son independientes entre sí.]**
+
+Una segunda asunción, es que **.purple[todos los atributos tienen el mismo efecto en la salida del algoritmo.]**
+
+###Entonces...
+
+.center[
+$\ P(y|x_1, x_2..x_n)= \LARGE \frac{P(x_1|y) * P(x_n|y)...P(x_1|y)* P(y)}{P(x_1)* P(x_2)...P(x_N)}$
+]
+
+---
+# Tipos de algoritmos
+
+**.orange[Bernoulli Naive Bayes]**: Para casos donde los atributos son variables binarias (e.g. si una palabra ocurre o no en un documento).
+
+--
+
+**.orange[Multinomial Naive Bayes]**: Para casos donde los atributos representan frecuencias (e.g. la cantidad de veces que una palabra ocurre en un documento).
+
+--
+
+**.orange[Gaussian Naive Bayes]**: Para casos donde los atributos toman valores continuos, se asume que los valores son muestras de una distribución gaussiana (esto se usa para calcular las probabilidades condicionales en el algoritmo).
+
