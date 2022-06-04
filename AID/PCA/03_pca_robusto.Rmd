@@ -122,6 +122,12 @@ autoplot(pca,
 
 Una de las alternativas robustas propuestas es *Minimun Covariance Determinant* (MCD), y otra es el *Minimum volume ellipsoid* (MVE).
 
+Para mas detalle de cada técnica mirar los papers correspondientes:
+
+1- Link de descarga [aqui](https://www.researchgate.net/publication/354058635_Robust_Principal_Component_Analysis_Using_Minimum_Covariance_Determinant_Estimator) para MCD
+
+2- Link de descarga [aquí](https://www.researchgate.net/publication/229803108_Minimum_Volume_Ellipsoid/link/59e1d3560f7e9b97fbe72fa9/download) para MVE.
+
 ### 1- MCD
 
 ```{r}
