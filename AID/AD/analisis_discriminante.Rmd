@@ -70,7 +70,7 @@ Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos
 
 3- Homocedasticidad.
 
-Verefiquemos supuestos:
+## Verefiquemos supuestos
 
 1- Normalidad multivariada
 
