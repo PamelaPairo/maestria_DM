@@ -1,0 +1,38 @@
+---
+title: "Análisis Discriminante"
+author: "Pamela E. Pairo"
+output:
+  html_document:
+    toc: yes
+    code_folding: show
+    toc_float: yes
+    df_print: paged
+    theme: united
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library(readxl)
+library(ggfortify)
+library(factoextra)
+library(ggpubr)
+library(downloadthis)
+library(reshape2)
+```
+
+```{r, echo = FALSE}
+
+download_link(
+  link = "https://github.com/PamelaPairo/maestria_DM/raw/main/AID/AD/analisis_discriminante.Rmd",
+  button_label = "Download .Rmd",
+  button_type = "danger",
+  has_icon = TRUE,
+  icon = "fa fa-save",
+  self_contained = FALSE
+)
+```
+
