@@ -36,3 +36,20 @@ download_link(
 )
 ```
 
+Es una técnica de **clasificación** en donde hay más de una variable respuesta (cuantitativa) medida en grupos predeterminados.
+
+El objetivo es:
+
+- Separar los grupos, identificando las variables que permiten esa separación
+
+- Clasificar a nuevos individuos
+
+# Base de datos
+
+Vamos a trabajar con la base de datos de `Iris`
+
+
+```{r}
+iris
+```
+
