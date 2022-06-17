@@ -16,12 +16,11 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 library(tidyverse)
-library(readxl)
-library(ggfortify)
 library(factoextra)
-library(ggpubr)
+library(mvShapiroTest)
+library(biotools)
 library(downloadthis)
-library(reshape2)
+library(MASS)
 ```
 
 ```{r, echo = FALSE}
@@ -35,6 +34,7 @@ download_link(
   self_contained = FALSE
 )
 ```
+
 
 Es una técnica de **clasificación** en donde hay más de una variable respuesta (cuantitativa) medida en grupos predeterminados.
 
@@ -50,6 +50,46 @@ Vamos a trabajar con la base de datos de `Iris`
 
 
 ```{r}
-iris
+data(iris)
+glimpse(iris)
+```
+
+```{r}
+setosa<- subset(iris[,1:4], iris$Species == "setosa")
+versicolor<- subset(iris[,1:4], iris$Species == "versicolor")
+virginica <- subset(iris[,1:4], iris$Species=="virginica")
+```
+
+# Análisis Discriminante Lineal (LDA)
+
+Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos:
+
+1- Distribución de normalidad multivariada
+
+2- Independencia de las observaciones
+
+3- Homocedasticidad.
+
+Verefiquemos supuestos:
+
+1- Normalidad multivariada
+
+¿Cuál es la hipótesis estadística?
+
+```{r}
+mvShapiro.Test(as.matrix(setosa))
+mvShapiro.Test(as.matrix(versicolor))  
+mvShapiro.Test(as.matrix(virginica))
+```
+2- Independencia de las observaciones
+
+Viene dada por el diseño
+
+3- Homocedasticidad
+
+Analizamos igualdad de matrices de varianzas y covarianzas:
+
+```{r}
+boxM(iris[,-5],iris[,5])
 ```
 
