@@ -84,13 +84,6 @@ df_test <- df_split %>%
 paste0("Total del dataset de entrenamiento: ", nrow(df_train))
 paste0("Total del dataset de testeo: ", nrow(df_test))
 ```
-Creamos tres subsets de datos para cada especie
-
-```{r}
-setosa<- subset(df_train[,1:4], df_train$Species == "setosa")
-versicolor<- subset(df_train[,1:4], df_train$Species == "versicolor")
-virginica <- subset(df_train[,1:4], df_train$Species=="virginica")
-```
 
 # Análisis Discriminante Lineal (LDA)
 
@@ -109,15 +102,16 @@ Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos
 ¿Cuál es la hipótesis estadística?
 
 ```{r}
-mvShapiro.Test(as.matrix(setosa))
-mvShapiro.Test(as.matrix(versicolor))  
-mvShapiro.Test(as.matrix(virginica))
+mvShapiro.Test(as.matrix(df_train[,-5]))
 ```
+
 2- Independencia de las observaciones
 
 Viene dada por el diseño
 
 3- Homocedasticidad
+
+Ho las matrices de varianzas-covarianzas de los grupos son iguales.
 
 Analizamos igualdad de matrices de varianzas y covarianzas:
 
@@ -162,6 +156,7 @@ lda.data <- cbind(df_train, predict(model_lda)$x)
 ggplot(lda.data, aes(LD1, LD2)) +
   geom_point(aes(color = Species))
 ```
+
 Veamos que predice el modelo en df_test
 
 ```{r}
@@ -180,6 +175,7 @@ table(predict(model_lda,type="class")$class,df_train$Species)
 library(klaR) 
 partimat (Species~. , data=df_train , method="lda")
 ```
+
 Veamos la _performance_ en df_test
 
 ```{r}
