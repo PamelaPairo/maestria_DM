@@ -65,7 +65,7 @@ ggpairs(iris, legend = 1, columns = 1:4, aes(color = Species, alpha = 0.5),
   theme(legend.position = "bottom")
 ```
 
-Vamos a separar el dataset en train y test
+Al conocerse la especie de pertenencia de cada individuo, se puede comprobar la efectividad del método de clasificación observando el porcentaje de casos bien clasificados. Para ello, vamos a separar el dataset en train y test
 
 ```{r}
 set.seed(123)#setear la semilla
