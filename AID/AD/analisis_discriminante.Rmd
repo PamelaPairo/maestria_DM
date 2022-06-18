@@ -163,15 +163,37 @@ lda.test <- predict(model_lda,df_test)
 df_test$lda <- lda.test$class
 table(df_test$lda,df_test$Species)
 ```
-## Análisis discriminante cuadrático*
+## Análisis discriminante cuadrático (QDA)
+
+El discriminante se dice cuadrático porque el término de segundo orden no se cancela como en el caso del discriminante lineal. QDA no asume la igualdad en la matriz de varianzas/covarianzas. En otras palabras, para QDA la matriz de covarianza puede ser diferente para cada clase.
+
+Vamos a aplicar QDA, a pesar de que no se satisface el supuesto de normalidad multivariada.
 
 ```{r}
-qda.iris <- qda(Species ~ ., df_train)
-
-qda.iris
+model_qda <- qda(Species ~ ., df_train)
+model_qda
 ```
 
 ```{r}
 partimat(Species ~ ., data=df_train, method="qda")
 ```
+
+```{r}
+table(predict(model_qda,type="class")$class,df_train$Species)
+```
+
+```{r}
+lda.test_qda <- predict(model_qda,df_test)
+df_test$qda <- lda.test_qda$class
+table(df_test$qda,df_test$Species)
+```
+
+```{r}
+#install.packages("devtools")
+#library(devtools)
+#install_github("fawda123/ggord")
+library(ggord)
+ggord(model_lda, df_train$Species, xlim = c(-10, 11))
+```
+
 
