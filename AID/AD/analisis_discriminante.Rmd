@@ -128,14 +128,6 @@ Vamos a proseguir como si se hubiese cumplido todos los supuestos. Tener en cuen
 model_lda <- lda(Species~., data =df_train)
 model_lda
 ```
-**Coefficients of linear discriminants**: Muestra la combinación lineal de variables predictoras que se utilizan para formar la regla de decisión LDA.
-
-Por ejemplo:
-
-$\ LD1= 0.76*Sepal.Length+ 1.85*Sepal.Width - 2.25*Petal.Length -2.91*Petal.Width$
-
-LD1 explica el 99% de la proporción de varianza entre clases.
-
 El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:
 
 *prior*: las probabilidades previas utilizadas.
@@ -145,6 +137,16 @@ El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:
 *svd*: son los valores singulares, informan el cociente entre desvíos estándar entre y dentro de grupos para cada FD; si se elevan al cuadrado se obtiene el autovalor de cada FD
 
 *counts*: El número de observaciones por clase.
+
+**Coefficients of linear discriminants**: Muestra la combinación lineal de variables predictoras que se utilizan para formar la regla de decisión LDA.
+
+Por ejemplo:
+
+$\ LD1= 0.76*Sepal.Length+ 1.85*Sepal.Width - 2.25*Petal.Length -2.91*Petal.Width$
+
+LD1 explica el 99% de la proporción de varianza entre clases.
+
+La 2da función discriminante es independiente de la primera (ortogonal) y es la que mejor separa los grupos usando la variación remanente o residual, después que la 1ra función discriminante ha sido determinada
 
 ```{r}
 prop = model_lda$svd^2/sum(model_lda$svd^2)
