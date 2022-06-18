@@ -16,11 +16,13 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 library(tidyverse)
+library(tidymodels)
 library(factoextra)
 library(mvShapiroTest)
 library(biotools)
 library(downloadthis)
 library(MASS)
+library(klaR)
 ```
 
 ```{r, echo = FALSE}
@@ -53,11 +55,30 @@ Vamos a trabajar con la base de datos de `Iris`
 data(iris)
 glimpse(iris)
 ```
+Vamos a separar el dataset en train y test
 
 ```{r}
-setosa<- subset(iris[,1:4], iris$Species == "setosa")
-versicolor<- subset(iris[,1:4], iris$Species == "versicolor")
-virginica <- subset(iris[,1:4], iris$Species=="virginica")
+set.seed(123)#setear la semilla
+# Create data split for train and test
+df_split <- initial_split(iris,
+                          prop = 0.9,
+                          strata = Species)#en este caso no es necesario porque las clases están balanceadas
+
+df_train <- df_split %>%
+              training()
+
+df_test <- df_split %>%
+              testing()
+
+# Número de datos en test y train
+paste0("Total del dataset de entrenamiento: ", nrow(df_train))
+paste0("Total del dataset de testeo: ", nrow(df_test))
+```
+
+```{r}
+setosa<- subset(df_train[,1:4], df_train$Species == "setosa")
+versicolor<- subset(df_train[,1:4], df_train$Species == "versicolor")
+virginica <- subset(df_train[,1:4], df_train$Species=="virginica")
 ```
 
 # Análisis Discriminante Lineal (LDA)
@@ -90,6 +111,67 @@ Viene dada por el diseño
 Analizamos igualdad de matrices de varianzas y covarianzas:
 
 ```{r}
-boxM(iris[,-5],iris[,5])
+boxM(df_train[,-5],df_train[,5])
+```
+Entonces ¿qué concluimos?
+
+Vamos a proseguir como si se hubiese cumplido todos los supuestos. Tener en cuenta que los resultados del LDA **no van a ser confiables en este caso**.
+
+## LDA
+
+```{r}
+model_lda <- lda(Species~., data =df_train)
+model_lda
+```
+**Coefficients of linear discriminants**: Muestra la combinación lineal de variables predictoras que se utilizan para formar la regla de decisión LDA.
+
+Por ejemplo:
+
+$\ LD1= 0.76*Sepal.Length+ 1.85*Sepal.Width - 2.25*Petal.Length -2.91*Petal.Width$
+
+```{r}
+lda.data <- cbind(df_train, predict(model_lda)$x)
+ggplot(lda.data, aes(LD1, LD2)) +
+  geom_point(aes(color = Species))
+```
+
+```{r}
+predict(model_lda, df_test[,-5])
+```
+
+```{r}
+predictions <- model_lda %>% predict(df_test)
+names(predictions)
+
+mean(predictions$class==df_test$Species)
+```
+Veamos la matriz de confusión en df_train
+
+```{r}
+table(predict(model_lda,type="class")$class,df_train$Species)
+```
+`partimat` muestra una matriz de gráficos para cada combinación de dos variables. Cada gráfico muestra una vista diferente de los mismos datos. Las regiones coloreadas delimitan cada área de clasificación. Se predice que cualquier observación que se encuentre dentro de una región pertenece a una clase específica. Cada gráfico también incluye la tasa de error aparente para esa vista de los datos.
+
+```{r}
+library(klaR) 
+partimat (Species~. , data=df_train , method="lda")
+```
+Veamos la _performance_ en df_test
+
+```{r}
+lda.test <- predict(model_lda,df_test)
+df_test$lda <- lda.test$class
+table(df_test$lda,df_test$Species)
+```
+## Análisis discriminante cuadrático*
+
+```{r}
+qda.iris <- qda(Species ~ ., df_train)
+
+qda.iris
+```
+
+```{r}
+partimat(Species ~ ., data=df_train, method="qda")
 ```
 
