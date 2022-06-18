@@ -96,7 +96,7 @@ virginica <- subset(df_train[,1:4], df_train$Species=="virginica")
 
 Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos:
 
-1- Distribución de normalidad multivariada
+1- Normalidad multivariada
 
 2- Independencia de las observaciones
 
@@ -148,7 +148,7 @@ El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:
 
 *means*: la media de cada clase.
 
-*svd*: los valores singulares, que dan la relación de las desviaciones estándar entre y dentro del grupo en las variables discriminantes lineales.
+*svd*: son los valores singulares, informan el cociente entre desvíos estándar entre y dentro de grupos para cada FD; si se elevan al cuadrado se obtiene el autovalor de cada FD
 
 *counts*: El número de observaciones por clase.
 
