@@ -197,7 +197,7 @@ library(ggord)
 ggord(model_lda, df_train$Species, xlim = c(-10, 11))
 ```
 
-## Análisis discriminante cuadrático (QDA)
+# Análisis discriminante cuadrático (QDA)
 
 El discriminante se dice cuadrático porque el término de segundo orden no se cancela como en el caso del discriminante lineal. QDA no asume la igualdad en la matriz de varianzas/covarianzas. En otras palabras, para QDA la matriz de covarianza puede ser diferente para cada clase.
 
