@@ -38,13 +38,16 @@ download_link(
 ```
 
 
-Es una técnica de **clasificación** en donde hay más de una variable respuesta (cuantitativa) medida en grupos predeterminados.
+Es una técnica de **clasificación** en donde la variable respuesta es cuantitativa.
 
 El objetivo es:
 
 - Separar los grupos, identificando las variables que permiten esa separación
 
 - Clasificar a nuevos individuos
+
+La idea es contruir funciones discriminantes (FD) que maximicen la variabilidad entre grupos con el objetivo de discriminarlos mejor. Esto se logra al maximizar la varianza entre grupos en relación con la varianza total
+
 
 # Base de datos
 
@@ -55,7 +58,7 @@ Vamos a trabajar con la base de datos de `Iris`
 data(iris)
 glimpse(iris)
 ```
-Realicemos algunos scatterplots
+Realicemos algunos _scatterplots_
 
 ```{r}
 library(GGally)
@@ -228,3 +231,11 @@ lda.test_qda <- predict(model_qda,df_test)
 df_test$qda <- lda.test_qda$class
 table(df_test$qda,df_test$Species)
 ```
+# Algunos comentarios 
+
+- El ánalisis discriminante es una técnica sensible a la presencia de _outliers_
+
+- Si el supuesto de normalidad multivariada se sostiene pero hay _outliers_ es recomendable recurrir a la versión robusta de QDA.
+
+- Si se rechaza la normalidad multivariada, el modelo robusto no es adecuado.
+
