@@ -239,3 +239,8 @@ table(df_test$qda,df_test$Species)
 
 - Si se rechaza la normalidad multivariada, el modelo robusto no es adecuado.
 
+## ¿Qué hacer si no se cumple el supuesto de normalidad multivariada?
+
+Hay diversas opiniones al respecto. Algunos mencionan que LDA es robusto a la falta de normalidad multivariada si los datos son lo suficientemente grandes.^[[_Discriminant Function Analysis Introductory Overview - Assumptions_](https://docs.tibco.com/data-science/GUID-B34E0CEC-ECEF-4CA0-AF56-7D91E7695397.html)] Sin embargo, _Lachenbruch et al. (1973)_^[[_Robustness of the linear and quadratic discriminant function to certain types of non-normality_](https://sci-hub.se/10.1080/03610927308827006)] han demostrado que los resultados de aplicar LDA si se ven muy afectados por la falta de normalidad multivariada luego de usar tres tipos de distribuciones no normales. Por otra parte, también se ha encontrado que QDA si es robusto a la falta de normalidad si las distribuciones de los datos se alejan ligeramente de distribución teórica^[[_How non-normality affects the quadratic discriminant function_](https://sci-hub.se/10.1080/03610927908827830)]
+
+Actualmente, se han propuesto varias alternativas que inclu
