@@ -6,6 +6,7 @@ Para mas información de la Maestría visitar el siguiente link: http://datamini
 
 ## Análisis Inteligente de Datos
 
+- [PCA](https://pamelapairo.github.io/maestria_DM/AID/PCA/02_PCA.html)
 - [PCA Robusto](https://pamelapairo.github.io/maestria_DM/AID/PCA/03_pca_robusto.html)
 - [Análisis Discriminante](https://pamelapairo.github.io/maestria_DM/AID/AD/analisis_discriminante.html)
 
