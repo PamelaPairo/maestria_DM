@@ -1,0 +1,212 @@
+---
+title: "PCA-Parte 2"
+author: "Pamela E. Pairo- AID 2022"
+date: "21/05/2022"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    df_print: paged
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library(corrplot)
+library(rgl)
+library(GGally)
+library(readxl)
+library(reshape2)
+library(factoextra)
+```
+
+# Base de datos conocida
+
+Se hace un sample de 200 datos (100 variadad 1, 100 variedad 2) de la base de datos original.
+
+```{r}
+df_vinos <- read_excel("vino.xlsx") %>% 
+  mutate_at('variedad', as.factor)
+  
+```
+
+Nos quedamos con las variables numéricas
+
+```{r}
+df_numericas <-df_vinos %>% 
+      select(is.numeric)
+```
+
+## Boxplots para todas las variables
+
+```{r}
+data_long <- melt(df_vinos)  
+ggplot(data_long, aes(x=variable, y=value)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+
+## Bloxplots considerando la variedad de vino
+
+```{r}
+ggplot(data_long, aes(x=variable, y=value, fill= variedad)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+```{r}
+#Matriz de correlación
+m_cor <- cor(df_numericas) 
+
+# representa la matriz de correlaciones mediante círculos
+corrplot(m_cor,method="circle") 
+```
+
+## Calculo de la varianza
+
+```{r}
+variance <- df_vinos %>% 
+  summarise_if(is.numeric, var) %>% 
+  t() %>% 
+  data.frame() %>% 
+  rename( "varianza"=".") %>% 
+  round(3)
+
+variance
+```
+
+# PCA
+
+```{r}
+pca <- prcomp(df_numericas,scale = TRUE)# con datos estandarizados
+names(pca)
+```
+`center`:contienen la media de las variables previa estandarización (en la escala original)
+
+`scale`: contienen desviación típica de las variables previa estandarización (en la escala original)
+
+`rotation`: contiene los *loadings*
+
+## Cargas o _loadings_
+
+```{r}
+round(pca$rotation,2)
+```
+
+```{r}
+contrib <- as.matrix(round(pca$rotation,2))
+corrplot(contrib,is.corr=FALSE)
+```
+
+```{r}
+round(pca$center,2) #vector de medias
+```
+
+## Autovalores
+
+¿Qué proporción de la variabilidad total es explicada por cada una de las componentes?
+
+```{r}
+prop_varianza <- pca$sdev^2 / sum(pca$sdev^2)
+prop_varianza
+```
+
+```{r}
+prop_varianza_acum <- cumsum(prop_varianza)
+prop_varianza_acum
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza_acum, pc = 1:12),
+       aes(x = pc, y = prop_varianza_acum, group = 1)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+```
+
+# ¿Cuántas CPs elegir?
+
+## Criterio 1: Porcentaje de variabilidad explicada
+
+Se define un porcentaje de variabilidad mínimo que se desea explicar y se toman las
+primeras _m_ componentes que alcanzan este porcentaje de explicación.
+
+Por ejemplo se elige un porcentaje de 90% de variabilidad.
+
+```{r}
+round(prop_varianza_acum*100,2)# llevo datos a porcentaje
+```
+
+## Criterio 2: Criterio de Kaiser
+
+Consiste en retener las _m_ primeras componentes tales que sus autovalores resulten iguales o mayores que 1.
+
+```{r}
+screeplot(pca, type = "l", npcs = 12)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+```
+
+## Criterio 3: Criterio del bastón roto
+
+Si la proporción de variabilidad explicada por $Y1, Y2, · · ·, Ym$ se estabiliza a partir de un cierto valor de CP, entonces aumentar la dimensión no aportaría cambios significativos.
+
+```{r}
+fviz_eig(pca, ncp =12, addlabels = TRUE, main="")
+```
+
+# Biplot
+
+- Los n objetos son ordenados en función de su puntaje en cada uno de los componentes analizados
+
+- Las p variables son representadas como vectores
+
+## _Scores_
+
+Se estandarizan las variables originales y luego con la fórmula de la combinación lineal correspondiente para cada CP, se calculan los _scores_ o puntajes de los vinos.
+
+```{r}
+pca$x[,1]# scores para la primer componente (PC1)
+```
+_Scores_ para todas las CPs.
+
+```{r}
+res.ind <- get_pca_ind(pca)
+head(res.ind$coord,10)
+```
+
+```{r}
+library(ggfortify)
+autoplot(pca, data = df_vinos, shape = F, label.size = 3, scale = 0)# scale=0 biplot segun scores
+```
+
+```{r}
+autoplot(pca, 
+         data = df_vinos, 
+         shape = F, 
+         label.size = 3, 
+         scale = 0, # scale=0 biplot segun scores
+         loadings.label=T,# nombre de las variables
+         loadings=T)# variables como vectores
+```
+
+Y si se diferencia a cada punto según la variedad de vino?
+
+```{r}
+autoplot(pca, 
+         data = df_vinos, 
+         colour = 'variedad',
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 3)
+```
+
+¿Qué información podemos sacar del biplot? 🤔
