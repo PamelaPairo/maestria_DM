@@ -5,9 +5,11 @@ date: "21/05/2022"
 output:
   html_document:
     toc: yes
+    code_folding: show
     toc_float: yes
     df_print: paged
     theme: united
+    code_download: true
 ---
 
 ```{r setup, include=FALSE}
@@ -66,7 +68,7 @@ m_cor <- cor(df_numericas)
 corrplot(m_cor,method="circle") 
 ```
 
-## Calculo de la varianza
+## Cálculo de la varianza
 
 ```{r}
 variance <- df_vinos %>% 
@@ -94,7 +96,7 @@ names(pca)
 ## Cargas o _loadings_
 
 ```{r}
-round(pca$rotation,2)
+knitr::kable(round(pca$rotation,2))
 ```
 
 ```{r}
@@ -103,7 +105,7 @@ corrplot(contrib,is.corr=FALSE)
 ```
 
 ```{r}
-round(pca$center,2) #vector de medias
+knitr::kable(round(pca$center,2)) #vector de medias
 ```
 
 ## Autovalores
@@ -179,7 +181,9 @@ _Scores_ para todas las CPs.
 
 ```{r}
 res.ind <- get_pca_ind(pca)
-head(res.ind$coord,10)
+knitr::kable(head(res.ind$coord,10), format = "html") %>% 
+  kableExtra::kable_styling() %>%
+  kableExtra::scroll_box(width = "100%")
 ```
 
 ```{r}
@@ -209,4 +213,27 @@ autoplot(pca,
          loadings.label.size = 3)
 ```
 
-¿Qué información podemos sacar del biplot? 🤔
+## ¿Qué información podemos sacar del biplot? 🤔
+
+Tener en cuenta lo siguiente:
+
+- Si se es el/la experto/a de dominio (o se le puede consultar) se puede dar una interpretación a qué aspecto del tema se refiere PC1 y PC2, considerando los _loadings_ de las varibles originales.
+
+- Si dos variables forman ángulos pequeños; esto nos estaría diciendo que las variables están muy correlacionadas (en este ejemplo sería el caso de anhídrico sulfuroso libre y anhídrico sulfuroso total)
+
+- Si dos variables forman ángulos de 90°, entonces nos indica que ambas variables **no** están correlacionadas (por ejemplo pH y densidad).
+
+- Los resultados del PCA son sensibles a la presencia de _outliers_ por lo que pueden distorsionar el ordenamiento.
+
+## ¿Y si se quiere graficar el PC2 vs PC3?
+
+```{r}
+autoplot(pca, x = 2, y = 3,
+         data = df_vinos, 
+         colour = 'variedad',
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 3)
+```
+
