@@ -237,3 +237,6 @@ autoplot(pca, x = 2, y = 3,
          loadings.label.size = 3)
 ```
 
+# En Python
+
+En [este link](https://github.com/PamelaPairo/maestria_DM/blob/main/AID/PCA/02_PCA%20en%20Python.ipynb) se puede ver el código en Python para realizar PCA.
