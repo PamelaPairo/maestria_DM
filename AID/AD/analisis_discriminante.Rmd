@@ -75,7 +75,7 @@ set.seed(123)#setear la semilla
 # Create data split for train and test
 df_split <- initial_split(iris,
                           prop = 0.9,
-                          strata = Species)#en este caso no es necesario porque las clases están balanceadas
+                          strata = Species)#para conservar la prporción de las clases
 
 df_train <- df_split %>%
               training()
