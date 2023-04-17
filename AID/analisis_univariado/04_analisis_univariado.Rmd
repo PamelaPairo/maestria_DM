@@ -1,0 +1,311 @@
+---
+title: "Análisis Discriminante"
+author: "Pamela E. Pairo"
+output:
+  html_document:
+    toc: yes
+    code_folding: show
+    toc_float: yes
+    df_print: paged
+    theme: united
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+```
+
+# Diferencia de medias para muestras normales con varianzas desconocidas
+
+_Coriandrum sativum_ ha sido cultivada históricamente en nuestro país, pero los productores quieren saber si les convendría cambiar por el cultivo de _C. tordylium_. El INTA lleva a cabo un estudio a fin de comparar el rendimiento de ambas especies. De las áreas sembradas con cada una de ellas, se eligieron 15 parcelas al azar, se cosecharon en su totalidad y se determinó el rendimiento por cromatografía gaseosa (g/cm3).
+
+En base a las observaciones realizadas, ¿podría el INTA recomendar a los productores cambiar de especie con un nivel de significación del 5%?
+
+```{r}
+df_coriandrum <-read.delim2("Coriandrum.txt")
+glimpse(df_coriandrum)
+```
+
+Cambiamos el tipo de dato de la variable `Rendimiento`
+
+```{r}
+df_coriandrum$Rendimiento <- as.numeric(df_coriandrum$Rendimiento)
+```
+
+```{r}
+boxplot(Rendimiento~Especie,
+data=df_coriandrum,
+xlab="Especie",
+ylab="Rendimiento",
+col="orange",
+border="brown"
+)
+```
+Estadística Descriptiva
+
+```{r}
+summary(df_coriandrum)
+```
+
+*Planteo de Hipótesis:*
+
+Ho:$\mu_{ct} - \mu_{cs}\le 0$
+
+Ha:$\mu_{ct} - \mu_{cs}> 0$
+
+
+*¿Conocemos las varianzas poblacionales?*
+
+Hipotesis para las varianzas poblacionales
+
+Ho $\frac{\sigma^2_{ct}}{\sigma^2_{cs}} =1$ 
+
+H1 $\frac{\sigma^2_{ct}}{\sigma^2_{cs}} \neq 1$ 
+
+```{r}
+var.test(Rendimiento~Especie, data=df_coriandrum, alternative = "two.sided") # es una prueba bilateral
+```
+
+Vuelvo a las Hipotesis de problema
+
+Con el parámetro `var.equal` se especifica si las varianzas de las poblaciones son similares o no, por ejemplo `var.equal= T` indica que las varianzas de ambas poblaciones son iguales.
+
+En `alternative` se especifica el tipo de prueba de hipótesis.
+
+
+```{r}
+t.test(Rendimiento~Especie , data=df_coriandrum, alternative = "greater", var.equal = T, conf.level = 0.95)
+
+```
+
+Si se desea obtener el límite inferior y superior del intervalo de confianza, debe correrse nuevamente la prueba, pero seleccionando la opción bilateral (`alternative= two.sided`)
+
+¿Conclusiones?
+
+
+# Diferencia de medias para muestras pareadas
+
+En un trabajo de investigación se utilizaron 16 parcelas experimentales con dos plantas de avena cada una con el fin de estudiar el efecto promotor del crecimiento de una solución de potasio. En cada parcela, una planta elegida al azar fue tratada con la solución de potasio y la otra no (control).
+
+```{r}
+library("readxl")
+df_avena <-read_excel("avena.xlsx")
+glimpse(df_avena)
+```
+
+$\LARGE X_d=$ diferencia en el crecimiento de una avena tratada y una avena control
+
+Hipotesis
+
+Ho $\mu_d \le 0$
+
+Ha $\mu_d > 0$
+
+```{r}
+df_avena <-df_avena %>% 
+  mutate(diferencia= tratamiento-control)
+```
+
+
+```{r}
+qqnorm(df_avena$diferencia)
+qqline(df_avena$diferencia, col = 2)
+```
+
+```{r}
+data <-read.delim2("Avena.txt")
+data$Tratamiento <-as.factor(data$Tratamiento)
+data$Altura <-as.numeric(data$Altura)
+t.test(data$Altura~data$Tratamiento, alternative = "greater", paired = T)
+```
+
+```{r}
+t.test(data$Altura~data$Tratamiento, alternative = "greater", paired = T)
+```
+
+# Pruebas no paramétricas
+
+## Test de Mann-Whitney-Wilcoxon
+
+En un estudio efectuado a fin de caracterizar la calidad y producción de aceite de oliva en la provincia de Catamarca de la República Argentina, se estudiaron dos de las variedades más conocidas. Para ello, se tomaron muestras de aceitunas de distintos ejemplares a una misma altura de copa de aproximadamente dos metros, y de todos los puntos cardinales de la misma, a efectos de evitar las variaciones debidas a la posición del fruto en la planta. Las aceitunas fueron secadas en estufa y se les determinó su contenido porcentual de aceite por extracción química.
+
+```{r}
+# Cargamos los datos
+
+Arbequina=c(34.5 , 20.1 , 21.8 , 18.2 , 19.5 , 20.2 , 22.5 , 23.9 , 22.1 , 24.2 )
+Carolea=c(16.4 , 14.8 , 17.8 , 12.3 , 11.9 , 15.5 , 13.4 , 16, 15.8 , 16.2 )
+```
+
+Realizamos la prueba de normalidad
+
+```{r}
+shapiro.test(Arbequina) # Testea la normalidad de los datos
+shapiro.test(Carolea ) # Testea la normalidad de los datos
+```
+
+```{r}
+library(reshape2)
+
+myList <-list(Arbequina, Carolea)
+df <- melt(myList)
+
+qplot(factor(L1), value, data = df, geom = "boxplot", xlab="Especies")
+```
+
+$\theta_A$ a la mediana poblacional (posición central) del contenido de aceite de la variedad Arbequina.
+
+$\theta_C$ a la mediana poblacional (posición central) del contenido de aceite de la variedad Carolea.
+
+Hipótesis
+
+Ho $\theta_A = \theta_C$
+
+Ha $\theta_A \neq \theta_C$
+
+```{r}
+wilcox.test(Arbequina, Carolea,alternative = "two.sided")
+```
+
+## Test para la mediana
+
+```{r}
+library(RVAideMemoire)# Paquete que contiene funciones misceláneas útiles en bioestadística
+library(readxl) 
+
+aceite<-read_excel("aceite.xlsx")
+mood.medtest(Aceite~Variedad, data=aceite)# Realiza el test de la mediana de Mood
+```
+
+Concluimos que rechazamos la hipótesis de la igualdad de las medianas de las dos variedades.
+
+# ANOVA
+
+Interesa estudiar la capacidad detoxificadora del césped
+_E. ophiuroides_ en suelos contaminados con Cd. A 20 macetas con césped se les asignó una de 5 dosis de Cd diferente (60, 120, 180, 240 y 300 mg Cd kg-1); 4 macetas por dosis. Se midió el Cd acumulado por la planta (expresado como mg Cd kg-1 materia seca)
+
+```{r}
+cadmio <- read.csv2("cadmio.csv")
+```
+
+```{r}
+boxplot(cd_tallo~dosis_cd,data=cadmio,xlab="Dosis Cd (mg/kg suelo",ylab="Cd tallo (mg/g MS)", col="orange"  )
+
+```
+Hipótesis estadísticas
+
+Ho $\mu_{60} = \mu_{120} = \mu_{180}= \mu_{240}= \mu_{300}$
+
+Ha $\mu_{i} \neq \mu$
+
+Realizamos el ANOVA
+
+```{r}
+modelo<-aov(cd_tallo ~ factor(dosis_cd), data=cadmio)
+summary(modelo)
+```
+
+### Supuestos
+
+- Las muestras deben ser aleatorias y las observaciones
+independientes
+
+- Las varianzas de las subpoblaciones deben ser iguales (homocedasticidad) 
+
+- La distribución de cada subpoblación es normal
+
+Calculamos los residuos del modelo
+
+```{r}
+e<-resid(modelo) # residuos
+re<-rstandard(modelo) #residuos estandarizados
+pre<-predict(modelo) #predichos
+res<-cbind(cadmio$dosis_cd,cadmio$cd_tallo,pre,e,round(re,2))
+colnames(res)<-c("dosis Cd", "Cd tallo", "Predichos", "Residuos", "residuos std") 
+res
+```
+
+```{r}
+res<-as.data.frame(res)
+par(mfrow = c(1, 2))
+plot(pre, re, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
+abline(0,0)
+qqnorm(e)
+qqline(e)
+shapiro.test(e)
+par(mfrow = c(1, 1))
+```
+
+Por prueba de hipótesis
+
+```{r}
+shapiro.test(re) 
+```
+
+Prueba de homogeneidad de varianzas
+
+```{r}
+library(car)
+
+cadmio$dosis_cd <- as.factor(cadmio$dosis_cd)
+leveneTest(cd_tallo ~ dosis_cd, data=cadmio)
+```
+
+El test de Levene no rechaza la hipótesis nula de homocedasticidad,
+
+Comparaciones a posterior
+
+IC para la diferencia de dos medias: equivale a una PH para dif de medias (¿el cero pertenece al IC?).
+
+```{r}
+TukeyHSD(modelo)
+```
+
+```{r}
+plot(TukeyHSD(modelo))
+```
+
+# Test de Kruscal-Wallis (no paramétrico)
+
+Se realizó una intervención educativa innovadora para mejorar el rendimiento de los estudiantes. Dentro de los grupos de clasificación, el A es el grupo de control y los restantes, B y C, son los grupos con distintas innovaciones.
+
+```{r}
+Puntajes=c(13,27,26,22,28,27,43,35,47,32,31,37,33,33,33,26,44,33,54)
+Grupo=as.factor(c(rep("A",6), rep("B", 6), rep("C", 7)))
+Rendimiento=data.frame (Grupo, Puntajes)
+```
+
+```{r}
+library(pgirmess)
+ggplot(Rendimiento,aes(x=Grupo,y=Puntajes,fill=Grupo)) +
+  geom_boxplot() +
+  xlab("") +
+  scale_fill_brewer(palette="Pastel1")
+# Produce boxplots
+grupoA=Rendimiento[Rendimiento$Grupo=="A",2]
+grupoB=Rendimiento[Rendimiento$Grupo=="B",2]
+grupoC=Rendimiento[Rendimiento$Grupo=="C",2]
+
+```
+
+```{r}
+shapiro.test(grupoA)
+shapiro.test(grupoB)
+shapiro.test(grupoC)
+```
+
+Ho Los tres grupos tienen la misma posición para la variable de estudio dada por el puntaje
+
+Ha al menos un grupo tiene diferente posición para la variable en estudio dada por el puntaje.
+
+```{r}
+kruskal.test(Puntajes, Grupo)# Realiza el test de Kruskal???Wallis
+
+```
+
+```{r}
+kruskalmc(Puntajes~Grupo )# Realiza un test de comparación múltiple entre tratamientos luego del test de Kruskal Wallis
+```
+
