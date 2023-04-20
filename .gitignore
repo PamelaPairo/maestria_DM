@@ -4,3 +4,6 @@
 .Ruserdata
 03_pca_robusto_files/
 04_analisis_univariado_files/
+*.xlsx
+*.txt
+*.csv
