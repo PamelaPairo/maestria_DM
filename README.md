@@ -11,7 +11,7 @@ Para mas información de la Maestría visitar el siguiente link: http://datamining
 - [PCA Robusto](https://pamelapairo.github.io/maestria_DM/AID/PCA/03_pca_robusto.html)
 - [Análisis Discriminante](https://pamelapairo.github.io/maestria_DM/AID/AD/analisis_discriminante.html)
 
-## Aprendizaje AutomÃ¡tico
+## Aprendizaje Automático
 
 - [Árboles de decisión](https://pamelapairo.github.io/maestria_DM/aprendizaje_automatico/03_practica.html#1)
 - [Ensamble learning y Naive Bayes](https://pamelapairo.github.io/maestria_DM/aprendizaje_automatico/ensamble_learning.html#1)
