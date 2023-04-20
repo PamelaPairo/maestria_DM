@@ -13,5 +13,5 @@ Para mas información de la Maestría visitar el siguiente link: http://datamining
 
 ## Aprendizaje AutomÃ¡tico
 
-- [Árboles de decisiÃ³n](https://pamelapairo.github.io/maestria_DM/aprendizaje_automatico/03_practica.html#1)
+- [Árboles de decisión](https://pamelapairo.github.io/maestria_DM/aprendizaje_automatico/03_practica.html#1)
 - [Ensamble learning y Naive Bayes](https://pamelapairo.github.io/maestria_DM/aprendizaje_automatico/ensamble_learning.html#1)
