@@ -289,7 +289,7 @@ leveneTest(cd_tallo ~ dosis_cd,
 summary(modelo)
 ```
 
-Comparaciones a posterior
+Comparaciones a posteriori
 
 IC para la diferencia de dos medias: equivale a una PH para dif de medias (¿el cero pertenece al IC?).
 
