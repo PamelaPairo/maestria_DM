@@ -270,7 +270,6 @@ library(moments)
 agostino.test(e)
 ```
 
-
 Prueba de homogeneidad de varianzas
 
 ```{r}

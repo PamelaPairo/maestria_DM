@@ -1236,81 +1236,80 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb62-316"><a href="#cb62-316" aria-hidden="true" tabindex="-1"></a><span class="fu">agostino.test</span>(e)</span>
 <span id="cb62-317"><a href="#cb62-317" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb62-318"><a href="#cb62-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-319"><a href="#cb62-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-320"><a href="#cb62-320" aria-hidden="true" tabindex="-1"></a>Prueba de homogeneidad de varianzas</span>
-<span id="cb62-321"><a href="#cb62-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-324"><a href="#cb62-324" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-325"><a href="#cb62-325" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb62-326"><a href="#cb62-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-327"><a href="#cb62-327" aria-hidden="true" tabindex="-1"></a>cadmio<span class="sc">$</span>dosis_cd <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(cadmio<span class="sc">$</span>dosis_cd)</span>
-<span id="cb62-328"><a href="#cb62-328" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(cd_tallo <span class="sc">~</span> dosis_cd, </span>
-<span id="cb62-329"><a href="#cb62-329" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>cadmio)</span>
-<span id="cb62-330"><a href="#cb62-330" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-331"><a href="#cb62-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-332"><a href="#cb62-332" aria-hidden="true" tabindex="-1"></a>**El test de Levene no rechaza la hipótesis nula de homocedasticidad.**</span>
-<span id="cb62-333"><a href="#cb62-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-336"><a href="#cb62-336" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-337"><a href="#cb62-337" aria-hidden="true" tabindex="-1"></a><span class="co">#modelo&lt;-aov(cd_tallo ~ factor(dosis_cd), </span></span>
-<span id="cb62-338"><a href="#cb62-338" aria-hidden="true" tabindex="-1"></a><span class="co">#            data=cadmio)</span></span>
-<span id="cb62-339"><a href="#cb62-339" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-340"><a href="#cb62-340" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span>
-<span id="cb62-341"><a href="#cb62-341" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-342"><a href="#cb62-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-343"><a href="#cb62-343" aria-hidden="true" tabindex="-1"></a>Comparaciones a posterior</span>
-<span id="cb62-344"><a href="#cb62-344" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-345"><a href="#cb62-345" aria-hidden="true" tabindex="-1"></a>IC para la diferencia de dos medias: equivale a una PH para dif de medias (¿el cero pertenece al IC?).</span>
-<span id="cb62-346"><a href="#cb62-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-349"><a href="#cb62-349" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-350"><a href="#cb62-350" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(modelo)</span>
-<span id="cb62-351"><a href="#cb62-351" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-352"><a href="#cb62-352" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-355"><a href="#cb62-355" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-356"><a href="#cb62-356" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">TukeyHSD</span>(modelo))</span>
-<span id="cb62-357"><a href="#cb62-357" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-358"><a href="#cb62-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-359"><a href="#cb62-359" aria-hidden="true" tabindex="-1"></a><span class="fu"># Test de Kruscal-Wallis (no paramétrico)</span></span>
-<span id="cb62-360"><a href="#cb62-360" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-361"><a href="#cb62-361" aria-hidden="true" tabindex="-1"></a>Se realizó una intervención educativa innovadora para mejorar el rendimiento de los estudiantes. Dentro de los grupos de clasificación, el A es el grupo de control y los restantes, B y C, son los grupos con distintas innovaciones.</span>
-<span id="cb62-362"><a href="#cb62-362" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-365"><a href="#cb62-365" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-366"><a href="#cb62-366" aria-hidden="true" tabindex="-1"></a>Puntajes<span class="ot">=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">27</span>,<span class="dv">26</span>,<span class="dv">22</span>,<span class="dv">28</span>,<span class="dv">27</span>,<span class="dv">43</span>,<span class="dv">35</span>,<span class="dv">47</span>,<span class="dv">32</span>,<span class="dv">31</span>,<span class="dv">37</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">26</span>,<span class="dv">44</span>,<span class="dv">33</span>,<span class="dv">54</span>)</span>
-<span id="cb62-367"><a href="#cb62-367" aria-hidden="true" tabindex="-1"></a>Grupo<span class="ot">=</span><span class="fu">as.factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"A"</span>,<span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"B"</span>, <span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"C"</span>, <span class="dv">7</span>)))</span>
-<span id="cb62-368"><a href="#cb62-368" aria-hidden="true" tabindex="-1"></a>Rendimiento<span class="ot">=</span><span class="fu">data.frame</span> (Grupo, Puntajes)</span>
-<span id="cb62-369"><a href="#cb62-369" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-370"><a href="#cb62-370" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-373"><a href="#cb62-373" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-374"><a href="#cb62-374" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pgirmess)</span>
-<span id="cb62-375"><a href="#cb62-375" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Rendimiento,</span>
-<span id="cb62-376"><a href="#cb62-376" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>Grupo,<span class="at">y=</span>Puntajes,<span class="at">fill=</span>Grupo)) <span class="sc">+</span></span>
-<span id="cb62-377"><a href="#cb62-377" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb62-378"><a href="#cb62-378" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb62-379"><a href="#cb62-379" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span>
-<span id="cb62-380"><a href="#cb62-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-381"><a href="#cb62-381" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce boxplots</span></span>
-<span id="cb62-382"><a href="#cb62-382" aria-hidden="true" tabindex="-1"></a>grupoA<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"A"</span>,<span class="dv">2</span>]</span>
-<span id="cb62-383"><a href="#cb62-383" aria-hidden="true" tabindex="-1"></a>grupoB<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"B"</span>,<span class="dv">2</span>]</span>
-<span id="cb62-384"><a href="#cb62-384" aria-hidden="true" tabindex="-1"></a>grupoC<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"C"</span>,<span class="dv">2</span>]</span>
-<span id="cb62-385"><a href="#cb62-385" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-386"><a href="#cb62-386" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-387"><a href="#cb62-387" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-390"><a href="#cb62-390" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-391"><a href="#cb62-391" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoA)</span>
-<span id="cb62-392"><a href="#cb62-392" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoB)</span>
-<span id="cb62-393"><a href="#cb62-393" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoC)</span>
-<span id="cb62-394"><a href="#cb62-394" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-395"><a href="#cb62-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-396"><a href="#cb62-396" aria-hidden="true" tabindex="-1"></a>Ho Los tres grupos tienen la misma posición para la variable de estudio dada por el puntaje</span>
-<span id="cb62-397"><a href="#cb62-397" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-398"><a href="#cb62-398" aria-hidden="true" tabindex="-1"></a>Ha al menos un grupo tiene diferente posición para la variable en estudio dada por el puntaje.</span>
-<span id="cb62-399"><a href="#cb62-399" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-402"><a href="#cb62-402" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-403"><a href="#cb62-403" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(Puntajes, Grupo)<span class="co"># Realiza el test de Kruskal Wallis</span></span>
-<span id="cb62-404"><a href="#cb62-404" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-405"><a href="#cb62-405" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb62-406"><a href="#cb62-406" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-409"><a href="#cb62-409" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb62-410"><a href="#cb62-410" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskalmc</span>(Puntajes<span class="sc">~</span>Grupo )<span class="co"># Realiza un test de comparación múltiple entre tratamientos luego del test de Kruskal Wallis</span></span>
-<span id="cb62-411"><a href="#cb62-411" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-319"><a href="#cb62-319" aria-hidden="true" tabindex="-1"></a>Prueba de homogeneidad de varianzas</span>
+<span id="cb62-320"><a href="#cb62-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-323"><a href="#cb62-323" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-324"><a href="#cb62-324" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb62-325"><a href="#cb62-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-326"><a href="#cb62-326" aria-hidden="true" tabindex="-1"></a>cadmio<span class="sc">$</span>dosis_cd <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(cadmio<span class="sc">$</span>dosis_cd)</span>
+<span id="cb62-327"><a href="#cb62-327" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(cd_tallo <span class="sc">~</span> dosis_cd, </span>
+<span id="cb62-328"><a href="#cb62-328" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>cadmio)</span>
+<span id="cb62-329"><a href="#cb62-329" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-330"><a href="#cb62-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-331"><a href="#cb62-331" aria-hidden="true" tabindex="-1"></a>**El test de Levene no rechaza la hipótesis nula de homocedasticidad.**</span>
+<span id="cb62-332"><a href="#cb62-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-335"><a href="#cb62-335" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-336"><a href="#cb62-336" aria-hidden="true" tabindex="-1"></a><span class="co">#modelo&lt;-aov(cd_tallo ~ factor(dosis_cd), </span></span>
+<span id="cb62-337"><a href="#cb62-337" aria-hidden="true" tabindex="-1"></a><span class="co">#            data=cadmio)</span></span>
+<span id="cb62-338"><a href="#cb62-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-339"><a href="#cb62-339" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span>
+<span id="cb62-340"><a href="#cb62-340" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-341"><a href="#cb62-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-342"><a href="#cb62-342" aria-hidden="true" tabindex="-1"></a>Comparaciones a posterior</span>
+<span id="cb62-343"><a href="#cb62-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-344"><a href="#cb62-344" aria-hidden="true" tabindex="-1"></a>IC para la diferencia de dos medias: equivale a una PH para dif de medias (¿el cero pertenece al IC?).</span>
+<span id="cb62-345"><a href="#cb62-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-348"><a href="#cb62-348" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-349"><a href="#cb62-349" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(modelo)</span>
+<span id="cb62-350"><a href="#cb62-350" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-351"><a href="#cb62-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-354"><a href="#cb62-354" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-355"><a href="#cb62-355" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">TukeyHSD</span>(modelo))</span>
+<span id="cb62-356"><a href="#cb62-356" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-357"><a href="#cb62-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-358"><a href="#cb62-358" aria-hidden="true" tabindex="-1"></a><span class="fu"># Test de Kruscal-Wallis (no paramétrico)</span></span>
+<span id="cb62-359"><a href="#cb62-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-360"><a href="#cb62-360" aria-hidden="true" tabindex="-1"></a>Se realizó una intervención educativa innovadora para mejorar el rendimiento de los estudiantes. Dentro de los grupos de clasificación, el A es el grupo de control y los restantes, B y C, son los grupos con distintas innovaciones.</span>
+<span id="cb62-361"><a href="#cb62-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-364"><a href="#cb62-364" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-365"><a href="#cb62-365" aria-hidden="true" tabindex="-1"></a>Puntajes<span class="ot">=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">27</span>,<span class="dv">26</span>,<span class="dv">22</span>,<span class="dv">28</span>,<span class="dv">27</span>,<span class="dv">43</span>,<span class="dv">35</span>,<span class="dv">47</span>,<span class="dv">32</span>,<span class="dv">31</span>,<span class="dv">37</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">26</span>,<span class="dv">44</span>,<span class="dv">33</span>,<span class="dv">54</span>)</span>
+<span id="cb62-366"><a href="#cb62-366" aria-hidden="true" tabindex="-1"></a>Grupo<span class="ot">=</span><span class="fu">as.factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"A"</span>,<span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"B"</span>, <span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"C"</span>, <span class="dv">7</span>)))</span>
+<span id="cb62-367"><a href="#cb62-367" aria-hidden="true" tabindex="-1"></a>Rendimiento<span class="ot">=</span><span class="fu">data.frame</span> (Grupo, Puntajes)</span>
+<span id="cb62-368"><a href="#cb62-368" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-369"><a href="#cb62-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-372"><a href="#cb62-372" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-373"><a href="#cb62-373" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pgirmess)</span>
+<span id="cb62-374"><a href="#cb62-374" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Rendimiento,</span>
+<span id="cb62-375"><a href="#cb62-375" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>Grupo,<span class="at">y=</span>Puntajes,<span class="at">fill=</span>Grupo)) <span class="sc">+</span></span>
+<span id="cb62-376"><a href="#cb62-376" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb62-377"><a href="#cb62-377" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb62-378"><a href="#cb62-378" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span>
+<span id="cb62-379"><a href="#cb62-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-380"><a href="#cb62-380" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce boxplots</span></span>
+<span id="cb62-381"><a href="#cb62-381" aria-hidden="true" tabindex="-1"></a>grupoA<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"A"</span>,<span class="dv">2</span>]</span>
+<span id="cb62-382"><a href="#cb62-382" aria-hidden="true" tabindex="-1"></a>grupoB<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"B"</span>,<span class="dv">2</span>]</span>
+<span id="cb62-383"><a href="#cb62-383" aria-hidden="true" tabindex="-1"></a>grupoC<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"C"</span>,<span class="dv">2</span>]</span>
+<span id="cb62-384"><a href="#cb62-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-385"><a href="#cb62-385" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-386"><a href="#cb62-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-389"><a href="#cb62-389" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-390"><a href="#cb62-390" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoA)</span>
+<span id="cb62-391"><a href="#cb62-391" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoB)</span>
+<span id="cb62-392"><a href="#cb62-392" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoC)</span>
+<span id="cb62-393"><a href="#cb62-393" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-394"><a href="#cb62-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-395"><a href="#cb62-395" aria-hidden="true" tabindex="-1"></a>Ho Los tres grupos tienen la misma posición para la variable de estudio dada por el puntaje</span>
+<span id="cb62-396"><a href="#cb62-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-397"><a href="#cb62-397" aria-hidden="true" tabindex="-1"></a>Ha al menos un grupo tiene diferente posición para la variable en estudio dada por el puntaje.</span>
+<span id="cb62-398"><a href="#cb62-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-401"><a href="#cb62-401" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-402"><a href="#cb62-402" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(Puntajes, Grupo)<span class="co"># Realiza el test de Kruskal Wallis</span></span>
+<span id="cb62-403"><a href="#cb62-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-404"><a href="#cb62-404" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb62-405"><a href="#cb62-405" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-408"><a href="#cb62-408" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb62-409"><a href="#cb62-409" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskalmc</span>(Puntajes<span class="sc">~</span>Grupo )<span class="co"># Realiza un test de comparación múltiple entre tratamientos luego del test de Kruskal Wallis</span></span>
+<span id="cb62-410"><a href="#cb62-410" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
