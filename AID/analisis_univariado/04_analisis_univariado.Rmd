@@ -56,7 +56,7 @@ summary(df_coriandrum)
 
 *Planteo de Hipótesis:*
 
-Ho:$\mu_{ct} - \mu_{cs}\le 0$
+Ho:$\mu_{ct} - \mu_{cs} = 0$
 
 Ha:$\mu_{ct} - \mu_{cs}> 0$
 
@@ -77,7 +77,7 @@ var.test(Rendimiento~Especie,
 
 Vuelvo a las Hipotesis de problema:
 
-Ho:$\mu_{ct} - \mu_{cs}\le 0$
+Ho:$\mu_{ct} - \mu_{cs} = 0$
 
 Ha:$\mu_{ct} - \mu_{cs}> 0$
 
@@ -190,7 +190,8 @@ wilcox.test(Arbequina,
 library(RVAideMemoire)# Paquete que contiene funciones misceláneas útiles en bioestadística
 
 aceite<-read_excel("aceite.xlsx")
-mood.medtest(Aceite~Variedad, data=aceite)# Realiza el test de la mediana de Mood
+mood.medtest(Aceite~Variedad,
+             data=aceite)# Realiza el test de la mediana de Mood
 ```
 
 Concluimos que rechazamos la hipótesis de la igualdad de las medianas de las dos variedades.
@@ -201,11 +202,16 @@ Interesa estudiar la capacidad detoxificadora del césped
 _E. ophiuroides_ en suelos contaminados con Cd. A 20 macetas con césped se les asignó una de 5 dosis de Cd diferente (60, 120, 180, 240 y 300 mg Cd kg-1); 4 macetas por dosis. Se midió el Cd acumulado por la planta (expresado como mg Cd kg-1 materia seca)
 
 ```{r}
+#cargamos los datos
 cadmio <- read.csv2("cadmio.csv")
 ```
 
 ```{r}
-boxplot(cd_tallo~dosis_cd,data=cadmio,xlab="Dosis Cd (mg/kg suelo",ylab="Cd tallo (mg/g MS)", col="orange"  )
+boxplot(cd_tallo~dosis_cd,
+        data=cadmio,
+        xlab="Dosis Cd (mg/kg suelo",
+        ylab="Cd tallo (mg/g MS)",
+        col="orange")
 
 ```
 Hipótesis estadísticas
@@ -213,15 +219,6 @@ Hipótesis estadísticas
 Ho $\mu_{60} = \mu_{120} = \mu_{180}= \mu_{240}= \mu_{300}$
 
 Ha $\mu_{i} \neq \mu$
-
-Realizamos el ANOVA
-
-```{r}
-modelo<-aov(cd_tallo ~ factor(dosis_cd), 
-            data=cadmio)
-
-summary(modelo)
-```
 
 ### Supuestos
 
@@ -231,6 +228,17 @@ independientes
 - Las varianzas de las subpoblaciones deben ser iguales (homocedasticidad) 
 
 - La distribución de cada subpoblación es normal
+
+Definimos el modelo:
+
+```{r}
+modelo<-aov(cd_tallo ~ factor(dosis_cd), 
+            data=cadmio)
+
+summary(modelo)
+```
+
+Primero, se chequean los supuestos
 
 Calculamos los residuos del modelo
 
@@ -248,16 +256,13 @@ res<-as.data.frame(res)
 par(mfrow = c(1, 2))
 plot(pre, re, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
 abline(0,0)
-qqnorm(e)
-qqline(e)
-shapiro.test(e)
-par(mfrow = c(1, 1))
+qqPlot(e)
 ```
 
 Por prueba de hipótesis
 
 ```{r}
-shapiro.test(re) 
+shapiro.test(e) 
 ```
 
 Prueba de homogeneidad de varianzas
@@ -266,10 +271,18 @@ Prueba de homogeneidad de varianzas
 library(car)
 
 cadmio$dosis_cd <- as.factor(cadmio$dosis_cd)
-leveneTest(cd_tallo ~ dosis_cd, data=cadmio)
+leveneTest(cd_tallo ~ dosis_cd, 
+           data=cadmio)
 ```
 
-El test de Levene no rechaza la hipótesis nula de homocedasticidad,
+**El test de Levene no rechaza la hipótesis nula de homocedasticidad.**
+
+```{r}
+#modelo<-aov(cd_tallo ~ factor(dosis_cd), 
+#            data=cadmio)
+
+summary(modelo)
+```
 
 Comparaciones a posterior
 
@@ -295,10 +308,12 @@ Rendimiento=data.frame (Grupo, Puntajes)
 
 ```{r}
 library(pgirmess)
-ggplot(Rendimiento,aes(x=Grupo,y=Puntajes,fill=Grupo)) +
+ggplot(Rendimiento,
+       aes(x=Grupo,y=Puntajes,fill=Grupo)) +
   geom_boxplot() +
   xlab("") +
   scale_fill_brewer(palette="Pastel1")
+
 # Produce boxplots
 grupoA=Rendimiento[Rendimiento$Grupo=="A",2]
 grupoB=Rendimiento[Rendimiento$Grupo=="B",2]
@@ -317,7 +332,7 @@ Ho Los tres grupos tienen la misma posición para la variable de estudio dada po
 Ha al menos un grupo tiene diferente posición para la variable en estudio dada por el puntaje.
 
 ```{r}
-kruskal.test(Puntajes, Grupo)# Realiza el test de Kruskal???Wallis
+kruskal.test(Puntajes, Grupo)# Realiza el test de Kruskal Wallis
 
 ```
 

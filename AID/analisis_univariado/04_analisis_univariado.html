@@ -214,7 +214,7 @@ $ Rendimiento &lt;chr&gt; "0.19", "0.201", "0.172", "0.193", "0.194", "0.225", "
 </div>
 </div>
 <p><em>Planteo de Hipótesis:</em></p>
-<p>Ho:<span class="math inline">\(\mu_{ct} - \mu_{cs}\le 0\)</span></p>
+<p>Ho:<span class="math inline">\(\mu_{ct} - \mu_{cs} = 0\)</span></p>
 <p>Ha:<span class="math inline">\(\mu_{ct} - \mu_{cs}&gt; 0\)</span></p>
 <p><em>¿Conocemos las varianzas poblacionales?</em></p>
 <p>Hipotesis para las varianzas poblacionales</p>
@@ -242,7 +242,7 @@ ratio of variances
 </div>
 </div>
 <p>Vuelvo a las Hipotesis de problema:</p>
-<p>Ho:<span class="math inline">\(\mu_{ct} - \mu_{cs}\le 0\)</span></p>
+<p>Ho:<span class="math inline">\(\mu_{ct} - \mu_{cs} = 0\)</span></p>
 <p>Ha:<span class="math inline">\(\mu_{ct} - \mu_{cs}&gt; 0\)</span></p>
 <p>Con el parámetro <code>var.equal</code> se especifica si las varianzas de las poblaciones son similares o no, por ejemplo <code>var.equal= T</code> indica que las varianzas de ambas poblaciones son iguales.</p>
 <p>En <code>alternative</code> se especifica el tipo de prueba de hipótesis.</p>
@@ -460,7 +460,8 @@ alternative hypothesis: true location shift is not equal to 0</code></pre>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RVAideMemoire)<span class="co"># Paquete que contiene funciones misceláneas útiles en bioestadística</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>aceite<span class="ot">&lt;-</span><span class="fu">read_excel</span>(<span class="st">"aceite.xlsx"</span>)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mood.medtest</span>(Aceite<span class="sc">~</span>Variedad, <span class="at">data=</span>aceite)<span class="co"># Realiza el test de la mediana de Mood</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mood.medtest</span>(Aceite<span class="sc">~</span>Variedad,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">data=</span>aceite)<span class="co"># Realiza el test de la mediana de Mood</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -479,13 +480,18 @@ p-value = 1.083e-05</code></pre>
 <div class="cell">
 <details open="">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>cadmio <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="st">"cadmio.csv"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#cargamos los datos</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>cadmio <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="st">"cadmio.csv"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details open="">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(cd_tallo<span class="sc">~</span>dosis_cd,<span class="at">data=</span>cadmio,<span class="at">xlab=</span><span class="st">"Dosis Cd (mg/kg suelo"</span>,<span class="at">ylab=</span><span class="st">"Cd tallo (mg/g MS)"</span>, <span class="at">col=</span><span class="st">"orange"</span>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(cd_tallo<span class="sc">~</span>dosis_cd,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">data=</span>cadmio,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab=</span><span class="st">"Dosis Cd (mg/kg suelo"</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab=</span><span class="st">"Cd tallo (mg/g MS)"</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">col=</span><span class="st">"orange"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="04_analisis_univariado_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
@@ -494,7 +500,14 @@ p-value = 1.083e-05</code></pre>
 <p>Hipótesis estadísticas</p>
 <p>Ho <span class="math inline">\(\mu_{60} = \mu_{120} = \mu_{180}= \mu_{240}= \mu_{300}\)</span></p>
 <p>Ha <span class="math inline">\(\mu_{i} \neq \mu\)</span></p>
-<p>Realizamos el ANOVA</p>
+<section id="supuestos" class="level3">
+<h3 class="anchored" data-anchor-id="supuestos">Supuestos</h3>
+<ul>
+<li><p>Las muestras deben ser aleatorias y las observaciones independientes</p></li>
+<li><p>Las varianzas de las subpoblaciones deben ser iguales (homocedasticidad)</p></li>
+<li><p>La distribución de cada subpoblación es normal</p></li>
+</ul>
+<p>Definimos el modelo:</p>
 <div class="cell">
 <details open="">
 <summary>Código</summary>
@@ -504,20 +517,14 @@ p-value = 1.083e-05</code></pre>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>                 Df Sum Sq Mean Sq F value   Pr(&gt;F)    
-factor(dosis_cd)  4  83493   20873    93.7 2.01e-10 ***
-Residuals        15   3342     223                     
+<pre><code>                 Df Sum Sq Mean Sq F value Pr(&gt;F)    
+factor(dosis_cd)  4  87303   21826     129  2e-11 ***
+Residuals        15   2538     169                   
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<section id="supuestos" class="level3">
-<h3 class="anchored" data-anchor-id="supuestos">Supuestos</h3>
-<ul>
-<li><p>Las muestras deben ser aleatorias y las observaciones independientes</p></li>
-<li><p>Las varianzas de las subpoblaciones deben ser iguales (homocedasticidad)</p></li>
-<li><p>La distribución de cada subpoblación es normal</p></li>
-</ul>
+<p>Primero, se chequean los supuestos</p>
 <p>Calculamos los residuos del modelo</p>
 <div class="cell">
 <details open="">
@@ -531,26 +538,26 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   dosis Cd Cd tallo Predichos Residuos residuos std
-1        60     23.2      30.3     -7.1        -0.55
-2        60     16.2      30.3    -14.1        -1.09
-3        60     52.7      30.3     22.4         1.73
-4        60     29.1      30.3     -1.2        -0.09
-5       120     52.5      59.0     -6.5        -0.50
-6       120     45.7      59.0    -13.3        -1.03
-7       120     52.9      59.0     -6.1        -0.47
-8       120     84.9      59.0     25.9         2.00
-9       180    123.5     125.0     -1.5        -0.12
-10      180    106.9     125.0    -18.1        -1.40
-11      180    123.9     125.0     -1.1        -0.09
-12      180    145.7     125.0     20.7         1.60
-13      240    166.8     168.5     -1.7        -0.13
-14      240    165.9     168.5     -2.6        -0.20
-15      240    184.3     168.5     15.8         1.22
-16      240    157.0     168.5    -11.5        -0.89
-17      300    208.4     202.3      6.1         0.47
-18      300    189.9     202.3    -12.4        -0.96
-19      300    217.7     202.3     15.4         1.19
-20      300    193.2     202.3     -9.1        -0.70</code></pre>
+1        60     23.2     30.30    -7.10        -0.63
+2        60     16.2     30.30   -14.10        -1.25
+3        60     52.7     30.30    22.40         1.99
+4        60     29.1     30.30    -1.20        -0.11
+5       120     52.5     54.75    -2.25        -0.20
+6       120     45.7     54.75    -9.05        -0.80
+7       120     52.9     54.75    -1.85        -0.16
+8       120     67.9     54.75    13.15         1.17
+9       180    133.5    140.00    -6.50        -0.58
+10      180    156.9    140.00    16.90         1.50
+11      180    123.9    140.00   -16.10        -1.43
+12      180    145.7    140.00     5.70         0.51
+13      240    166.8    168.50    -1.70        -0.15
+14      240    165.9    168.50    -2.60        -0.23
+15      240    184.3    168.50    15.80         1.40
+16      240    157.0    168.50   -11.50        -1.02
+17      300    208.4    202.30     6.10         0.54
+18      300    189.9    202.30   -12.40        -1.10
+19      300    217.7    202.30    15.40         1.37
+20      300    193.2    202.30    -9.10        -0.81</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -560,59 +567,63 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pre, re, <span class="at">xlab=</span><span class="st">"Predichos"</span>, <span class="at">ylab=</span><span class="st">"Residuos estandarizados"</span>,<span class="at">main=</span><span class="st">"Grafico de dispersion de RE vs PRED"</span> )</span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(e)</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(e)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqPlot</span>(e)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="04_analisis_univariado_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  3 10</code></pre>
+</div>
+</div>
+<p>Por prueba de hipótesis</p>
+<div class="cell">
 <details open="">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(e)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(e) </span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
 
 data:  e
-W = 0.90194, p-value = 0.04484</code></pre>
-</div>
-<details open="">
-<summary>Código</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>Por prueba de hipótesis</p>
-<div class="cell">
-<details open="">
-<summary>Código</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(re) </span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Shapiro-Wilk normality test
-
-data:  re
-W = 0.90194, p-value = 0.04484</code></pre>
+W = 0.92721, p-value = 0.1364</code></pre>
 </div>
 </div>
 <p>Prueba de homogeneidad de varianzas</p>
 <div class="cell">
 <details open="">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>cadmio<span class="sc">$</span>dosis_cd <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(cadmio<span class="sc">$</span>dosis_cd)</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(cd_tallo <span class="sc">~</span> dosis_cd, <span class="at">data=</span>cadmio)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>cadmio<span class="sc">$</span>dosis_cd <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(cadmio<span class="sc">$</span>dosis_cd)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(cd_tallo <span class="sc">~</span> dosis_cd, </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>cadmio)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Levene's Test for Homogeneity of Variance (center = median)
       Df F value Pr(&gt;F)
-group  4  0.0782 0.9878
+group  4  0.4306 0.7844
       15               </code></pre>
 </div>
 </div>
-<p>El test de Levene no rechaza la hipótesis nula de homocedasticidad,</p>
+<p><strong>El test de Levene no rechaza la hipótesis nula de homocedasticidad.</strong></p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co">#modelo&lt;-aov(cd_tallo ~ factor(dosis_cd), </span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="co">#            data=cadmio)</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 Df Sum Sq Mean Sq F value Pr(&gt;F)    
+factor(dosis_cd)  4  87303   21826     129  2e-11 ***
+Residuals        15   2538     169                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
 <p>Comparaciones a posterior</p>
 <p>IC para la diferencia de dos medias: equivale a una PH para dif de medias (¿el cero pertenece al IC?).</p>
 <div class="cell">
@@ -627,17 +638,17 @@ group  4  0.0782 0.9878
 Fit: aov(formula = cd_tallo ~ factor(dosis_cd), data = cadmio)
 
 $`factor(dosis_cd)`
-         diff        lwr       upr     p adj
-120-60   28.7  -3.890016  61.29002 0.0977522
-180-60   94.7  62.109984 127.29002 0.0000018
-240-60  138.2 105.609984 170.79002 0.0000000
-300-60  172.0 139.409984 204.59002 0.0000000
-180-120  66.0  33.409984  98.59002 0.0001299
-240-120 109.5  76.909984 142.09002 0.0000003
-300-120 143.3 110.709984 175.89002 0.0000000
-240-180  43.5  10.909984  76.09002 0.0068735
-300-180  77.3  44.709984 109.89002 0.0000215
-300-240  33.8   1.209984  66.39002 0.0403377</code></pre>
+          diff          lwr      upr     p adj
+120-60   24.45  -3.95090463  52.8509 0.1088118
+180-60  109.70  81.29909537 138.1009 0.0000000
+240-60  138.20 109.79909537 166.6009 0.0000000
+300-60  172.00 143.59909537 200.4009 0.0000000
+180-120  85.25  56.84909537 113.6509 0.0000012
+240-120 113.75  85.34909537 142.1509 0.0000000
+300-120 147.55 119.14909537 175.9509 0.0000000
+240-180  28.50   0.09909537  56.9009 0.0490061
+300-180  62.30  33.89909537  90.7009 0.0000533
+300-240  33.80   5.39909537  62.2009 0.0163461</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -646,7 +657,7 @@ $`factor(dosis_cd)`
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">TukeyHSD</span>(modelo))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="04_analisis_univariado_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="04_analisis_univariado_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -666,13 +677,14 @@ $`factor(dosis_cd)`
 <details open="">
 <summary>Código</summary>
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pgirmess)</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Rendimiento,<span class="fu">aes</span>(<span class="at">x=</span>Grupo,<span class="at">y=</span>Puntajes,<span class="at">fill=</span>Grupo)) <span class="sc">+</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Rendimiento,</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>Grupo,<span class="at">y=</span>Puntajes,<span class="at">fill=</span>Grupo)) <span class="sc">+</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="04_analisis_univariado_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+<p><img src="04_analisis_univariado_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
 <details open="">
 <summary>Código</summary>
@@ -722,7 +734,7 @@ W = 0.82769, p-value = 0.07607</code></pre>
 <div class="cell">
 <details open="">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(Puntajes, Grupo)<span class="co"># Realiza el test de Kruskal???Wallis</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(Puntajes, Grupo)<span class="co"># Realiza el test de Kruskal Wallis</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -995,7 +1007,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb60-64"><a href="#cb60-64" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-65"><a href="#cb60-65" aria-hidden="true" tabindex="-1"></a>*Planteo de Hipótesis:*</span>
 <span id="cb60-66"><a href="#cb60-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-67"><a href="#cb60-67" aria-hidden="true" tabindex="-1"></a>Ho:$\mu_{ct} - \mu_{cs}\le 0$</span>
+<span id="cb60-67"><a href="#cb60-67" aria-hidden="true" tabindex="-1"></a>Ho:$\mu_{ct} - \mu_{cs} = 0$</span>
 <span id="cb60-68"><a href="#cb60-68" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-69"><a href="#cb60-69" aria-hidden="true" tabindex="-1"></a>Ha:$\mu_{ct} - \mu_{cs}&gt; 0$</span>
 <span id="cb60-70"><a href="#cb60-70" aria-hidden="true" tabindex="-1"></a></span>
@@ -1016,7 +1028,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb60-87"><a href="#cb60-87" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-88"><a href="#cb60-88" aria-hidden="true" tabindex="-1"></a>Vuelvo a las Hipotesis de problema:</span>
 <span id="cb60-89"><a href="#cb60-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-90"><a href="#cb60-90" aria-hidden="true" tabindex="-1"></a>Ho:$\mu_{ct} - \mu_{cs}\le 0$</span>
+<span id="cb60-90"><a href="#cb60-90" aria-hidden="true" tabindex="-1"></a>Ho:$\mu_{ct} - \mu_{cs} = 0$</span>
 <span id="cb60-91"><a href="#cb60-91" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-92"><a href="#cb60-92" aria-hidden="true" tabindex="-1"></a>Ha:$\mu_{ct} - \mu_{cs}&gt; 0$</span>
 <span id="cb60-93"><a href="#cb60-93" aria-hidden="true" tabindex="-1"></a></span>
@@ -1129,140 +1141,155 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb60-222"><a href="#cb60-222" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RVAideMemoire)<span class="co"># Paquete que contiene funciones misceláneas útiles en bioestadística</span></span>
 <span id="cb60-223"><a href="#cb60-223" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-224"><a href="#cb60-224" aria-hidden="true" tabindex="-1"></a>aceite<span class="ot">&lt;-</span><span class="fu">read_excel</span>(<span class="st">"aceite.xlsx"</span>)</span>
-<span id="cb60-225"><a href="#cb60-225" aria-hidden="true" tabindex="-1"></a><span class="fu">mood.medtest</span>(Aceite<span class="sc">~</span>Variedad, <span class="at">data=</span>aceite)<span class="co"># Realiza el test de la mediana de Mood</span></span>
-<span id="cb60-226"><a href="#cb60-226" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-227"><a href="#cb60-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-228"><a href="#cb60-228" aria-hidden="true" tabindex="-1"></a>Concluimos que rechazamos la hipótesis de la igualdad de las medianas de las dos variedades.</span>
-<span id="cb60-229"><a href="#cb60-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-230"><a href="#cb60-230" aria-hidden="true" tabindex="-1"></a><span class="fu"># ANOVA</span></span>
-<span id="cb60-231"><a href="#cb60-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-232"><a href="#cb60-232" aria-hidden="true" tabindex="-1"></a>Interesa estudiar la capacidad detoxificadora del césped</span>
-<span id="cb60-233"><a href="#cb60-233" aria-hidden="true" tabindex="-1"></a>_E. ophiuroides_ en suelos contaminados con Cd. A 20 macetas con césped se les asignó una de 5 dosis de Cd diferente (60, 120, 180, 240 y 300 mg Cd kg-1); 4 macetas por dosis. Se midió el Cd acumulado por la planta (expresado como mg Cd kg-1 materia seca)</span>
-<span id="cb60-234"><a href="#cb60-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-237"><a href="#cb60-237" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-238"><a href="#cb60-238" aria-hidden="true" tabindex="-1"></a>cadmio <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="st">"cadmio.csv"</span>)</span>
-<span id="cb60-239"><a href="#cb60-239" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-240"><a href="#cb60-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-243"><a href="#cb60-243" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-244"><a href="#cb60-244" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(cd_tallo<span class="sc">~</span>dosis_cd,<span class="at">data=</span>cadmio,<span class="at">xlab=</span><span class="st">"Dosis Cd (mg/kg suelo"</span>,<span class="at">ylab=</span><span class="st">"Cd tallo (mg/g MS)"</span>, <span class="at">col=</span><span class="st">"orange"</span>  )</span>
-<span id="cb60-245"><a href="#cb60-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-246"><a href="#cb60-246" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-247"><a href="#cb60-247" aria-hidden="true" tabindex="-1"></a>Hipótesis estadísticas</span>
-<span id="cb60-248"><a href="#cb60-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-249"><a href="#cb60-249" aria-hidden="true" tabindex="-1"></a>Ho $\mu_{60} = \mu_{120} = \mu_{180}= \mu_{240}= \mu_{300}$</span>
-<span id="cb60-250"><a href="#cb60-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-251"><a href="#cb60-251" aria-hidden="true" tabindex="-1"></a>Ha $\mu_{i} \neq \mu$</span>
-<span id="cb60-252"><a href="#cb60-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-253"><a href="#cb60-253" aria-hidden="true" tabindex="-1"></a>Realizamos el ANOVA</span>
+<span id="cb60-225"><a href="#cb60-225" aria-hidden="true" tabindex="-1"></a><span class="fu">mood.medtest</span>(Aceite<span class="sc">~</span>Variedad,</span>
+<span id="cb60-226"><a href="#cb60-226" aria-hidden="true" tabindex="-1"></a>             <span class="at">data=</span>aceite)<span class="co"># Realiza el test de la mediana de Mood</span></span>
+<span id="cb60-227"><a href="#cb60-227" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-228"><a href="#cb60-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-229"><a href="#cb60-229" aria-hidden="true" tabindex="-1"></a>Concluimos que rechazamos la hipótesis de la igualdad de las medianas de las dos variedades.</span>
+<span id="cb60-230"><a href="#cb60-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-231"><a href="#cb60-231" aria-hidden="true" tabindex="-1"></a><span class="fu"># ANOVA</span></span>
+<span id="cb60-232"><a href="#cb60-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-233"><a href="#cb60-233" aria-hidden="true" tabindex="-1"></a>Interesa estudiar la capacidad detoxificadora del césped</span>
+<span id="cb60-234"><a href="#cb60-234" aria-hidden="true" tabindex="-1"></a>_E. ophiuroides_ en suelos contaminados con Cd. A 20 macetas con césped se les asignó una de 5 dosis de Cd diferente (60, 120, 180, 240 y 300 mg Cd kg-1); 4 macetas por dosis. Se midió el Cd acumulado por la planta (expresado como mg Cd kg-1 materia seca)</span>
+<span id="cb60-235"><a href="#cb60-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-238"><a href="#cb60-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-239"><a href="#cb60-239" aria-hidden="true" tabindex="-1"></a><span class="co">#cargamos los datos</span></span>
+<span id="cb60-240"><a href="#cb60-240" aria-hidden="true" tabindex="-1"></a>cadmio <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="st">"cadmio.csv"</span>)</span>
+<span id="cb60-241"><a href="#cb60-241" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-242"><a href="#cb60-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-245"><a href="#cb60-245" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-246"><a href="#cb60-246" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(cd_tallo<span class="sc">~</span>dosis_cd,</span>
+<span id="cb60-247"><a href="#cb60-247" aria-hidden="true" tabindex="-1"></a>        <span class="at">data=</span>cadmio,</span>
+<span id="cb60-248"><a href="#cb60-248" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab=</span><span class="st">"Dosis Cd (mg/kg suelo"</span>,</span>
+<span id="cb60-249"><a href="#cb60-249" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab=</span><span class="st">"Cd tallo (mg/g MS)"</span>,</span>
+<span id="cb60-250"><a href="#cb60-250" aria-hidden="true" tabindex="-1"></a>        <span class="at">col=</span><span class="st">"orange"</span>)</span>
+<span id="cb60-251"><a href="#cb60-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-252"><a href="#cb60-252" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-253"><a href="#cb60-253" aria-hidden="true" tabindex="-1"></a>Hipótesis estadísticas</span>
 <span id="cb60-254"><a href="#cb60-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-257"><a href="#cb60-257" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-258"><a href="#cb60-258" aria-hidden="true" tabindex="-1"></a>modelo<span class="ot">&lt;-</span><span class="fu">aov</span>(cd_tallo <span class="sc">~</span> <span class="fu">factor</span>(dosis_cd), </span>
-<span id="cb60-259"><a href="#cb60-259" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>cadmio)</span>
+<span id="cb60-255"><a href="#cb60-255" aria-hidden="true" tabindex="-1"></a>Ho $\mu_{60} = \mu_{120} = \mu_{180}= \mu_{240}= \mu_{300}$</span>
+<span id="cb60-256"><a href="#cb60-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-257"><a href="#cb60-257" aria-hidden="true" tabindex="-1"></a>Ha $\mu_{i} \neq \mu$</span>
+<span id="cb60-258"><a href="#cb60-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-259"><a href="#cb60-259" aria-hidden="true" tabindex="-1"></a><span class="fu">### Supuestos</span></span>
 <span id="cb60-260"><a href="#cb60-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-261"><a href="#cb60-261" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span>
-<span id="cb60-262"><a href="#cb60-262" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-261"><a href="#cb60-261" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las muestras deben ser aleatorias y las observaciones</span>
+<span id="cb60-262"><a href="#cb60-262" aria-hidden="true" tabindex="-1"></a>independientes</span>
 <span id="cb60-263"><a href="#cb60-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-264"><a href="#cb60-264" aria-hidden="true" tabindex="-1"></a><span class="fu">### Supuestos</span></span>
+<span id="cb60-264"><a href="#cb60-264" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las varianzas de las subpoblaciones deben ser iguales (homocedasticidad) </span>
 <span id="cb60-265"><a href="#cb60-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-266"><a href="#cb60-266" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las muestras deben ser aleatorias y las observaciones</span>
-<span id="cb60-267"><a href="#cb60-267" aria-hidden="true" tabindex="-1"></a>independientes</span>
-<span id="cb60-268"><a href="#cb60-268" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-269"><a href="#cb60-269" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las varianzas de las subpoblaciones deben ser iguales (homocedasticidad) </span>
-<span id="cb60-270"><a href="#cb60-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-271"><a href="#cb60-271" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>La distribución de cada subpoblación es normal</span>
-<span id="cb60-272"><a href="#cb60-272" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-273"><a href="#cb60-273" aria-hidden="true" tabindex="-1"></a>Calculamos los residuos del modelo</span>
-<span id="cb60-274"><a href="#cb60-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-277"><a href="#cb60-277" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-278"><a href="#cb60-278" aria-hidden="true" tabindex="-1"></a>e<span class="ot">&lt;-</span><span class="fu">resid</span>(modelo) <span class="co"># residuos</span></span>
-<span id="cb60-279"><a href="#cb60-279" aria-hidden="true" tabindex="-1"></a>re<span class="ot">&lt;-</span><span class="fu">rstandard</span>(modelo) <span class="co">#residuos estandarizados</span></span>
-<span id="cb60-280"><a href="#cb60-280" aria-hidden="true" tabindex="-1"></a>pre<span class="ot">&lt;-</span><span class="fu">predict</span>(modelo) <span class="co">#predichos</span></span>
-<span id="cb60-281"><a href="#cb60-281" aria-hidden="true" tabindex="-1"></a>res<span class="ot">&lt;-</span><span class="fu">cbind</span>(cadmio<span class="sc">$</span>dosis_cd,cadmio<span class="sc">$</span>cd_tallo,pre,e,<span class="fu">round</span>(re,<span class="dv">2</span>))</span>
-<span id="cb60-282"><a href="#cb60-282" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(res)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"dosis Cd"</span>, <span class="st">"Cd tallo"</span>, <span class="st">"Predichos"</span>, <span class="st">"Residuos"</span>, <span class="st">"residuos std"</span>) </span>
-<span id="cb60-283"><a href="#cb60-283" aria-hidden="true" tabindex="-1"></a>res</span>
-<span id="cb60-284"><a href="#cb60-284" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-285"><a href="#cb60-285" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-288"><a href="#cb60-288" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-289"><a href="#cb60-289" aria-hidden="true" tabindex="-1"></a>res<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(res)</span>
-<span id="cb60-290"><a href="#cb60-290" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb60-291"><a href="#cb60-291" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pre, re, <span class="at">xlab=</span><span class="st">"Predichos"</span>, <span class="at">ylab=</span><span class="st">"Residuos estandarizados"</span>,<span class="at">main=</span><span class="st">"Grafico de dispersion de RE vs PRED"</span> )</span>
-<span id="cb60-292"><a href="#cb60-292" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
-<span id="cb60-293"><a href="#cb60-293" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(e)</span>
-<span id="cb60-294"><a href="#cb60-294" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(e)</span>
-<span id="cb60-295"><a href="#cb60-295" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(e)</span>
-<span id="cb60-296"><a href="#cb60-296" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb60-297"><a href="#cb60-297" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-298"><a href="#cb60-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-299"><a href="#cb60-299" aria-hidden="true" tabindex="-1"></a>Por prueba de hipótesis</span>
-<span id="cb60-300"><a href="#cb60-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-303"><a href="#cb60-303" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-304"><a href="#cb60-304" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(re) </span>
-<span id="cb60-305"><a href="#cb60-305" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-306"><a href="#cb60-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-307"><a href="#cb60-307" aria-hidden="true" tabindex="-1"></a>Prueba de homogeneidad de varianzas</span>
-<span id="cb60-308"><a href="#cb60-308" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-311"><a href="#cb60-311" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-312"><a href="#cb60-312" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb60-266"><a href="#cb60-266" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>La distribución de cada subpoblación es normal</span>
+<span id="cb60-267"><a href="#cb60-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-268"><a href="#cb60-268" aria-hidden="true" tabindex="-1"></a>Definimos el modelo:</span>
+<span id="cb60-269"><a href="#cb60-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-272"><a href="#cb60-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-273"><a href="#cb60-273" aria-hidden="true" tabindex="-1"></a>modelo<span class="ot">&lt;-</span><span class="fu">aov</span>(cd_tallo <span class="sc">~</span> <span class="fu">factor</span>(dosis_cd), </span>
+<span id="cb60-274"><a href="#cb60-274" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>cadmio)</span>
+<span id="cb60-275"><a href="#cb60-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-276"><a href="#cb60-276" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span>
+<span id="cb60-277"><a href="#cb60-277" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-278"><a href="#cb60-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-279"><a href="#cb60-279" aria-hidden="true" tabindex="-1"></a>Primero, se chequean los supuestos</span>
+<span id="cb60-280"><a href="#cb60-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-281"><a href="#cb60-281" aria-hidden="true" tabindex="-1"></a>Calculamos los residuos del modelo</span>
+<span id="cb60-282"><a href="#cb60-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-285"><a href="#cb60-285" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-286"><a href="#cb60-286" aria-hidden="true" tabindex="-1"></a>e<span class="ot">&lt;-</span><span class="fu">resid</span>(modelo) <span class="co"># residuos</span></span>
+<span id="cb60-287"><a href="#cb60-287" aria-hidden="true" tabindex="-1"></a>re<span class="ot">&lt;-</span><span class="fu">rstandard</span>(modelo) <span class="co">#residuos estandarizados</span></span>
+<span id="cb60-288"><a href="#cb60-288" aria-hidden="true" tabindex="-1"></a>pre<span class="ot">&lt;-</span><span class="fu">predict</span>(modelo) <span class="co">#predichos</span></span>
+<span id="cb60-289"><a href="#cb60-289" aria-hidden="true" tabindex="-1"></a>res<span class="ot">&lt;-</span><span class="fu">cbind</span>(cadmio<span class="sc">$</span>dosis_cd,cadmio<span class="sc">$</span>cd_tallo,pre,e,<span class="fu">round</span>(re,<span class="dv">2</span>))</span>
+<span id="cb60-290"><a href="#cb60-290" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(res)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"dosis Cd"</span>, <span class="st">"Cd tallo"</span>, <span class="st">"Predichos"</span>, <span class="st">"Residuos"</span>, <span class="st">"residuos std"</span>) </span>
+<span id="cb60-291"><a href="#cb60-291" aria-hidden="true" tabindex="-1"></a>res</span>
+<span id="cb60-292"><a href="#cb60-292" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-293"><a href="#cb60-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-296"><a href="#cb60-296" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-297"><a href="#cb60-297" aria-hidden="true" tabindex="-1"></a>res<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(res)</span>
+<span id="cb60-298"><a href="#cb60-298" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb60-299"><a href="#cb60-299" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pre, re, <span class="at">xlab=</span><span class="st">"Predichos"</span>, <span class="at">ylab=</span><span class="st">"Residuos estandarizados"</span>,<span class="at">main=</span><span class="st">"Grafico de dispersion de RE vs PRED"</span> )</span>
+<span id="cb60-300"><a href="#cb60-300" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb60-301"><a href="#cb60-301" aria-hidden="true" tabindex="-1"></a><span class="fu">qqPlot</span>(e)</span>
+<span id="cb60-302"><a href="#cb60-302" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-303"><a href="#cb60-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-304"><a href="#cb60-304" aria-hidden="true" tabindex="-1"></a>Por prueba de hipótesis</span>
+<span id="cb60-305"><a href="#cb60-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-308"><a href="#cb60-308" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-309"><a href="#cb60-309" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(e) </span>
+<span id="cb60-310"><a href="#cb60-310" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-311"><a href="#cb60-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-312"><a href="#cb60-312" aria-hidden="true" tabindex="-1"></a>Prueba de homogeneidad de varianzas</span>
 <span id="cb60-313"><a href="#cb60-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-314"><a href="#cb60-314" aria-hidden="true" tabindex="-1"></a>cadmio<span class="sc">$</span>dosis_cd <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(cadmio<span class="sc">$</span>dosis_cd)</span>
-<span id="cb60-315"><a href="#cb60-315" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(cd_tallo <span class="sc">~</span> dosis_cd, <span class="at">data=</span>cadmio)</span>
-<span id="cb60-316"><a href="#cb60-316" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-317"><a href="#cb60-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-318"><a href="#cb60-318" aria-hidden="true" tabindex="-1"></a>El test de Levene no rechaza la hipótesis nula de homocedasticidad,</span>
-<span id="cb60-319"><a href="#cb60-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-320"><a href="#cb60-320" aria-hidden="true" tabindex="-1"></a>Comparaciones a posterior</span>
-<span id="cb60-321"><a href="#cb60-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-322"><a href="#cb60-322" aria-hidden="true" tabindex="-1"></a>IC para la diferencia de dos medias: equivale a una PH para dif de medias (¿el cero pertenece al IC?).</span>
+<span id="cb60-316"><a href="#cb60-316" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-317"><a href="#cb60-317" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb60-318"><a href="#cb60-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-319"><a href="#cb60-319" aria-hidden="true" tabindex="-1"></a>cadmio<span class="sc">$</span>dosis_cd <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(cadmio<span class="sc">$</span>dosis_cd)</span>
+<span id="cb60-320"><a href="#cb60-320" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(cd_tallo <span class="sc">~</span> dosis_cd, </span>
+<span id="cb60-321"><a href="#cb60-321" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>cadmio)</span>
+<span id="cb60-322"><a href="#cb60-322" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-323"><a href="#cb60-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-326"><a href="#cb60-326" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-327"><a href="#cb60-327" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(modelo)</span>
-<span id="cb60-328"><a href="#cb60-328" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-329"><a href="#cb60-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-332"><a href="#cb60-332" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-333"><a href="#cb60-333" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">TukeyHSD</span>(modelo))</span>
-<span id="cb60-334"><a href="#cb60-334" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-335"><a href="#cb60-335" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-336"><a href="#cb60-336" aria-hidden="true" tabindex="-1"></a><span class="fu"># Test de Kruscal-Wallis (no paramétrico)</span></span>
-<span id="cb60-337"><a href="#cb60-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-338"><a href="#cb60-338" aria-hidden="true" tabindex="-1"></a>Se realizó una intervención educativa innovadora para mejorar el rendimiento de los estudiantes. Dentro de los grupos de clasificación, el A es el grupo de control y los restantes, B y C, son los grupos con distintas innovaciones.</span>
-<span id="cb60-339"><a href="#cb60-339" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-342"><a href="#cb60-342" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-343"><a href="#cb60-343" aria-hidden="true" tabindex="-1"></a>Puntajes<span class="ot">=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">27</span>,<span class="dv">26</span>,<span class="dv">22</span>,<span class="dv">28</span>,<span class="dv">27</span>,<span class="dv">43</span>,<span class="dv">35</span>,<span class="dv">47</span>,<span class="dv">32</span>,<span class="dv">31</span>,<span class="dv">37</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">26</span>,<span class="dv">44</span>,<span class="dv">33</span>,<span class="dv">54</span>)</span>
-<span id="cb60-344"><a href="#cb60-344" aria-hidden="true" tabindex="-1"></a>Grupo<span class="ot">=</span><span class="fu">as.factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"A"</span>,<span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"B"</span>, <span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"C"</span>, <span class="dv">7</span>)))</span>
-<span id="cb60-345"><a href="#cb60-345" aria-hidden="true" tabindex="-1"></a>Rendimiento<span class="ot">=</span><span class="fu">data.frame</span> (Grupo, Puntajes)</span>
-<span id="cb60-346"><a href="#cb60-346" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-347"><a href="#cb60-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-350"><a href="#cb60-350" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-351"><a href="#cb60-351" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pgirmess)</span>
-<span id="cb60-352"><a href="#cb60-352" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Rendimiento,<span class="fu">aes</span>(<span class="at">x=</span>Grupo,<span class="at">y=</span>Puntajes,<span class="at">fill=</span>Grupo)) <span class="sc">+</span></span>
-<span id="cb60-353"><a href="#cb60-353" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb60-354"><a href="#cb60-354" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
-<span id="cb60-355"><a href="#cb60-355" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span>
-<span id="cb60-356"><a href="#cb60-356" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce boxplots</span></span>
-<span id="cb60-357"><a href="#cb60-357" aria-hidden="true" tabindex="-1"></a>grupoA<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"A"</span>,<span class="dv">2</span>]</span>
-<span id="cb60-358"><a href="#cb60-358" aria-hidden="true" tabindex="-1"></a>grupoB<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"B"</span>,<span class="dv">2</span>]</span>
-<span id="cb60-359"><a href="#cb60-359" aria-hidden="true" tabindex="-1"></a>grupoC<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"C"</span>,<span class="dv">2</span>]</span>
-<span id="cb60-360"><a href="#cb60-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-324"><a href="#cb60-324" aria-hidden="true" tabindex="-1"></a>**El test de Levene no rechaza la hipótesis nula de homocedasticidad.**</span>
+<span id="cb60-325"><a href="#cb60-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-328"><a href="#cb60-328" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-329"><a href="#cb60-329" aria-hidden="true" tabindex="-1"></a><span class="co">#modelo&lt;-aov(cd_tallo ~ factor(dosis_cd), </span></span>
+<span id="cb60-330"><a href="#cb60-330" aria-hidden="true" tabindex="-1"></a><span class="co">#            data=cadmio)</span></span>
+<span id="cb60-331"><a href="#cb60-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-332"><a href="#cb60-332" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span>
+<span id="cb60-333"><a href="#cb60-333" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-334"><a href="#cb60-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-335"><a href="#cb60-335" aria-hidden="true" tabindex="-1"></a>Comparaciones a posterior</span>
+<span id="cb60-336"><a href="#cb60-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-337"><a href="#cb60-337" aria-hidden="true" tabindex="-1"></a>IC para la diferencia de dos medias: equivale a una PH para dif de medias (¿el cero pertenece al IC?).</span>
+<span id="cb60-338"><a href="#cb60-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-341"><a href="#cb60-341" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-342"><a href="#cb60-342" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(modelo)</span>
+<span id="cb60-343"><a href="#cb60-343" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-344"><a href="#cb60-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-347"><a href="#cb60-347" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-348"><a href="#cb60-348" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">TukeyHSD</span>(modelo))</span>
+<span id="cb60-349"><a href="#cb60-349" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-350"><a href="#cb60-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-351"><a href="#cb60-351" aria-hidden="true" tabindex="-1"></a><span class="fu"># Test de Kruscal-Wallis (no paramétrico)</span></span>
+<span id="cb60-352"><a href="#cb60-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-353"><a href="#cb60-353" aria-hidden="true" tabindex="-1"></a>Se realizó una intervención educativa innovadora para mejorar el rendimiento de los estudiantes. Dentro de los grupos de clasificación, el A es el grupo de control y los restantes, B y C, son los grupos con distintas innovaciones.</span>
+<span id="cb60-354"><a href="#cb60-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-357"><a href="#cb60-357" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-358"><a href="#cb60-358" aria-hidden="true" tabindex="-1"></a>Puntajes<span class="ot">=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">27</span>,<span class="dv">26</span>,<span class="dv">22</span>,<span class="dv">28</span>,<span class="dv">27</span>,<span class="dv">43</span>,<span class="dv">35</span>,<span class="dv">47</span>,<span class="dv">32</span>,<span class="dv">31</span>,<span class="dv">37</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">33</span>,<span class="dv">26</span>,<span class="dv">44</span>,<span class="dv">33</span>,<span class="dv">54</span>)</span>
+<span id="cb60-359"><a href="#cb60-359" aria-hidden="true" tabindex="-1"></a>Grupo<span class="ot">=</span><span class="fu">as.factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"A"</span>,<span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"B"</span>, <span class="dv">6</span>), <span class="fu">rep</span>(<span class="st">"C"</span>, <span class="dv">7</span>)))</span>
+<span id="cb60-360"><a href="#cb60-360" aria-hidden="true" tabindex="-1"></a>Rendimiento<span class="ot">=</span><span class="fu">data.frame</span> (Grupo, Puntajes)</span>
 <span id="cb60-361"><a href="#cb60-361" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-362"><a href="#cb60-362" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-365"><a href="#cb60-365" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-366"><a href="#cb60-366" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoA)</span>
-<span id="cb60-367"><a href="#cb60-367" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoB)</span>
-<span id="cb60-368"><a href="#cb60-368" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoC)</span>
-<span id="cb60-369"><a href="#cb60-369" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-370"><a href="#cb60-370" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-371"><a href="#cb60-371" aria-hidden="true" tabindex="-1"></a>Ho Los tres grupos tienen la misma posición para la variable de estudio dada por el puntaje</span>
+<span id="cb60-366"><a href="#cb60-366" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pgirmess)</span>
+<span id="cb60-367"><a href="#cb60-367" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Rendimiento,</span>
+<span id="cb60-368"><a href="#cb60-368" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>Grupo,<span class="at">y=</span>Puntajes,<span class="at">fill=</span>Grupo)) <span class="sc">+</span></span>
+<span id="cb60-369"><a href="#cb60-369" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb60-370"><a href="#cb60-370" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb60-371"><a href="#cb60-371" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span>
 <span id="cb60-372"><a href="#cb60-372" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-373"><a href="#cb60-373" aria-hidden="true" tabindex="-1"></a>Ha al menos un grupo tiene diferente posición para la variable en estudio dada por el puntaje.</span>
-<span id="cb60-374"><a href="#cb60-374" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-377"><a href="#cb60-377" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-378"><a href="#cb60-378" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(Puntajes, Grupo)<span class="co"># Realiza el test de Kruskal???Wallis</span></span>
+<span id="cb60-373"><a href="#cb60-373" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce boxplots</span></span>
+<span id="cb60-374"><a href="#cb60-374" aria-hidden="true" tabindex="-1"></a>grupoA<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"A"</span>,<span class="dv">2</span>]</span>
+<span id="cb60-375"><a href="#cb60-375" aria-hidden="true" tabindex="-1"></a>grupoB<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"B"</span>,<span class="dv">2</span>]</span>
+<span id="cb60-376"><a href="#cb60-376" aria-hidden="true" tabindex="-1"></a>grupoC<span class="ot">=</span>Rendimiento[Rendimiento<span class="sc">$</span>Grupo<span class="sc">==</span><span class="st">"C"</span>,<span class="dv">2</span>]</span>
+<span id="cb60-377"><a href="#cb60-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-378"><a href="#cb60-378" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-379"><a href="#cb60-379" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-380"><a href="#cb60-380" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-381"><a href="#cb60-381" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-384"><a href="#cb60-384" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-385"><a href="#cb60-385" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskalmc</span>(Puntajes<span class="sc">~</span>Grupo )<span class="co"># Realiza un test de comparación múltiple entre tratamientos luego del test de Kruskal Wallis</span></span>
+<span id="cb60-382"><a href="#cb60-382" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-383"><a href="#cb60-383" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoA)</span>
+<span id="cb60-384"><a href="#cb60-384" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoB)</span>
+<span id="cb60-385"><a href="#cb60-385" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(grupoC)</span>
 <span id="cb60-386"><a href="#cb60-386" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-387"><a href="#cb60-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-388"><a href="#cb60-388" aria-hidden="true" tabindex="-1"></a>Ho Los tres grupos tienen la misma posición para la variable de estudio dada por el puntaje</span>
+<span id="cb60-389"><a href="#cb60-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-390"><a href="#cb60-390" aria-hidden="true" tabindex="-1"></a>Ha al menos un grupo tiene diferente posición para la variable en estudio dada por el puntaje.</span>
+<span id="cb60-391"><a href="#cb60-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-394"><a href="#cb60-394" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-395"><a href="#cb60-395" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(Puntajes, Grupo)<span class="co"># Realiza el test de Kruskal Wallis</span></span>
+<span id="cb60-396"><a href="#cb60-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-397"><a href="#cb60-397" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-398"><a href="#cb60-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-401"><a href="#cb60-401" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-402"><a href="#cb60-402" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskalmc</span>(Puntajes<span class="sc">~</span>Grupo )<span class="co"># Realiza un test de comparación múltiple entre tratamientos luego del test de Kruskal Wallis</span></span>
+<span id="cb60-403"><a href="#cb60-403" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
