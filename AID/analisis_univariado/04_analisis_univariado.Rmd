@@ -265,6 +265,12 @@ Por prueba de hipótesis
 shapiro.test(e) 
 ```
 
+```{r}
+library(moments)
+agostino.test(e)
+```
+
+
 Prueba de homogeneidad de varianzas
 
 ```{r}
