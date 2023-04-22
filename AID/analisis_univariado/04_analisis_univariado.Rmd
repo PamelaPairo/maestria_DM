@@ -39,6 +39,12 @@ Cambiamos el tipo de dato de la variable `Rendimiento`
 df_coriandrum$Rendimiento <- as.numeric(df_coriandrum$Rendimiento)
 ```
 
+Estadística Descriptiva
+
+```{r}
+summary(df_coriandrum)
+```
+
 ```{r}
 boxplot(Rendimiento~Especie,
 data=df_coriandrum,
@@ -47,11 +53,6 @@ ylab="Rendimiento",
 col="orange",
 border="brown"
 )
-```
-Estadística Descriptiva
-
-```{r}
-summary(df_coriandrum)
 ```
 
 *Planteo de Hipótesis:*
@@ -112,7 +113,7 @@ $\LARGE X_d=$ diferencia en el crecimiento de una avena tratada y una avena cont
 
 Hipotesis
 
-Ho $\mu_d \le 0$
+Ho $\mu_d = 0$
 
 Ha $\mu_d > 0$
 
@@ -341,7 +342,9 @@ kruskal.test(Puntajes, Grupo)# Realiza el test de Kruskal Wallis
 
 ```
 
+Comparación múltiple entre tratamientos luego del test de Kruskal Wallis
+
 ```{r}
-kruskalmc(Puntajes~Grupo )# Realiza un test de comparación múltiple entre tratamientos luego del test de Kruskal Wallis
+kruskalmc(Puntajes~Grupo )
 ```
 
