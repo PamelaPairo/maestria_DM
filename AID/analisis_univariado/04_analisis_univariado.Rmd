@@ -127,6 +127,14 @@ df_avena <-df_avena %>%
 qqPlot(df_avena$diferencia)
 ```
 
+Prueba t para muestras pareadas
+
+```{r}
+t.test(Pair(control, tratamiento) ~ 1, 
+       alternative = "greater",
+       data = df_avena)
+```
+
 ```{r}
 df2_avena <-stack(df_avena[2:3]) |> 
               relocate (tratamiento=ind) |> 
