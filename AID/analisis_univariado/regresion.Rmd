@@ -35,10 +35,11 @@ p<-ggplot(casas,
 p + xlab("Superficie") +  ylab("Precio") 
 ```
 
-Se plantea el modelo de Regresión Lineal Simple
+## Regresión Lineal Simple
+
+Se plantea el modelo de Regresión
 
 ```{r}
-#Modelo de regresión
 modelo1<-lm(price ~ surface_total, 
             data=casas)
 summary(modelo1)
@@ -83,7 +84,7 @@ p + geom_smooth(method = "lm",
 summary(modelo1)$r.squared
 ```
 
-## Regresión Múltiple
+## Regresión Lineal Múltiple
 
 ```{r}
 modelo2<-lm(price ~ surface_total + antiguedad, 
