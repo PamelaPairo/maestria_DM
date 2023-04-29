@@ -1,0 +1,115 @@
+---
+title: "Regresión Lineal"
+author: "Pamela E. Pairo"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library("readxl")
+library(MASS)
+library(car)
+```
+
+Se dispone de un dataset con información del precio de viviendas de CABA y su información respecto a la antiguedad y la superficie.
+
+```{r}
+casas <-read_excel("casas2.xlsx")
+summary(casas)
+```
+```{r}
+#Gráfico de dispersión
+p<-ggplot(casas, 
+          aes(x =surface_total , y = price)) + 
+          geom_point(aes(), colour ="deepskyblue", size=2)
+p + xlab("Superficie") +  ylab("Precio") 
+```
+
+Se plantea el modelo de Regresión Lineal Simple
+
+```{r}
+#Modelo de regresión
+modelo1<-lm(price ~ surface_total, 
+            data=casas)
+summary(modelo1)
+```
+
+```{r}
+#Calculamos los residuos y los predichos
+e<-resid(modelo1) # residuos
+re<-rstandard(modelo1) #residuos estandarizados
+pre<-predict(modelo1) #predichos
+res<-cbind(casas$surface_total,casas$price,pre,e,round(re,2))
+colnames(res)<-c("superficie", "precio", "Predichos", "Residuos", "residuos std") 
+head(res)
+```
+
+```{r}
+#Supuestos
+qqPlot(e)
+```
+
+```{r}
+shapiro.test(e)
+```
+
+Intervalo de Confianza
+
+Para cambia el nivel de confianza cambiar el `level`
+
+```{r}
+confint(modelo1)#por default es del 95%
+```
+Se agrega la recta al gráfico
+
+```{r}
+
+p + geom_smooth(method = "lm", 
+                se = TRUE)#para mostrar la banda de confianza
+```
+
+```{r}
+#coeficiente de determinación (en summary)
+summary(modelo1)$r.squared
+```
+
+## Regresión Múltiple
+
+```{r}
+modelo2<-lm(price ~ surface_total + antiguedad, 
+            data=casas)
+```
+
+```{r}
+a <- ggplot(casas, aes(surface_total, antiguedad))
+a + geom_point()
+```
+
+```{r}
+shapiro.test(resid(modelo2))
+```
+Vemos los resultados del modelo
+
+```{r}
+summary(modelo2)
+```
+
+```{r}
+library(faraway)
+prplot(modelo2,1)
+```
+```{r}
+p + geom_smooth(method = "lm", 
+                se = FALSE)
+```
+
