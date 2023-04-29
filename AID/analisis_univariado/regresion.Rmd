@@ -1,5 +1,5 @@
 ---
-title: "Regresión Lineal"
+title: "Regresión Lineal y Múltiple"
 author: "Pamela E. Pairo"
 lang: es
 format:
