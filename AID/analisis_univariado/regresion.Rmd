@@ -62,13 +62,16 @@ Evaluamos el supuesto de normalidad de manera gráfica y mediante una prueba de 
 
 ```{r}
 #Supuestos
+par(mfrow = c(1, 2))
+plot(pre, re, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
+abline(0,0)
 qqPlot(e)
 ```
 
 ```{r}
 shapiro.test(e)
 ```
-Como el p-valor= 0.284 es menor a $\alpha$ (0.05), se asume normalidad en los datos.
+Como el p-valor= 0.284 es menor a $\alpha$ =0.05, se asume normalidad en los datos.
 
 **Intervalo de Confianza**
 
@@ -102,15 +105,38 @@ summary(modelo1)$r.squared
 
 ## Regresión Lineal Múltiple
 
+Se incluye la variable `antiguedad` al modelo.
+
 ```{r}
 modelo2<-lm(price ~ surface_total + antiguedad, 
             data=casas)
 ```
 
+**Gráficos de dispersión**
+
 ```{r}
-a <- ggplot(casas, aes(surface_total, antiguedad))
-a + geom_point()
+library(GGally)
+ggpairs(casas, diag = list(continuous = "blankDiag"))
 ```
+Supuestos
+
+```{r}
+#Calculamos los residuos y los predichos
+e_m2<-resid(modelo2) # residuos
+re_m2<-rstandard(modelo2) #residuos estandarizados
+pre_m2<-predict(modelo2) #predichos
+res_m2<-cbind(casas$surface_total,casas$price,pre_m2,e_m2,round(re_m2,2))
+colnames(res_m2)<-c("superficie", "precio", "Predichos", "Residuos", "residuos std") 
+head(res_m2)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(pre_m2, re_m2, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
+abline(0,0)
+qqPlot(e_m2)
+```
+Se chequea normalidad
 
 ```{r}
 shapiro.test(resid(modelo2))
@@ -120,6 +146,11 @@ Vemos los resultados del modelo
 ```{r}
 summary(modelo2)
 ```
+De acuerdo a los resultados obtenidos, el modelo propuesto es significativo y válido (p-valor < $\alpha=0.05$), resultando significativo únicamente el coeficiente para la variable `surface_total`(p<0.05). El 87% de la variabilidad de los datos es explicado por el modelo de regresión múltiple.
+
+## Bonus track: Residuos parciales
+
+Los gráficos de dispersión de Y vs cada X muestran el efecto sobre la variable respuesta (VR) de una variable explicatoria (VE) sin considerar el efecto de las otras VE. Los gráficos de residuos parciales muestran el efecto parcial sobre la VR de una VE cuando las otras VE son incluidas en el modelo y mantenidas constantes.
 
 ```{r}
 library(faraway)
