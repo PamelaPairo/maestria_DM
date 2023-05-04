@@ -107,6 +107,8 @@ summary(modelo1)$r.squared
 
 Se incluye la variable `antiguedad` al modelo.
 
+$\LARGE Precio_{i}= \beta_{0} + \beta_{1} superficie + \beta_{2} antiguedad + \varepsilon_i$
+
 ```{r}
 modelo2<-lm(price ~ surface_total + antiguedad, 
             data=casas)
