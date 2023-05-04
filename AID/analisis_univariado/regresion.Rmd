@@ -21,14 +21,15 @@ library(MASS)
 library(car)
 ```
 
-Se dispone de un dataset con información del precio de viviendas de CABA y su información respecto a la antiguedad y la superficie.
+Se dispone de un dataset con datos del precio de viviendas de CABA y información respecto a la antiguedad y la superficie.
 
 ```{r}
-casas <-read_excel("casas2.xlsx")
+casas <-read_excel("casas.xlsx")
 summary(casas)
 ```
+Se realiza un grafico de dispersión.
+
 ```{r}
-#Gráfico de dispersión
 p<-ggplot(casas, 
           aes(x =surface_total , y = price)) + 
           geom_point(aes(), colour ="deepskyblue", size=2)
@@ -44,6 +45,8 @@ modelo1<-lm(price ~ surface_total,
             data=casas)
 summary(modelo1)
 ```
+Se calculan los residuos del modelo para chequear los supuestos.
+
 
 ```{r}
 #Calculamos los residuos y los predichos
@@ -55,6 +58,8 @@ colnames(res)<-c("superficie", "precio", "Predichos", "Residuos", "residuos std"
 head(res)
 ```
 
+Evaluamos el supuesto de normalidad de manera gráfica y mediante una prueba de hipótesis.
+
 ```{r}
 #Supuestos
 qqPlot(e)
@@ -63,10 +68,13 @@ qqPlot(e)
 ```{r}
 shapiro.test(e)
 ```
+Como el p-valor= 0.284 es menor a $\alpha$ (0.05), se asume normalidad en los datos.
 
-Intervalo de Confianza
+**Intervalo de Confianza**
 
-Para cambia el nivel de confianza cambiar el `level`
+Se calcula el intervalo de confianza del 95% para la ordenada al origen y la pendiente del modelo de regresión. 
+
+Para cambiar el nivel de confianza cambiar el parámetro `level`
 
 ```{r}
 confint(modelo1)#por default es del 95%
@@ -78,6 +86,14 @@ Se agrega la recta al gráfico
 p + geom_smooth(method = "lm", 
                 se = TRUE)#para mostrar la banda de confianza
 ```
+
+Entonces, se analiza el el modelo propuesto y como el p-valor dado es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.
+
+```{r}
+summary(modelo1)
+```
+
+Por el valor obtenido de $\ R^2= 0.86$ se deduce que el modelo propuesto explica el 86,63% de la variabilidad de los datos.
 
 ```{r}
 #coeficiente de determinación (en summary)
@@ -113,4 +129,6 @@ prplot(modelo2,1)
 p + geom_smooth(method = "lm", 
                 se = FALSE)
 ```
+
+
 
