@@ -256,7 +256,7 @@ data:  e
 W = 0.96615, p-value = 0.284</code></pre>
 </div>
 </div>
-<p>Como el p-valor= 0.284 es menor a <span class="math inline">\(\alpha\)</span> =0.05, se asume normalidad en los datos.</p>
+<p>Como el p-valor= 0.284 es mayor a <span class="math inline">\(\alpha\)</span> =0.05, se asume normalidad en los datos.</p>
 <p><strong>Intervalo de Confianza</strong></p>
 <p>Se calcula el intervalo de confianza del 95% para la ordenada al origen y la pendiente del modelo de regresión.</p>
 <p>Para cambiar el nivel de confianza cambiar el parámetro <code>level</code></p>
@@ -271,7 +271,7 @@ W = 0.96615, p-value = 0.284</code></pre>
 surface_total   2249.771  2926.986</code></pre>
 </div>
 </div>
-<p>Se agrega la recta al gráfico</p>
+<p>Se agrega la recta al gráfico y la banda de confianza.</p>
 <div class="cell">
 <details open="">
 <summary>Código</summary>
@@ -282,7 +282,7 @@ surface_total   2249.771  2926.986</code></pre>
 <p><img src="regresion_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Entonces, se analiza el el modelo propuesto y como el p-valor dado es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.</p>
+<p>Entonces, se analiza el el modelo propuesto y como el p-valor dado que es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.</p>
 <div class="cell">
 <details open="">
 <summary>Código</summary>
@@ -710,7 +710,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb31-83"><a href="#cb31-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb31-84"><a href="#cb31-84" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(e)</span>
 <span id="cb31-85"><a href="#cb31-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-86"><a href="#cb31-86" aria-hidden="true" tabindex="-1"></a>Como el p-valor= 0.284 es menor a $\alpha$ =0.05, se asume normalidad en los datos.</span>
+<span id="cb31-86"><a href="#cb31-86" aria-hidden="true" tabindex="-1"></a>Como el p-valor= 0.284 es mayor a $\alpha$ =0.05, se asume normalidad en los datos.</span>
 <span id="cb31-87"><a href="#cb31-87" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-88"><a href="#cb31-88" aria-hidden="true" tabindex="-1"></a>**Intervalo de Confianza**</span>
 <span id="cb31-89"><a href="#cb31-89" aria-hidden="true" tabindex="-1"></a></span>
@@ -721,14 +721,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb31-96"><a href="#cb31-96" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb31-97"><a href="#cb31-97" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(modelo1)<span class="co">#por default es del 95%</span></span>
 <span id="cb31-98"><a href="#cb31-98" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-99"><a href="#cb31-99" aria-hidden="true" tabindex="-1"></a>Se agrega la recta al gráfico</span>
+<span id="cb31-99"><a href="#cb31-99" aria-hidden="true" tabindex="-1"></a>Se agrega la recta al gráfico y la banda de confianza.</span>
 <span id="cb31-100"><a href="#cb31-100" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-103"><a href="#cb31-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb31-104"><a href="#cb31-104" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, </span>
 <span id="cb31-105"><a href="#cb31-105" aria-hidden="true" tabindex="-1"></a>                <span class="at">se =</span> <span class="cn">TRUE</span>)<span class="co">#para mostrar la banda de confianza</span></span>
 <span id="cb31-106"><a href="#cb31-106" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb31-107"><a href="#cb31-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-108"><a href="#cb31-108" aria-hidden="true" tabindex="-1"></a>Entonces, se analiza el el modelo propuesto y como el p-valor dado es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.</span>
+<span id="cb31-108"><a href="#cb31-108" aria-hidden="true" tabindex="-1"></a>Entonces, se analiza el el modelo propuesto y como el p-valor dado que es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.</span>
 <span id="cb31-109"><a href="#cb31-109" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-112"><a href="#cb31-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb31-113"><a href="#cb31-113" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)</span>

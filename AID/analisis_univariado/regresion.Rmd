@@ -71,7 +71,7 @@ qqPlot(e)
 ```{r}
 shapiro.test(e)
 ```
-Como el p-valor= 0.284 es menor a $\alpha$ =0.05, se asume normalidad en los datos.
+Como el p-valor= 0.284 es mayor a $\alpha$ =0.05, se asume normalidad en los datos.
 
 **Intervalo de Confianza**
 
@@ -82,7 +82,7 @@ Para cambiar el nivel de confianza cambiar el parámetro `level`
 ```{r}
 confint(modelo1)#por default es del 95%
 ```
-Se agrega la recta al gráfico
+Se agrega la recta al gráfico y la banda de confianza.
 
 ```{r}
 
@@ -90,7 +90,7 @@ p + geom_smooth(method = "lm",
                 se = TRUE)#para mostrar la banda de confianza
 ```
 
-Entonces, se analiza el el modelo propuesto y como el p-valor dado es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.
+Entonces, se analiza el el modelo propuesto y como el p-valor dado que es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.
 
 ```{r}
 summary(modelo1)
