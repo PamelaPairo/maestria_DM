@@ -326,10 +326,17 @@ Mejoremos la visualización
 ```{r}
 library(ggfortify)
 
-autoplot(pca, data = df, colour = 'Poblacion',
-         loadings = TRUE, loadings.colour = 'black',
-         loadings.label = TRUE, loadings.label.size = 5)
+autoplot(pca, 
+         data = df, 
+         colour = 'Poblacion',
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 5)
 ```
+
+
+Vizualicemos las primeras 3 componentes:
 
 ```{r}
 componentes <- pca[["x"]]
