@@ -152,9 +152,7 @@ corrplot(m_cor,
 
 Fórmula de la varianza
 
-$$
-  {\LARGE s^{2}={\frac{{\displaystyle \sum_{i=1}^{N}\left(x_{i}- \overline{x}\right)^{2}}}{n-1}}}
-$$
+
 
 ```{r}
 m_cov <-round(cov(df_numericas),2)
@@ -242,7 +240,9 @@ print(sum(round(autovalores_cov,2)))
 
 ```{r}
 #varianza de las variables
-apply(X = df_numericas, MARGIN = 2, FUN = var)
+apply(X = df_numericas, 
+      MARGIN = 2, 
+      FUN = var)
 ```
 
 
