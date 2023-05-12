@@ -22,6 +22,7 @@ library(rgl)
 library(plot3D)
 library(GGally)
 library(reshape2)
+library(plotly)
 ```
 
 **Contexto**
@@ -152,7 +153,7 @@ corrplot(m_cor,
 
 Fórmula de la varianza
 
-
+$$ {\LARGE s^{2}={\frac{{\displaystyle \sum_{i=1}^{N}\left(x_{i}- \overline{x}\right)^{2}}}{n-1}}}$$
 
 ```{r}
 m_cov <-round(cov(df_numericas),2)
@@ -283,8 +284,8 @@ cbind(carga1,carga2)
 ```
 
 ```{r echo=TRUE}
-ggplot(carga1, aes(colnames(df_numericas),primeracarga)) + 
-       geom_bar ( stat="identity" ,
+ggplot(carga1, aes(colnames(df_numericas) ,primeracarga)) + 
+       geom_bar (stat="identity" , 
        position="dodge" ,
        fill ="royalblue" ,
        width =0.5 ) + xlab( 'Variables' ) + ylab('Primera carga' )
@@ -332,6 +333,30 @@ library(ggfortify)
 autoplot(pca, data = df, colour = 'Poblacion',
          loadings = TRUE, loadings.colour = 'black',
          loadings.label = TRUE, loadings.label.size = 5)
+```
+
+```{r}
+componentes <- pca[["x"]]
+componentes <- data.frame(componentes)
+componentes = cbind(componentes, df$Poblacion)
+
+titulo = 'Primeras 3 CPs'
+
+fig <- plot_ly(componentes, 
+               x = ~PC1, 
+               y = ~PC2, 
+               z = ~PC3, 
+               color = ~df$Poblacion,
+               colors = c('#636EFA','#EF553B','#00CC96') ) |> 
+   add_markers(size = 12)
+ 
+fig <- fig |> 
+  layout(
+    title = titulo,
+    scene = list(bgcolor = "#f3f2fc")
+)
+
+fig
 ```
 
 ¿Cómo interpretamos el biplot?
