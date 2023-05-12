@@ -151,10 +151,6 @@ corrplot(m_cor,
 
 # Matriz de Varianzas y covarianzas
 
-Fórmula de la varianza
-
-${\LARGE s^{2}={\frac{{\displaystyle \sum_{i=1}^{N}\left(x_{i}-\overline{x}\right)^{2}}}{n-1}}}$
-
 ```{r}
 m_cov <-round(cov(df_numericas),2)
 
