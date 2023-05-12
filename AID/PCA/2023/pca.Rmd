@@ -1,0 +1,339 @@
+---
+title: "Análisis de Componentes Principales"
+author: "Pamela E. Pairo"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library(ggrepel)
+library(gsheet)
+library(rgl)
+library(plot3D)
+library(GGally)
+library(reshape2)
+```
+
+**Contexto**
+
+Hay bastante heterogeneidad entre los individuos de una planta de baja capacidad dispersiva que crece en valles intermontanos.Los investigadores del asunto desean saber si pueden describir esa heterogeneidad con un número menor de dimensiones que las 7 características vegetativas y reproductivas que midieron.
+
+Partes de una flor
+
+![](https://i.pinimg.com/originals/e5/3b/78/e53b7858a464dfb20738473fff0c19f5.jpg)
+
+Internodo
+
+![](https://images.vexels.com/media/users/3/202454/raw/a6f138847ef867363d9afb3d13b2e792-diseno-de-anatomia-de-plantas-de-flores.jpg)
+
+```{r}
+#Carga de la base de datos
+df <-read.delim2("plantas.txt") |> 
+  mutate_at('Poblacion', as.factor) |> 
+  mutate(across(where(is.character), as.numeric))
+
+glimpse(df)
+```
+**Objetivo del PCA**
+
+
+Reducir el número de variables generando **nuevas variables que resuman la información original**. Revelar patrones en los datos que pueden no ser detectados al analizar las variables por separado.
+
+
+```{r}
+# scatter plot
+library(ggplot2)
+ggplot(df, aes(x=Petalo, y=Internodal)) + 
+  geom_point( colour='#56B4E9', shape=19)+
+  xlab("Largo Petalo")+
+  ylab("Largo Sépalo")+
+  theme_bw()
+```
+Trabajamos unicamente con las variables numéricas.
+
+```{r}
+df_numericas <-df |> 
+      select(where(is.numeric))
+```
+
+Todos contra todos
+
+```{r}
+gpairs_lower <- function(g){
+  g$plots <- g$plots[-(1:g$nrow)]
+  g$yAxisLabels <- g$yAxisLabels[-1]
+  g$nrow <- g$nrow -1
+
+  g$plots <- g$plots[-(seq(g$ncol, length(g$plots), by = g$ncol))]
+  g$xAxisLabels <- g$xAxisLabels[-g$ncol]
+  g$ncol <- g$ncol - 1
+
+  g
+}
+
+
+g <-ggpairs(df_numericas, 
+            aes(color = df$Poblacion, alpha = 0.5),
+            lower = list(continuous = "points", combo = "dot"), 
+            upper  = list(continuous = "blank"), legend = 1)+ theme(legend.position = "bottom")
+
+gpairs_lower(g)
+```
+```{r}
+data_long <- melt(df)  
+ggplot(data_long, aes(x=variable, y=value)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+```{r}
+ggplot(data_long, aes(x=variable, y=value, fill= Poblacion)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+
+**Representación tridimensional de variables**
+
+```{r}
+scatter3D(df$Petalo, df$Sepalo, df$Internodal, 
+          phi = 0, 
+          bty = "g",
+          pch = 20, 
+          cex = 2, 
+          ticktype = "detailed", 
+          colvar=NULL, 
+          col = "blue",
+          xlab="Petalo",
+          ylab="Sepalo",
+          zlab="Internodal")
+```
+
+```{r}
+mycolors <- c('royalblue1', 'darkcyan', 'oldlace', 'red')
+df$color <- mycolors[ as.numeric(df$Poblacion) ]
+
+plot3d(df$Petalo, df$Sepalo, df$Internodal, 
+          type = 's', 
+          radius = .1,
+          col = df$color,
+          xlab="Petalo",
+          ylab="Sepalo",
+          zlab="Internodal")
+
+rglwidget()
+```
+
+
+```{r}
+#Matriz de correlación
+library(corrplot)
+
+m_cor <- cor(df_numericas) 
+
+# representa la matriz de correlaciones mediante círculos
+corrplot(m_cor,
+         method="circle",
+         type = "upper",
+         diag= FALSE) 
+```
+
+# Matriz de Varianzas y covarianzas
+
+Fórmula de la varianza
+
+$$
+  {\LARGE s^{2}={\frac{{\displaystyle \sum_{i=1}^{N}\left(x_{i}- \overline{x}\right)^{2}}}{n-1}}}
+$$
+
+```{r}
+m_cov <-round(cov(df_numericas),2)
+
+m_cov
+```
+
+Las varianzas tienen distintas unidades: No son comparables!!
+
+Y la traza??
+
+```{r}
+traza_cov  <-sum(diag(m_cov))
+traza_cov
+```
+
+```{r}
+traza_cov  <-sum(diag(m_cov))
+traza_cov
+```
+
+La función `eigen()` calcula los autovectores y autovalores y los almacena en una lista bajo el nombre de _vectors_ y _values_, respectivamente.
+
+```{r}
+m_cov <- eigen(m_cov)
+autovalores_cov <- m_cov$values #autovalores
+round(autovalores_cov, 2)
+```
+
+Y si estandarizo los datos?
+
+```{r}
+datos_estandarizados <- data.frame(scale(df_numericas))
+
+#calculo la matriz de covarianzas en los datos estandarizados
+round(cov(datos_estandarizados),2)
+```
+
+# Matriz de Correlaciones
+
+```{r}
+m_cor <-round(cor(df_numericas),2)
+m_cor
+```
+
+Y la traza?
+
+```{r}
+traza_cor  <-sum(diag(m_cor))
+traza_cor
+```
+
+Traza = p (número de variables)
+
+```{r}
+desc_mat_cor <-eigen(m_cor)
+autovalores_cor <-desc_mat_cor$values
+round(autovalores_cor,2)
+```
+
+```{r}
+print(sum(round(autovalores_cor)))
+print(sum(round(autovalores_cov,2)))
+```
+
+**Conclusión**:la suma de los autovalores de cada matriz coincide con su respectiva traza
+
+## ¿Que matriz usar para extraer a los componentes?
+
+**Matriz de varianzas y covarianzas**
+
+-   Cuando las variables están en la misma escala
+
+-   Da más peso a las variables con mayor varianza
+
+-   En la interpretación interesa la diferencia entre varianzas
+
+**Matriz de correlación**:
+
+-   Cuando las variables están en distintas escalas o con valores muy distintos
+
+-   Da el mismo peso a todas las variables
+
+# PCA
+
+```{r}
+#varianza de las variables
+apply(X = df_numericas, MARGIN = 2, FUN = var)
+```
+
+
+Por defecto, `prcomp()` centra las variables para que tengan media cero, pero si se quiere además que su desviación estándar sea de uno, hay que indicar *scale = TRUE*.
+
+```{r, class.source="bg-success"}
+pca <- prcomp(df_numericas,
+              scale = TRUE)# con datos estandarizados
+names(pca)
+```
+
+`center`:contienen la media de las variables previa estandarización (en la escala original)
+
+`scale`: contienen desviación típica de las variables previa estandarización (en la escala original)
+
+`rotation`: contiene los *loadings*
+
+```{r}
+round(pca$rotation,2)
+```
+
+¿Cuál seria la combinación lineal de la primer componente?
+
+$\ PC1= 0.62*Petalo- 0.15*Internodal - 0.02*Sepalo -0.18*Bractea -0.63*Peciolo +0.18*Hoja -0.36*Hoja$
+
+Y de la segunda componente (PCA2)??
+
+## _Loadings_
+
+```{r echo=TRUE}
+#loadings
+
+carga1 = data.frame(cbind(X=1:length(df_numericas),
+                          primeracarga=data.frame(pca$rotation)[,1]))
+carga2 = data.frame(cbind(X=1:length(df_numericas),
+                          segundacarga=data.frame(pca$rotation)[,2]))
+cbind(carga1,carga2)
+```
+
+```{r echo=TRUE}
+ggplot(carga1, aes(colnames(df_numericas),primeracarga)) + 
+       geom_bar ( stat="identity" ,
+       position="dodge" ,
+       fill ="royalblue" ,
+       width =0.5 ) + xlab( 'Variables' ) + ylab('Primera carga' )
+
+```
+
+## Autovalores
+
+¿Qué proporción de la variabilidad total es explicada por las componentes?
+
+```{r}
+pca$sdev^2 # autovalores
+```
+
+```{r}
+prop_varianza <- pca$sdev^2 / sum(pca$sdev^2)
+prop_varianza
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza, pc = 1:7),
+       aes(x = pc, y = prop_varianza)) +
+  geom_col(width = 0.3) +
+  scale_y_continuous(limits = c(0,0.3)) +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. de varianza explicada")
+```
+
+## Biplot
+
+- Los objetos son ordenados en función de su puntaje en cada uno de los componentes analizados
+
+- Las variables son representadas como vectores
+
+```{r}
+biplot(x = pca, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
+```
+
+Mejoremos la visualización
+
+```{r}
+library(ggfortify)
+
+autoplot(pca, data = df, colour = 'Poblacion',
+         loadings = TRUE, loadings.colour = 'black',
+         loadings.label = TRUE, loadings.label.size = 5)
+```
+
+¿Cómo interpretamos el biplot?
+
+¿Con cuántas componentes nos quedamos? Lo vemos la próxima clase.
