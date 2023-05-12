@@ -248,7 +248,7 @@ apply(X = df_numericas, MARGIN = 2, FUN = var)
 
 Por defecto, `prcomp()` centra las variables para que tengan media cero, pero si se quiere además que su desviación estándar sea de uno, hay que indicar *scale = TRUE*.
 
-```{r, class.source="bg-success"}
+```{r}
 pca <- prcomp(df_numericas,
               scale = TRUE)# con datos estandarizados
 names(pca)
