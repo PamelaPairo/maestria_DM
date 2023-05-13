@@ -169,8 +169,8 @@ traza_cov
 La función `eigen()` calcula los autovectores y autovalores y los almacena en una lista bajo el nombre de _vectors_ y _values_, respectivamente.
 
 ```{r}
-m_cov <- eigen(m_cov)
-autovalores_cov <- m_cov$values #autovalores
+m_cov_AA <- eigen(m_cov)
+autovalores_cov <- m_cov_AA$values #autovalores
 round(autovalores_cov, 2)
 ```
 
