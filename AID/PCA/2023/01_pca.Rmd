@@ -166,11 +166,6 @@ traza_cov  <-sum(diag(m_cov))
 traza_cov
 ```
 
-```{r}
-traza_cov  <-sum(diag(m_cov))
-traza_cov
-```
-
 La función `eigen()` calcula los autovectores y autovalores y los almacena en una lista bajo el nombre de _vectors_ y _values_, respectivamente.
 
 ```{r}
