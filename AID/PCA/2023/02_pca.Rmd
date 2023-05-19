@@ -1,0 +1,345 @@
+---
+title: "PCA-Parte 2"
+author: "Pamela E. Pairo- AID 2023"
+date: "20/05/2023"
+output:
+  html_document:
+    toc: yes
+    code_folding: show
+    toc_float: yes
+    df_print: paged
+    theme: united
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library(corrplot)
+library(rgl)
+library(GGally)
+library(readxl)
+library(reshape2)
+library(factoextra)
+library(ISLR)
+```
+
+# Base de datos sobre la venta de sillas de autos para chiques 
+
+Un conjunto de datos simulados que contiene las ventas de sillas de coche en 400 locales diferentes.
+
+```{r}
+data("Carseats")
+
+df <- as_tibble(Carseats)
+
+glimpse(df)
+  
+```
+
+Nos quedamos con las variables numéricas
+
+```{r}
+
+numericas <- select_if(df, is.numeric)
+numericas$Sales <-NULL
+
+```
+
+
+
+## Boxplots para todas las variables
+
+```{r}
+data_long <- melt(numericas)  
+ggplot(data_long, aes(x=variable, y=value)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+
+```{r}
+#Matriz de correlación
+m_cor <- cor(numericas) 
+
+# representa la matriz de correlaciones mediante círculos
+corrplot(m_cor,
+         method="circle", 
+         type = 'upper', 
+         diag = FALSE) 
+```
+
+# PCA
+
+```{r}
+pca <- prcomp(numericas,
+              scale = TRUE)# con datos estandarizados
+names(pca)
+```
+`center`:contienen la media de las variables previa estandarización (en la escala original)
+
+`scale`: contienen desviación típica de las variables previa estandarización (en la escala original)
+
+`rotation`: contiene los *loadings*
+
+## Cargas o _loadings_
+
+```{r}
+knitr::kable(round(pca$rotation,2))
+```
+
+```{r}
+contrib <- as.matrix(round(pca$rotation,2))
+corrplot(contrib,is.corr=FALSE)
+```
+
+```{r}
+knitr::kable(round(pca$center,2)) #vector de medias
+```
+
+## Autovalores
+
+¿Qué proporción de la variabilidad total es explicada por cada una de las componentes?
+
+```{r}
+prop_varianza <- pca$sdev^2 / sum(pca$sdev^2)
+prop_varianza_acum <- cumsum(prop_varianza)
+prop_varianza_acum
+
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza_acum, pc = 1:7),
+       aes(x = pc, y = prop_varianza_acum, group = 1)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+```
+
+# ¿Cuántas CPs elegir?
+
+## Criterio 1: Porcentaje de variabilidad explicada
+
+Se define un porcentaje de variabilidad mínimo que se desea explicar y se toman las
+primeras _m_ componentes que alcanzan este porcentaje de explicación.
+
+Por ejemplo se elige un porcentaje de 80% de variabilidad.
+
+```{r}
+round(prop_varianza_acum*100,2)# llevo datos a porcentaje
+```
+
+## Criterio 2: Criterio de Kaiser
+
+Consiste en retener las _m_ primeras componentes tales que sus autovalores resulten iguales o mayores que 1.
+
+```{r}
+screeplot(pca, type = "l", npcs = 12)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+```
+
+## Criterio 3: Criterio del bastón roto
+
+Si la proporción de variabilidad explicada por $Y1, Y2, · · ·, Ym$ se estabiliza a partir de un cierto valor de CP, entonces aumentar la dimensión no aportaría cambios significativos.
+
+```{r}
+fviz_eig(pca, ncp =7, addlabels = TRUE, main="")
+```
+
+# Biplot
+
+- Los n objetos son ordenados en función de su puntaje en cada uno de los componentes analizados
+
+- Las p variables son representadas como vectores
+
+## _Scores_
+
+Se estandarizan las variables originales y luego con la fórmula de la combinación lineal correspondiente para cada CP, se calculan los _scores_ o puntajes de los vinos.
+
+```{r}
+pca$x[,1]# scores para la primer componente (PC1)
+```
+_Scores_ para todas las CPs.
+
+```{r}
+res.ind <- get_pca_ind(pca)
+knitr::kable(head(res.ind$coord,10), format = "html") %>% 
+  kableExtra::kable_styling() %>%
+  kableExtra::scroll_box(width = "100%")
+```
+
+```{r}
+library(ggfortify)
+autoplot(pca, data = df, shape = F, label.size = 3, scale = 0)# scale=0 biplot segun scores
+```
+
+```{r}
+autoplot(pca, 
+         data = df, 
+         shape = F, 
+         label.size = 3, 
+         scale = 0, # scale=0 biplot segun scores
+         loadings.label=T,# nombre de las variables
+         loadings=T)# variables como vectores
+```
+
+Y si se diferencia a cada punto según la variedad de vino?
+
+```{r}
+autoplot(pca, 
+         data = df, 
+         colour = 'Sales',
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 3)
+```
+
+## ¿Qué información podemos sacar del biplot? 🤔
+
+Tener en cuenta lo siguiente:
+
+- Si se es el/la experto/a de dominio (o se le puede consultar) se puede dar una interpretación a qué aspecto del tema se refiere PC1 y PC2, considerando los _loadings_ de las varibles originales.
+
+- Si dos variables forman ángulos pequeños; esto nos estaría diciendo que las variables están muy correlacionadas (en este ejemplo sería el caso de anhídrico sulfuroso libre y anhídrico sulfuroso total)
+
+- Si dos variables forman ángulos de 90°, entonces nos indica que ambas variables **no** están correlacionadas (por ejemplo pH y densidad).
+
+- Los resultados del PCA son sensibles a la presencia de _outliers_ por lo que pueden distorsionar el ordenamiento.
+
+## ¿Y si se quiere graficar el PC2 vs PC3?
+
+```{r}
+autoplot(pca, x = 2, y = 3,
+         data = df, 
+         colour = 'Sales',
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 3)
+```
+
+### En Python
+
+En [este link](https://github.com/PamelaPairo/maestria_DM/blob/main/AID/PCA/02_PCA%20en%20Python.ipynb) se puede ver el código en Python para realizar PCA.
+
+## PCA robusto
+
+**Técnicas robustas**
+
+Una de las alternativas robustas propuestas es *Minimun Covariance Determinant* (MCD), y otra es el *Minimum volume ellipsoid* (MVE).
+
+Para mas detalle de cada técnica mirar los papers correspondientes:
+
+1- Link de descarga [aqui](https://www.researchgate.net/publication/354058635_Robust_Principal_Component_Analysis_Using_Minimum_Covariance_Determinant_Estimator) para MCD
+
+2- Link de descarga [aquí](https://www.researchgate.net/publication/229803108_Minimum_Volume_Ellipsoid/link/59e1d3560f7e9b97fbe72fa9/download) para MVE.
+
+Se agregan *outliers* a la base de datos
+
+```{r}
+df_out<-rbind(as_tibble(Carseats), 
+              c (1, 900, 3, 100, 20, 4000, "Good", 5, 10, "No", "No") ,
+              c (5, 250, 7, 0, 20, 150, "Good", 20, 10, "Yes", "No") ,
+              c ( 20, 15, 20, 500, 20, 1450, "Medium", 10, 50, "No", "No"))
+
+glimpse(df_out)
+```
+
+```{r}
+df_out <-df_out |> 
+         mutate_if(is.character, as.numeric)
+```
+
+```{r}
+df_out$Sales <- NULL
+df_out$ShelveLoc <-NULL
+df_out$Urban <-NULL
+df_out$US <- NULL
+```
+
+### 1- MCD
+
+```{r}
+pca_mcd <-princomp(df_out, cor=TRUE, scores=TRUE,
+covmat=MASS::cov.mcd(df_out))#se especifica MCD
+summary(pca_mcd)
+```
+
+### 2- MVE
+
+```{r}
+pca_mve <-princomp(df_out, cor=TRUE, scores=TRUE,
+covmat=MASS::cov.mve(df_out))#se especifica MVE
+summary(pca_mve)
+```
+
+```{r}
+library(ggpubr)
+
+par(mfrow=c(2,1))
+p1 <-fviz_eig(pca_mve, ncp =12, addlabels = TRUE, main="MVE")
+p2<- fviz_eig(pca_mcd, ncp =12, addlabels = TRUE, main="MCD")
+
+ggarrange(p1,p2, nrow = 1, ncol = 2)
+```
+
+```{r}
+screeplot(pca_mve, type = "l", npcs = 7)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+col=c("red"), lty=5, cex=0.6)
+```
+
+## Comparando la varianza explicada entre PCA no robusto y MVE
+
+```{r}
+pca_out <- prcomp(df_out,
+              scale = TRUE)# con datos estandarizados
+
+autoplot(pca_out, 
+         data = df_out, 
+         shape = F, 
+         label.size = 3, 
+         scale = 0, # scale=0 biplot segun scores
+         loadings.label=T,# nombre de las variables
+         loadings=T)# variables como vectores
+```
+
+
+```{r}
+p3 <-fviz_eig(pca_out, 
+              ncp =12, 
+              addlabels = TRUE, 
+              main="No robusto",
+              barfill = "#69b3a2",
+              barcolor = "#69b3a2")
+
+ggarrange(p2,p3, nrow = 1, ncol = 2)
+```
+
+## Scree plot del PCA NO robusto
+
+```{r}
+screeplot(pca_out, type = "l", npcs = 12)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+col=c("red"), lty=5, cex=0.6)
+```
+
+## Scree plot del PCA MCD
+
+```{r}
+screeplot(pca_mcd, type = "l", npcs = 12)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+col=c("red"), lty=5, cex=0.6)
+
+```
+
