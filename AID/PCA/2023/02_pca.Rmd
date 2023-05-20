@@ -1,15 +1,16 @@
 ---
 title: "PCA-Parte 2"
 author: "Pamela E. Pairo- AID 2023"
-date: "20/05/2023"
-output:
-  html_document:
-    toc: yes
-    code_folding: show
-    toc_float: yes
-    df_print: paged
-    theme: united
-    code_download: true
+lang: es
+description: |
+  Biplot y técnicas robustas
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
 ---
 
 ```{r setup, include=FALSE}
@@ -20,9 +21,9 @@ library(tidyverse)
 library(corrplot)
 library(rgl)
 library(GGally)
-library(readxl)
 library(reshape2)
 library(factoextra)
+library(ggfortify)
 library(ISLR)
 ```
 
@@ -260,9 +261,9 @@ Se agregan *outliers* a la base de datos
 
 ```{r}
 df_out<-rbind(as_tibble(Carseats), 
-              c (1, 900, 3, 100, 20, 4000, "Good", 5, 10, "No", "No") ,
-              c (5, 250, 7, 0, 20, 150, "Good", 20, 10, "Yes", "No") ,
-              c ( 20, 15, 20, 500, 20, 1450, "Medium", 10, 50, "No", "No"))
+              c (1, 900, 3, 100, 20, 3, "Good", 5, 10, "No", "No") ,
+              c (5, 250, 3000, 0, 20, 150, "Good", 70, 10, "Yes", "Si") ,
+              c ( 20, 15, 200, 500, 20, 100, "Medium", 20, 20, "No", "No"))
 
 glimpse(df_out)
 ```
@@ -305,8 +306,8 @@ summary(pca_mve)
 library(ggpubr)
 
 par(mfrow=c(2,1))
-p1 <-fviz_eig(pca_mve, ncp =12, addlabels = TRUE, main="MVE")
-p2<- fviz_eig(pca_mcd, ncp =12, addlabels = TRUE, main="MCD")
+p1 <-fviz_eig(pca_mve, ncp =7, addlabels = TRUE, main="MVE")
+p2<- fviz_eig(pca_mcd, ncp =7, addlabels = TRUE, main="MCD")
 
 ggarrange(p1,p2, nrow = 1, ncol = 2)
 ```
@@ -336,7 +337,7 @@ autoplot(pca_out,
 
 ```{r}
 p3 <-fviz_eig(pca_out, 
-              ncp =12, 
+              ncp =7, 
               addlabels = TRUE, 
               main="No robusto",
               barfill = "#69b3a2",
@@ -357,7 +358,7 @@ col=c("red"), lty=5, cex=0.6)
 ## Scree plot del PCA MCD
 
 ```{r}
-screeplot(pca_mcd, type = "l", npcs = 12)
+screeplot(pca_mcd, type = "l", npcs = 7)
 abline(h = 1, col="red", lty=5)
 legend("topright", legend=c("Eigenvalue = 1"),
 col=c("red"), lty=5, cex=0.6)
