@@ -30,13 +30,32 @@ library(ISLR)
 
 Un conjunto de datos simulados que contiene las ventas de sillas de coche en 400 locales diferentes.
 
+`Sales`: Unit sales (in thousands) at each location
+
+`CompPrice`: Price charged by competitor at each location
+
+`Income`: Community income level (in thousands of dollars)
+
+`Advertising`: Local advertising budget for company at each location (in thousands of dollars)
+
+`Population`: Population size in region (in thousands)
+
+`Price`: Price company charges for car seats at each site
+
+`ShelveLoc`: A factor with levels Bad, Good and Medium indicating the quality of the shelving location for the car seats at each site
+
+`Age`: Average age of the local population
+
+`Education`: Education level at each location
+
+`Urban`: A factor with levels No and Yes to indicate whether the store is in an urban or rural location
+
+`US`: A factor with levels No and Yes to indicate whether the store is in the US or not
+
 ```{r}
 data("Carseats")
-
 df <- as_tibble(Carseats)
-
 glimpse(df)
-  
 ```
 
 Nos quedamos con las variables numéricas
@@ -174,10 +193,6 @@ knitr::kable(head(res.ind$coord,10), format = "html") %>%
   kableExtra::scroll_box(width = "100%")
 ```
 
-```{r}
-library(ggfortify)
-autoplot(pca, data = df, shape = F, label.size = 3, scale = 0)# scale=0 biplot segun scores
-```
 
 ```{r}
 autoplot(pca, 
@@ -207,9 +222,9 @@ Tener en cuenta lo siguiente:
 
 - Si se es el/la experto/a de dominio (o se le puede consultar) se puede dar una interpretación a qué aspecto del tema se refiere PC1 y PC2, considerando los _loadings_ de las varibles originales.
 
-- Si dos variables forman ángulos pequeños; esto nos estaría diciendo que las variables están muy correlacionadas (en este ejemplo sería el caso de anhídrico sulfuroso libre y anhídrico sulfuroso total)
+- Si dos variables forman ángulos pequeños; esto nos estaría diciendo que las variables están muy correlacionadas (en este ejemplo sería el caso de `Price` y `CompPrice`)
 
-- Si dos variables forman ángulos de 90°, entonces nos indica que ambas variables **no** están correlacionadas (por ejemplo pH y densidad).
+- Si dos variables forman ángulos de 90°, entonces nos indica que ambas variables **no** están correlacionadas (por ejemplo `Price` y `Population`).
 
 - Los resultados del PCA son sensibles a la presencia de _outliers_ por lo que pueden distorsionar el ordenamiento.
 
@@ -264,19 +279,25 @@ df_out$Urban <-NULL
 df_out$US <- NULL
 ```
 
-### 1- MCD
+### Mínimo Determinante de la Covariancia (MCD)
 
 ```{r}
-pca_mcd <-princomp(df_out, cor=TRUE, scores=TRUE,
-covmat=MASS::cov.mcd(df_out))#se especifica MCD
+pca_mcd <-princomp(df_out, 
+                   cor=TRUE,
+                   scores=TRUE,
+                   covmat=MASS::cov.mcd(df_out))#se especifica MCD
 summary(pca_mcd)
 ```
 
-### 2- MVE
+### 2- Elipsoide de volumen mínimo (MVE)
+
+Esta estimación busca el elipsoide de volumen mínimo que contiene al menos la mitad de los puntos del conjunto de datos.
 
 ```{r}
-pca_mve <-princomp(df_out, cor=TRUE, scores=TRUE,
-covmat=MASS::cov.mve(df_out))#se especifica MVE
+pca_mve <-princomp(df_out, 
+                   cor=TRUE, 
+                   scores=TRUE,
+                   covmat=MASS::cov.mve(df_out))#se especifica MVE
 summary(pca_mve)
 ```
 
