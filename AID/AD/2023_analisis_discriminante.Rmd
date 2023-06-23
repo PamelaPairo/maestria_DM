@@ -1,0 +1,234 @@
+---
+title: "Análisis Discriminante"
+author: "Pamela E. Pairo"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library(tidymodels)
+library(factoextra)
+library(mvShapiroTest)
+library(biotools)
+library(downloadthis)
+library(MASS)
+library(klaR)
+```
+
+
+Es una técnica de **clasificación** cuyo objetivo es:
+
+- Separar los grupos, identificando las variables que permiten esa separación
+
+- Clasificar a nuevos individuos
+
+La idea es contruir funciones discriminantes (FD) que maximicen la variabilidad entre grupos con el objetivo de discriminarlos mejor. Esto se logra al maximizar la varianza entre grupos en relación con la varianza total
+
+
+# Base de datos
+
+Vamos a trabajar con la base de datos de `Iris`
+
+
+```{r}
+data(iris)
+glimpse(iris)
+```
+Realicemos algunos _scatterplots_
+
+```{r}
+library(GGally)
+
+ggpairs(iris, legend = 1, columns = 1:4, aes(color = Species, alpha = 0.5),
+        upper = list(continuous = "points"))+
+  theme(legend.position = "bottom")
+```
+
+Al conocerse la especie de pertenencia de cada individuo, se puede comprobar la efectividad del método de clasificación observando el porcentaje de casos bien clasificados. Para ello, vamos a separar el dataset en train y test
+
+```{r}
+set.seed(123)#setear la semilla
+# Create data split for train and test
+df_split <- initial_split(iris,
+                          prop = 0.9,
+                          strata = Species)#para conservar la proporción de las clases
+
+df_train <- df_split %>%
+              training()
+
+df_test <- df_split %>%
+              testing()
+
+# Número de datos en test y train
+paste0("Total del dataset de entrenamiento: ", nrow(df_train))
+paste0("Total del dataset de testeo: ", nrow(df_test))
+```
+Creamos tres subsets de datos para cada especie
+
+```{r}
+setosa<- subset(df_train[,1:4], df_train$Species == "setosa")
+versicolor<- subset(df_train[,1:4], df_train$Species == "versicolor")
+virginica <- subset(df_train[,1:4], df_train$Species=="virginica")
+```
+
+# Análisis Discriminante Lineal (LDA)
+
+Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos:
+
+1- Normalidad multivariada
+
+2- Independencia de las observaciones
+
+3- Homocedasticidad.
+
+## Verefiquemos supuestos
+
+1- Normalidad multivariada
+
+¿Cuál es la hipótesis estadística?
+
+```{r}
+mvShapiro.Test(as.matrix(setosa))
+mvShapiro.Test(as.matrix(versicolor))  
+mvShapiro.Test(as.matrix(virginica))
+```
+
+2- Independencia de las observaciones
+
+Viene dada por el diseño
+
+3- Homocedasticidad
+
+Ho las matrices de varianzas-covarianzas de los grupos son iguales.
+
+Analizamos igualdad de matrices de varianzas y covarianzas:
+
+```{r}
+boxM(df_train[,-5],df_train[,5])
+```
+Entonces ¿qué concluimos?
+
+Vamos a proseguir como si se hubiese cumplido todos los supuestos. Tener en cuenta que los resultados del LDA **no van a ser confiables en este caso**.
+
+## LDA
+
+```{r}
+model_lda <- lda(Species~., data =df_train)
+model_lda
+```
+El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:
+
+*prior*: las probabilidades previas utilizadas.
+
+*means*: la media de cada clase.
+
+*svd*: son los valores singulares, informan el cociente entre desvíos estándar entre y dentro de grupos para cada FD; si se elevan al cuadrado se obtiene el autovalor de cada FD
+
+*counts*: El número de observaciones por clase.
+
+**Coefficients of linear discriminants**: Muestra la combinación lineal de variables predictoras que se utilizan para formar la regla de decisión LDA.
+
+Por ejemplo:
+
+$\ LD1= 0.76*Sepal.Length+ 1.85*Sepal.Width - 2.25*Petal.Length -2.91*Petal.Width$
+
+LD1 explica el 99% de la proporción de varianza entre clases.
+
+La 2da función discriminante es independiente de la primera (ortogonal) y es la que mejor separa los grupos usando la variación remanente o residual, después que la 1ra función discriminante ha sido determinada
+
+```{r}
+prop = model_lda$svd^2/sum(model_lda$svd^2)
+prop #varianza entre grupos explicada por cada FD
+```
+
+```{r}
+lda.data <- cbind(df_train, predict(model_lda)$x)
+ggplot(lda.data, aes(LD1, LD2)) +
+  geom_point(aes(color = Species))
+```
+
+Veamos que predice el modelo en df_test
+
+```{r}
+predictions <- model_lda %>% predict(df_test)
+predictions
+```
+
+Veamos la matriz de confusión en df_train
+
+```{r}
+table(predict(model_lda,type="class")$class,df_train$Species)
+```
+`partimat` muestra una matriz de gráficos para cada combinación de dos variables. Cada gráfico muestra una vista diferente de los mismos datos. Las regiones coloreadas delimitan cada área de clasificación. Se predice que cualquier observación que se encuentre dentro de una región pertenece a una clase específica. Cada gráfico también incluye la tasa de error aparente para esa vista de los datos.
+
+```{r}
+library(klaR) 
+partimat (Species~. , data=df_train , method="lda")
+```
+
+Veamos la _performance_ en df_test
+
+```{r}
+lda.test <- predict(model_lda,df_test)
+df_test$lda <- lda.test$class
+table(df_test$lda,df_test$Species)
+```
+### Biplot
+
+```{r}
+#install.packages("devtools")
+#library(devtools)
+#install_github("fawda123/ggord")
+library(ggord)
+ggord(model_lda, df_train$Species, xlim = c(-10, 11))
+```
+
+# Análisis discriminante cuadrático (QDA)
+
+El discriminante se dice cuadrático porque el término de segundo orden no se cancela como en el caso del discriminante lineal. QDA no asume la igualdad en la matriz de varianzas/covarianzas. En otras palabras, para QDA la matriz de covarianza puede ser diferente para cada clase.
+
+Vamos a aplicar QDA, a pesar de que no se satisface el supuesto de normalidad multivariada.
+
+```{r}
+model_qda <- qda(Species ~ ., df_train)
+model_qda
+```
+
+```{r}
+partimat(Species ~ ., data=df_train, method="qda")
+```
+
+```{r}
+table(predict(model_qda,type="class")$class,df_train$Species)
+```
+
+```{r}
+lda.test_qda <- predict(model_qda,df_test)
+df_test$qda <- lda.test_qda$class
+table(df_test$qda,df_test$Species)
+```
+# Algunos comentarios 
+
+- El ánalisis discriminante es una técnica sensible a la presencia de _outliers_
+
+- Si el supuesto de normalidad multivariada se sostiene pero hay _outliers_ es recomendable recurrir a la versión robusta de QDA.
+
+- Si se rechaza la normalidad multivariada, el modelo robusto no es adecuado.
+
+## ¿Qué hacer si no se cumple el supuesto de normalidad multivariada?
+
+Hay diversas opiniones al respecto. Algunos mencionan que LDA es robusto a la falta de normalidad multivariada si los datos son lo suficientemente grandes.^[[_Discriminant Function Analysis Introductory Overview - Assumptions_](https://docs.tibco.com/data-science/GUID-B34E0CEC-ECEF-4CA0-AF56-7D91E7695397.html)] Sin embargo, _Lachenbruch et al. (1973)_^[[_Robustness of the linear and quadratic discriminant function to certain types of non-normality_](https://sci-hub.se/10.1080/03610927308827006)] han demostrado que los resultados de aplicar LDA si se ven muy afectados por la falta de normalidad multivariada luego de usar tres tipos de distribuciones no normales. Por otra parte, también se ha encontrado que QDA si es robusto a la falta de normalidad si las distribuciones de los datos se alejan ligeramente de distribución teórica^[[_How non-normality affects the quadratic discriminant function_](https://sci-hub.se/10.1080/03610927908827830)]
+
+Actualmente, se han propuesto alternativas no paramétricas para los casos en que el supuesto de normalidad no se cumple.^[[_Nonparametric Discriminant Analysis_](https://sci-hub.se/10.1109/TPAMI.1983.4767461)] haciendo uso de matrices de dispersión, por ejemplo. Además, _Sharipah Soaad Syed Yahaya et al. (2016)_^[[_Robust Linear Discriminant Analysis _](https://thescipub.com/pdf/jmssp.2016.312.316.pdf)] proponen el uso de dos estimadores robusto llamados one-step M-estimator (MOM) y winsorized modified one-step M-estimator (WMOM), que permiten trabajar con aquellos datos que no solo **no** siguen una distribución normal sino que tambien son heterocedásticos.
+
+Finalmente, se propone también el uso de algoritmos mas complejos que permiten proseguir cuando no se cumplen los supuestos y no hay necesidad de transformar los datos para ello. Uno de los modelos propuestos es el uso de Árboles de decisión para clasificación^[[_Classification Trees as an Alternative to Linear Discriminant Analysis_](https://www.researchgate.net/publication/11093785_Classification_Trees_as_an_Alternative_to_Linear_Discriminant_Analysis)]
