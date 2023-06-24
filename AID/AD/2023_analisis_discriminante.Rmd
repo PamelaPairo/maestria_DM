@@ -23,6 +23,7 @@ library(biotools)
 library(downloadthis)
 library(MASS)
 library(klaR)
+library(discrim)
 ```
 
 
@@ -49,7 +50,10 @@ Realicemos algunos _scatterplots_
 ```{r}
 library(GGally)
 
-ggpairs(iris, legend = 1, columns = 1:4, aes(color = Species, alpha = 0.5),
+ggpairs(iris, 
+        legend = 1, 
+        columns = 1:4, 
+        aes(color = Species, alpha = 0.5),
         upper = list(continuous = "points"))+
   theme(legend.position = "bottom")
 ```
@@ -58,9 +62,9 @@ Al conocerse la especie de pertenencia de cada individuo, se puede comprobar la 
 
 ```{r}
 set.seed(123)#setear la semilla
-# Create data split for train and test
+
 df_split <- initial_split(iris,
-                          prop = 0.9,
+                          prop = 0.85,
                           strata = Species)#para conservar la proporción de las clases
 
 df_train <- df_split %>%
@@ -114,7 +118,8 @@ Ho las matrices de varianzas-covarianzas de los grupos son iguales.
 Analizamos igualdad de matrices de varianzas y covarianzas:
 
 ```{r}
-boxM(df_train[,-5],df_train[,5])
+boxM(df_train[,-5],
+     df_train[,5])# las especies
 ```
 Entonces ¿qué concluimos?
 
@@ -140,7 +145,7 @@ El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:
 
 Por ejemplo:
 
-$\ LD1= 0.76*Sepal.Length+ 1.85*Sepal.Width - 2.25*Petal.Length -2.91*Petal.Width$
+$\ LD1= 0.78*Sepal.Length+ 1.79*Sepal.Width - 2.13*Petal.Length -3.03*Petal.Width$
 
 LD1 explica el 99% de la proporción de varianza entre clases.
 
@@ -160,7 +165,8 @@ ggplot(lda.data, aes(LD1, LD2)) +
 Veamos que predice el modelo en df_test
 
 ```{r}
-predictions <- model_lda %>% predict(df_test)
+predictions <- model_lda |>  
+                predict(df_test)
 predictions
 ```
 
@@ -205,7 +211,9 @@ model_qda
 ```
 
 ```{r}
-partimat(Species ~ ., data=df_train, method="qda")
+partimat(Species ~ ., 
+         data=df_train, 
+         method="qda")
 ```
 
 ```{r}
@@ -232,3 +240,60 @@ Hay diversas opiniones al respecto. Algunos mencionan que LDA es robusto a la fa
 Actualmente, se han propuesto alternativas no paramétricas para los casos en que el supuesto de normalidad no se cumple.^[[_Nonparametric Discriminant Analysis_](https://sci-hub.se/10.1109/TPAMI.1983.4767461)] haciendo uso de matrices de dispersión, por ejemplo. Además, _Sharipah Soaad Syed Yahaya et al. (2016)_^[[_Robust Linear Discriminant Analysis _](https://thescipub.com/pdf/jmssp.2016.312.316.pdf)] proponen el uso de dos estimadores robusto llamados one-step M-estimator (MOM) y winsorized modified one-step M-estimator (WMOM), que permiten trabajar con aquellos datos que no solo **no** siguen una distribución normal sino que tambien son heterocedásticos.
 
 Finalmente, se propone también el uso de algoritmos mas complejos que permiten proseguir cuando no se cumplen los supuestos y no hay necesidad de transformar los datos para ello. Uno de los modelos propuestos es el uso de Árboles de decisión para clasificación^[[_Classification Trees as an Alternative to Linear Discriminant Analysis_](https://www.researchgate.net/publication/11093785_Classification_Trees_as_an_Alternative_to_Linear_Discriminant_Analysis)]
+
+## Bonus track: LDA con `Tidymodels`
+
+Al igual que `tidyverse`, `tidymodels` está compuesto por un conjunto de paquetes como los siguientes:
+
+-   `rsample`: para realizar la división del dataset en entrenamiento, validación y testeo.
+
+-   `recipes`: para el preprocesamiento
+
+-   `parnship`: para especificar el modelo
+
+-   `yardstick`: para evaluar el modelo
+
+Mayores especificaciones y ejemplos de uso de `tidymodels`, en su [página](https://www.tidymodels.org/packages/)
+
+## Preprocesamiento de datos usando `recipe`
+
+```{r}
+rec_lda <- recipe(Species~., data =df_train) |> 
+           step_scale(all_predictors()) |> prep()
+
+# Bake
+df_train <- bake(rec_lda, new_data=df_train)
+df_test <- bake(rec_lda, new_data=df_test)
+
+```
+
+```{r}
+lda <- discrim_linear() |> # para hacer QDA poner discrim_quad
+  set_engine("MASS")
+
+lda_fit <- workflow() |> 
+  add_model(lda) |> 
+  add_recipe(rec_lda) |> 
+  fit(df_train)
+
+lda_fit
+```
+
+```{r}
+predictions <- predict(lda_fit, df_test)
+predictions
+```
+
+
+Predicciones para el dataset de entrenamiento
+```{r}
+table(predict(lda_fit, df_train)$.pred_class,df_train$Species)
+```
+
+Predicciones para el dataset de testeo
+```{r}
+table(predict(lda_fit, df_test)$.pred_class,df_test$Species)
+```
+
+
+
