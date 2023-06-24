@@ -241,7 +241,7 @@ Actualmente, se han propuesto alternativas no paramétricas para los casos en qu
 
 Finalmente, se propone también el uso de algoritmos mas complejos que permiten proseguir cuando no se cumplen los supuestos y no hay necesidad de transformar los datos para ello. Uno de los modelos propuestos es el uso de Árboles de decisión para clasificación^[[_Classification Trees as an Alternative to Linear Discriminant Analysis_](https://www.researchgate.net/publication/11093785_Classification_Trees_as_an_Alternative_to_Linear_Discriminant_Analysis)]
 
-## Bonus track: LDA con `Tidymodels`
+# Bonus track: LDA con `Tidymodels`
 
 Al igual que `tidyverse`, `tidymodels` está compuesto por un conjunto de paquetes como los siguientes:
 
@@ -254,6 +254,8 @@ Al igual que `tidyverse`, `tidymodels` está compuesto por un conjunto de paquet
 -   `yardstick`: para evaluar el modelo
 
 Mayores especificaciones y ejemplos de uso de `tidymodels`, en su [página](https://www.tidymodels.org/packages/)
+
+Para mas información sobre las funciones disponibles para realizar análisis discriminante ver [aquí](https://discrim.tidymodels.org/)
 
 ## Preprocesamiento de datos usando `recipe`
 
@@ -277,11 +279,6 @@ lda_fit <- workflow() |>
   fit(df_train)
 
 lda_fit
-```
-
-```{r}
-predictions <- predict(lda_fit, df_test)
-predictions
 ```
 
 
