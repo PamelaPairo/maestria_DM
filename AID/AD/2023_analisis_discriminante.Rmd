@@ -225,6 +225,20 @@ lda.test_qda <- predict(model_qda,df_test)
 df_test$qda <- lda.test_qda$class
 table(df_test$qda,df_test$Species)
 ```
+# Análisis Discriminante Robusto
+
+En el parámetro `method` se especifica el método, en el ejemplo se aplica el Minimun Covariance Determinant. Las _priors_ por default son las proporciones de las clases.
+
+```{r}
+library(rrcov)# instalar este paquete para ADR
+
+robusto_lda <- Linda(Species ~ .,
+                     method= "mcd", 
+                     df_train)
+predict(robusto_lda)# devuelve la matriz de confusion para df_train
+
+```
+
 # Algunos comentarios 
 
 - El ánalisis discriminante es una técnica sensible a la presencia de _outliers_
