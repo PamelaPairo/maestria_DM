@@ -23,6 +23,7 @@ library(plot3D)
 library(GGally)
 library(reshape2)
 library(plotly)
+library(kableExtra)
 ```
 
 **Contexto**
@@ -110,7 +111,7 @@ ggplot(data_long, aes(x=variable, y=value, fill= Response)) +
 
 
 ```{r}
-scatter3D(df_sample$MntFruits, df_sample$NumWebPurchases, df_sample$Age, 
+scatter3D(df_sample$MntWines, df_sample$NumWebPurchases, df_sample$Age, 
           phi = 0, 
           bty = "g",
           pch = 20, 
@@ -118,7 +119,7 @@ scatter3D(df_sample$MntFruits, df_sample$NumWebPurchases, df_sample$Age,
           ticktype = "detailed", 
           colvar=NULL, 
           col = "blue",
-          xlab="MntFruits",
+          xlab="MntWines",
           ylab="NumWebPurchases",
           zlab="Age")
 ```
@@ -127,11 +128,11 @@ scatter3D(df_sample$MntFruits, df_sample$NumWebPurchases, df_sample$Age,
 mycolors <- c('royalblue1', 'red')
 df_sample$color <- mycolors[ as.numeric(df_sample$Response) ]
 
-plot3d(df_sample$MntFruits, df_sample$NumWebPurchases, df_sample$Age, 
+plot3d(df_sample$MntWines, df_sample$NumWebPurchases, df_sample$Age, 
           type = 's', 
-          radius = 1.7,
+          radius = 10,
           col = df_sample$color,
-          xlab="MntFruits",
+          xlab="MntWines",
           ylab="NumWebPurchases",
           zlab="Age")
 
@@ -190,7 +191,8 @@ round(cov(datos_estandarizados),2)
 
 ```{r}
 m_cor <-round(cor(df_num),2)
-m_cor
+m_cor |> knitr::kable(format = "html") |> 
+  kable_styling() 
 ```
 
 Y la traza?
@@ -262,12 +264,14 @@ names(pca)
 `rotation`: contiene los *loadings*
 
 ```{r}
-round(pca$rotation,2)
+
+round(pca$rotation,2) |> knitr::kable(format = "html") |> 
+  kable_styling() 
 ```
 
 ¿Cuál seria la combinación lineal de la primer componente?
 
-$\ PC1= 0.62*Petalo- 0.15*Internodal - 0.02*Sepalo -0.18*Bractea -0.63*Peciolo +0.18*Hoja -0.36*Hoja$
+$\ PC1= 0.38*Income+ 0.34*MntWines + 0.30*MntFruits +0.36*MntMeatProducts +0.33*MntFishProducts +0.31*MntSweetProducts +0.28*MntGoldProds- 0.03*NumDealsPurchases+ 0.26*NumWebPurchases+ 0.38*NumCatalogPurchases+ 0.11*Age$
 
 Y de la segunda componente (PCA2)??
 
@@ -288,7 +292,7 @@ ggplot(carga1, aes(colnames(df_num) ,primeracarga)) +
        geom_bar (stat="identity" , 
        position="dodge" ,
        fill ="royalblue" ,
-       width =0.5 ) + xlab( 'Variables' ) + ylab('Primera carga' )
+       width =0.5 ) + xlab( 'Variables' ) + ylab('Primera carga' )+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
@@ -306,7 +310,7 @@ prop_varianza
 ```
 
 ```{r}
-ggplot(data = data.frame(prop_varianza, pc = 1:14),
+ggplot(data = data.frame(prop_varianza, pc = 1:11),
        aes(x = pc, y = prop_varianza)) +
   geom_col(width = 0.4) +
   scale_y_continuous(limits = c(0,0.2)) +
@@ -368,11 +372,11 @@ fig <- fig |>
 fig
 ```
 
-- Reducción de dimensionalidad: When your features are highly redundant (multicollinear, specifically), PCA will partition out the redundancy into one or more near-zero variance components, which you can then drop since they will contain little or no information.
-- Detección de anomalías: Unusual variation, not apparent from the original features, will often show up in the low-variance components. These components could be highly informative in an anomaly or outlier detection task.
-- Reducción de ruido: A collection of sensor readings will often share some common background noise. PCA can sometimes collect the (informative) signal into a smaller number of features while leaving the noise alone, thus boosting the signal-to-noise ratio.
-Decorrelation: Some ML algorithms struggle with highly-correlated features. PCA transforms correlated features into uncorrelated components, which could be easier for your algorithm to work with.
-
 ¿Cómo interpretamos el biplot?
+
+- Reducción de dimensionalidad
+- Detección de anomalías
+- Decorrelación: Algunos algoritmos de aprendizaje automático tienen dificultades con características altamente correlacionadas. PCA transforma características correlacionadas en componentes no correlacionados, lo que podría ser más fácil para que tu algoritmo trabaje con ellas
+
 
 ¿Con cuántas componentes nos quedamos? Lo vemos la próxima clase.
