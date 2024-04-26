@@ -1,0 +1,395 @@
+---
+title: "Análisis de Componentes Principales"
+author: "Pamela E. Pairo"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library(ggrepel)
+library(gsheet)
+library(rgl)
+library(plot3D)
+library(GGally)
+library(reshape2)
+library(plotly)
+```
+
+**Contexto**
+
+
+
+**Descripción de las columnas del dataset**
+
+![](dictionary.png)
+
+
+```{r}
+df <-read.csv("ifood_df.csv")
+glimpse(df)
+```
+¿Hay valores faltantes?
+
+```{r}
+sum(is.na(df))# para saber cuantos na hay en la base de datos
+```
+Hay datos duplicados?
+
+```{r}
+any(duplicated(df))
+```
+```{r}
+df_sin_duplicados <- dplyr::distinct(df)
+```
+
+
+```{r}
+# scatter plot
+library(ggplot2)
+ggplot(df_sin_duplicados, aes(x=MntWines, y=Income)) + 
+  geom_point( colour='#56B4E9', shape=19)+
+  xlab("Cantidad de vinos comprados")+
+  ylab("Income")+
+  theme_bw()
+```
+
+Trabajamos unicamente con las variables numéricas.
+
+```{r}
+df_sample <-df_sin_duplicados |> 
+           sample_n(500)
+
+df_num <- df_sample |> 
+          select(1:15) 
+
+df_sample$marital_Single <- as.factor(df_sample$marital_Single)
+df_sample$marital_Married <- as.factor(df_sample$marital_Married)
+df_sample$education_Graduation <- as.factor(df_sample$education_Graduation)
+```
+
+Todos contra todos
+
+```{r}
+gpairs_lower <- function(g){
+  g$plots <- g$plots[-(1:g$nrow)]
+  g$yAxisLabels <- g$yAxisLabels[-1]
+  g$nrow <- g$nrow -1
+
+  g$plots <- g$plots[-(seq(g$ncol, length(g$plots), by = g$ncol))]
+  g$xAxisLabels <- g$xAxisLabels[-g$ncol]
+  g$ncol <- g$ncol - 1
+
+  g
+}
+
+
+g <-ggpairs(df_num, 
+            aes(color = df_sample$marital_Married, alpha = 0.5),
+            lower = list(continuous = "points", combo = "dot"), 
+            upper  = list(continuous = "blank"), legend = 1)+ theme(legend.position = "bottom")
+
+gpairs_lower(g)
+```
+
+
+```{r}
+data_long <- df_sample |> 
+             select(1:15, 29) |> 
+             melt()
+
+```
+
+```{r}
+
+ggplot(data_long, aes(x=variable, y=value)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+```{r}
+ggplot(data_long, aes(x=variable, y=value, fill= marital_Single)) + 
+    geom_boxplot() +
+    facet_wrap(~variable, scale="free")
+```
+
+
+**Representación tridimensional de variables**
+
+
+```{r}
+scatter3D(df_sample$NumStorePurchases, df_sample$MntSweetProducts, df_sample$Recency, 
+          phi = 0, 
+          bty = "g",
+          pch = 20, 
+          cex = 2, 
+          ticktype = "detailed", 
+          colvar=NULL, 
+          col = "blue",
+          xlab="MntFruits",
+          ylab="MntSweetProducts",
+          zlab="Recency")
+```
+
+```{r}
+mycolors <- c('royalblue1', 'red')
+df_sample$color <- mycolors[ as.numeric(df_sample$marital_Single) ]
+
+plot3d(df_sample$NumStorePurchases, df_sample$MntSweetProducts, df_sample$Recency, 
+          type = 's', 
+          radius = 1.7,
+          col = df_sample$color,
+          xlab="MntFruits",
+          ylab="MntSweetProducts",
+          zlab="Recency")
+
+rglwidget()
+```
+
+
+```{r}
+#Matriz de correlación
+library(corrplot)
+
+m_cor <- cor(df_num) 
+
+# representa la matriz de correlaciones mediante círculos
+corrplot(m_cor,
+         method="circle",
+         type = "upper",
+         diag= FALSE) 
+```
+
+# Matriz de Varianzas y covarianzas
+
+```{r}
+m_cov <-round(cov(df_num),2)
+
+m_cov
+```
+
+Las varianzas tienen distintas unidades: No son comparables!!
+
+Y la traza??
+
+```{r}
+traza_cov  <-sum(diag(m_cov))
+traza_cov
+```
+
+La función `eigen()` calcula los autovectores y autovalores y los almacena en una lista bajo el nombre de _vectors_ y _values_, respectivamente.
+
+```{r}
+m_cov_AA <- eigen(m_cov)
+autovalores_cov <- m_cov_AA$values #autovalores
+round(autovalores_cov, 2)
+```
+
+Y si estandarizo los datos?
+
+```{r}
+datos_estandarizados <- data.frame(scale(df_num))
+
+#calculo la matriz de covarianzas en los datos estandarizados
+round(cov(datos_estandarizados),2)
+```
+
+# Matriz de Correlaciones
+
+```{r}
+m_cor <-round(cor(df_num),2)
+m_cor
+```
+
+Y la traza?
+
+```{r}
+traza_cor  <-sum(diag(m_cor))
+traza_cor
+```
+
+Traza = p (número de variables)
+
+```{r}
+desc_mat_cor <-eigen(m_cor)
+autovalores_cor <-desc_mat_cor$values
+round(autovalores_cor,2)
+```
+
+```{r}
+print(sum(round(autovalores_cor)))
+print(sum(round(autovalores_cov,2)))
+```
+
+**Conclusión**:la suma de los autovalores de cada matriz coincide con su respectiva traza
+
+## ¿Que matriz usar para extraer a los componentes?
+
+**Matriz de varianzas y covarianzas**
+
+-   Cuando las variables están en la misma escala
+
+-   Da más peso a las variables con mayor varianza
+
+-   En la interpretación interesa la diferencia entre varianzas
+
+**Matriz de correlación**:
+
+-   Cuando las variables están en distintas escalas o con valores muy distintos
+
+-   Da el mismo peso a todas las variables
+
+# PCA
+
+**Objetivo del PCA**
+
+
+Reducir el número de variables generando **nuevas variables que resuman la información original**. Revelar patrones en los datos que pueden no ser detectados al analizar las variables por separado.
+
+
+
+```{r}
+#varianza de las variables
+apply(X = df_num, 
+      MARGIN = 2, 
+      FUN = var)
+```
+
+Por defecto, `prcomp()` centra las variables para que tengan media cero, pero si se quiere además que su desviación estándar sea de uno, hay que indicar *scale = TRUE*.
+
+```{r}
+pca <- prcomp(df_num,
+              scale = TRUE)# con datos estandarizados
+names(pca)
+```
+
+`center`:contienen la media de las variables previa estandarización (en la escala original)
+
+`scale`: contienen desviación típica de las variables previa estandarización (en la escala original)
+
+`rotation`: contiene los *loadings*
+
+```{r}
+round(pca$rotation,2)
+```
+
+¿Cuál seria la combinación lineal de la primer componente?
+
+$\ PC1= 0.62*Petalo- 0.15*Internodal - 0.02*Sepalo -0.18*Bractea -0.63*Peciolo +0.18*Hoja -0.36*Hoja$
+
+Y de la segunda componente (PCA2)??
+
+## _Loadings_
+
+```{r echo=TRUE}
+#loadings
+
+carga1 = data.frame(cbind(X=1:length(df_num),
+                          primeracarga=data.frame(pca$rotation)[,1]))
+carga2 = data.frame(cbind(X=1:length(df_num),
+                          segundacarga=data.frame(pca$rotation)[,2]))
+cbind(carga1,carga2)
+```
+
+```{r echo=TRUE}
+ggplot(carga1, aes(colnames(df_num) ,primeracarga)) + 
+       geom_bar (stat="identity" , 
+       position="dodge" ,
+       fill ="royalblue" ,
+       width =0.5 ) + xlab( 'Variables' ) + ylab('Primera carga' )
+
+```
+
+## Autovalores
+
+¿Qué proporción de la variabilidad total es explicada por las componentes?
+
+```{r}
+pca$sdev^2 # autovalores
+```
+
+```{r}
+prop_varianza <- pca$sdev^2 / sum(pca$sdev^2)
+prop_varianza
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza, pc = 1:15),
+       aes(x = pc, y = prop_varianza)) +
+  geom_col(width = 0.4) +
+  scale_y_continuous(limits = c(0,0.2)) +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. de varianza explicada")
+```
+
+## Biplot
+
+- Los objetos son ordenados en función de su puntaje en cada uno de los componentes analizados
+
+- Las variables son representadas como vectores
+
+```{r}
+biplot(x = pca, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
+```
+
+Mejoremos la visualización
+
+```{r}
+library(ggfortify)
+
+df_sample$Response <- as.factor(df_sample$Response)
+
+autoplot(pca, 
+         data = df_sample, 
+         colour = 'Response',
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 5)
+```
+
+
+Vizualicemos las primeras 3 componentes:
+
+```{r}
+componentes <- pca[["x"]]
+componentes <- data.frame(componentes)
+componentes = cbind(componentes, df_sample$Response)
+
+titulo = 'Primeras 3 CPs'
+
+fig <- plot_ly(componentes, 
+               x = ~PC1, 
+               y = ~PC2, 
+               z = ~PC3, 
+               color = ~df_sample$Response,
+               colors = c('#636EFA','#EF553B') ) |> 
+   add_markers(size = 12)
+ 
+fig <- fig |> 
+  layout(
+    title = titulo,
+    scene = list(bgcolor = "#f3f2fc")
+)
+
+fig
+```
+
+- Reducción de dimensionalidad: When your features are highly redundant (multicollinear, specifically), PCA will partition out the redundancy into one or more near-zero variance components, which you can then drop since they will contain little or no information.
+- Detección de anomalías: Unusual variation, not apparent from the original features, will often show up in the low-variance components. These components could be highly informative in an anomaly or outlier detection task.
+- Reducción de ruido: A collection of sensor readings will often share some common background noise. PCA can sometimes collect the (informative) signal into a smaller number of features while leaving the noise alone, thus boosting the signal-to-noise ratio.
+Decorrelation: Some ML algorithms struggle with highly-correlated features. PCA transforms correlated features into uncorrelated components, which could be easier for your algorithm to work with.
+
+¿Cómo interpretamos el biplot?
+
+¿Con cuántas componentes nos quedamos? Lo vemos la próxima clase.
