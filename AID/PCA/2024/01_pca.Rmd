@@ -55,6 +55,8 @@ any(duplicated(df))
 ```
 
 ```{r}
+set.seed(11) 
+
 df_sample <- dplyr::distinct(df) |> #elimino datos repetidos
            sample_n(350)
 
@@ -284,7 +286,7 @@ corrplot(contrib,is.corr=FALSE)
 
 ¿Cuál seria la combinación lineal de la primer componente?
 
-$\ PC1= 0.37*Income+ 0.34*MntWines + 0.32*MntFruits +0.37*MntMeatProducts +0.33*MntFishProducts +0.30*MntSweetProducts +0.28*MntGoldProds- 0.04*NumDealsPurchases+ 0.27*NumWebPurchases+ 0.37*NumCatalogPurchases+ 0.11*Age$
+$\ PC1= 0.39*Income+ 0.35*MntWines + 0.33*MntFruits +0.36*MntMeatProducts +0.32*MntFishProducts +0.33*MntSweetProducts +0.27*MntGoldProds- 0.06*NumDealsPurchases+ 0.25*NumWebPurchases+ 0.37*NumCatalogPurchases+ 0.08*Age$
 
 Y de la segunda componente (PCA2)??
 
@@ -398,7 +400,7 @@ knitr::kable(head(res.ind$coord,10), format = "html") %>%
   kableExtra::scroll_box(width = "100%")
 ```
 
-## Biplot
+## Biplot ✍🏽
 
 ```{r}
 library(ggfortify)
@@ -506,7 +508,7 @@ fviz_pca_biplot(num.pca,
 
 ✔️ _Outliers_ pueden distorsionar el ordenamiento.
 
-# PCA robusto
+# PCA robusto 💪🏽
 
 **Técnicas robustas**
 
