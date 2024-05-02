@@ -56,7 +56,7 @@ any(duplicated(df))
 
 ```{r}
 df_sample <- dplyr::distinct(df) |> #elimino datos repetidos
-           sample_n(300)
+           sample_n(350)
 
 df_num <- df_sample |> 
           select(1, 5:13, 25)#selecciono columnas de interes 
@@ -255,13 +255,6 @@ Reducir el número de variables generando **nuevas variables que resuman la info
 - Detección de anomalías
 - Decorrelación: Algunos algoritmos de aprendizaje automático tienen dificultades con características altamente correlacionadas. PCA transforma características correlacionadas en componentes no correlacionados, lo que podría ser más fácil para que tu algoritmo trabaje con ellas
 
-```{r}
-#varianza de las variables
-apply(X = df_num, 
-      MARGIN = 2, 
-      FUN = var)
-```
-
 Por defecto, `prcomp()` centra las variables para que tengan media cero, pero si se quiere además que su desviación estándar sea de uno, hay que indicar *scale = TRUE*.
 
 ```{r}
@@ -291,7 +284,7 @@ corrplot(contrib,is.corr=FALSE)
 
 ¿Cuál seria la combinación lineal de la primer componente?
 
-$\ PC1= 0.38*Income+ 0.34*MntWines + 0.30*MntFruits +0.36*MntMeatProducts +0.33*MntFishProducts +0.31*MntSweetProducts +0.28*MntGoldProds- 0.03*NumDealsPurchases+ 0.26*NumWebPurchases+ 0.38*NumCatalogPurchases+ 0.11*Age$
+$\ PC1= 0.37*Income+ 0.34*MntWines + 0.32*MntFruits +0.37*MntMeatProducts +0.33*MntFishProducts +0.30*MntSweetProducts +0.28*MntGoldProds- 0.04*NumDealsPurchases+ 0.27*NumWebPurchases+ 0.37*NumCatalogPurchases+ 0.11*Age$
 
 Y de la segunda componente (PCA2)??
 
@@ -353,21 +346,72 @@ ggplot(data = data.frame(prop_varianza_acum, pc = 1:11),
        y = "Prop. varianza explicada acumulada")
 ```
 
-## Biplot
+# ¿Cuántas CPs elegir?
+
+## Criterio 1: Porcentaje de variabilidad explicada
+
+Se define un porcentaje de variabilidad mínimo que se desea explicar y se toman las primeras m componentes que alcanzan este porcentaje de explicación.
+
+Por ejemplo se elige un porcentaje de 80% de variabilidad.
+
+```{r}
+round(prop_varianza_acum*100,2)# llevo datos a porcentaje
+```
+## Criterio 2: Criterio de Kaiser
+
+Consiste en retener las m primeras componentes tales que sus autovalores resulten iguales o mayores que 1.
+
+```{r}
+screeplot(pca, type = "l", npcs = 11)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+```
+
+## Criterio 3: Criterio del bastón roto
+
+Si la proporción de variabilidad explicada por $Y1, Y2, · · ·, Ym$ se estabiliza a partir de un cierto valor de CP, entonces aumentar la dimensión no aportaría cambios significativos.
+
+```{r}
+library(factoextra)
+
+fviz_eig(pca, ncp =11, addlabels = TRUE, main="")
+```
+
+# Vizualización
 
 - Los objetos son ordenados en función de su puntaje en cada uno de los componentes analizados
 
 - Las variables son representadas como vectores
 
+## _Scores_
+
+Se estandarizan las variables originales y luego con la fórmula de la combinación lineal correspondiente para cada CP, se calculan los scores o puntajes de los vinos.
+
 ```{r}
-biplot(x = pca, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
+pca$x[,1]# scores para la primer componente (PC1)
+```
+```{r}
+res.ind <- get_pca_ind(pca)
+knitr::kable(head(res.ind$coord,10), format = "html") %>% 
+  kableExtra::kable_styling() %>%
+  kableExtra::scroll_box(width = "100%")
 ```
 
-Mejoremos la visualización
+## Biplot
 
 ```{r}
 library(ggfortify)
 
+autoplot(pca, 
+         data = df_num, 
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 5)
+```
+
+```{r}
 df_sample$Response <- as.factor(df_sample$Response)
 
 autoplot(pca, 
@@ -378,7 +422,6 @@ autoplot(pca,
          loadings.label = TRUE, 
          loadings.label.size = 5)
 ```
-
 
 Vizualicemos las primeras 3 componentes:
 
@@ -406,9 +449,54 @@ fig <- fig |>
 fig
 ```
 
-¿Cómo interpretamos el biplot?
+## ¿Qué información podemos sacar del biplot? 🤔
 
-¿Con cuántas componentes nos quedamos? Lo vemos la próxima clase.
+Tener en cuenta lo siguiente:
+
+- Si se es el/la experto/a de dominio (o se le puede consultar) se puede dar una interpretación a qué aspecto del tema se refiere PC1 y PC2, considerando los _loadings_ de las varibles originales.
+
+- Si dos variables forman ángulos pequeños; esto nos estaría diciendo que las variables están muy correlacionadas (en este ejemplo sería el caso de `NumCatalogPurchases` y `Income`)
+
+- Si dos variables forman ángulos de 90°, entonces nos indica que ambas variables **no** están correlacionadas (por ejemplo `MntWines` y `NumDealsPurchases`).
+
+- Los resultados del PCA son sensibles a la presencia de _outliers_ por lo que pueden distorsionar el ordenamiento.
+
+## ¿Y si se quiere graficar el PC2 vs PC3?
+
+```{r}
+autoplot(pca, x = 2, y = 3,
+         data = df_num, 
+         loadings = TRUE, 
+         loadings.colour = 'blue',
+         loadings.label = TRUE, 
+         loadings.label.size = 4)
+```
+
+```{r}
+library(FactoMineR)
+num.pca <- PCA(df_num,              
+               scale.unit= TRUE,
+               ncp=6,
+               graph = FALSE)
+names(num.pca)
+```
+```{r}
+num.pca$eig
+```
+```{r}
+# Default plot
+fviz_pca_ind(num.pca, 
+             label="none")
+```
+
+```{r}
+fviz_pca_biplot(num.pca, 
+  habillage = df_sample$Response, 
+  col.var = "red", 
+  label = "var") +
+  scale_color_brewer(palette="Dark2")+
+  theme_minimal()
+```
 
 # Consideraciones importantes 💡
 
@@ -417,6 +505,20 @@ fig
 ✔️ El PCA es mas eficiente si las variables se relacionan linealmente.
 
 ✔️ _Outliers_ pueden distorsionar el ordenamiento.
+
+# PCA robusto
+
+**Técnicas robustas**
+
+Una de las alternativas robustas propuestas es *Minimun Covariance Determinant* (MCD), y otra es el *Minimum volume ellipsoid* (MVE).
+
+Para mas detalle de cada técnica mirar los papers correspondientes:
+
+1- Link de descarga [aqui](https://www.researchgate.net/publication/354058635_Robust_Principal_Component_Analysis_Using_Minimum_Covariance_Determinant_Estimator) para MCD
+
+2- Link de descarga [aquí](https://www.researchgate.net/publication/229803108_Minimum_Volume_Ellipsoid/link/59e1d3560f7e9b97fbe72fa9/download) para MVE.
+
+Se agregan *outliers* a la base de datos
 
 ```{r}
 sessionInfo()
