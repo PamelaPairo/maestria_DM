@@ -30,54 +30,41 @@ library(kableExtra)
 
 Una empresa de alimentos está planeando lanzar una campaña de marketing el próximo mes con el objetivo de maximizar las ganancias. En una campaña piloto con 2,240 clientes, aquellos que compraron la oferta fueron etiquetados como exitosos.
 
-**Descripción de las columnas del dataset**
 
-![](dictionary.png)
+# Análisis exploratorio 📊
 
+Carga de la base de datos
 
 ```{r}
 df <-read.csv("ifood_df.csv")
 glimpse(df)
 ```
+**Descripción de las columnas del dataset**
+
+![](dictionary.png)
+
 ¿Hay valores faltantes?
 
 ```{r}
 sum(is.na(df))# para saber cuantos na hay en la base de datos
 ```
-Hay datos duplicados?
+¿Hay datos duplicados?
 
 ```{r}
 any(duplicated(df))
 ```
-```{r}
-df_sin_duplicados <- dplyr::distinct(df)
-```
-
 
 ```{r}
-# scatter plot
-
-ggplot(df_sin_duplicados, aes(x=MntWines, y=Income)) + 
-  geom_point( colour='#56B4E9', shape=19)+
-  xlab("Cantidad de vinos comprados")+
-  ylab("Income")+
-  theme_bw()
-```
-
-Trabajamos unicamente con las variables numéricas.
-
-```{r}
-df_sample <-df_sin_duplicados |> 
+df_sample <- dplyr::distinct(df) |> #elimino datos repetidos
            sample_n(300)
 
 df_num <- df_sample |> 
-          select(1, 5:13, 25) 
+          select(1, 5:13, 25)#selecciono columnas de interes 
 
 df_sample$marital_Single <- as.factor(df_sample$marital_Single)
 df_sample$marital_Married <- as.factor(df_sample$marital_Married)
 df_sample$Response <- as.factor(df_sample$Response)
 ```
-
 
 ```{r}
 hist(df_sample$Age, 
@@ -89,7 +76,30 @@ hist(df_sample$Age,
 )
 ```
 
+```{r}
+recuentos <- table(df_sample$marital_Married)
 
+# Calcular los porcentajes
+porcentajes <- round(prop.table(recuentos) * 100)
+
+# Crear las etiquetas con las categorías y los porcentajes
+etiquetas <- paste(names(recuentos),"  \n", porcentajes, "%", sep = "")
+
+# Crear el gráfico de torta con las etiquetas de categorías y porcentajes
+pie(recuentos, labels = etiquetas, main="Personas casadas (%)")
+```
+
+```{r}
+# scatter plot
+
+ggplot(df_sample, aes(x=MntWines, y=Income)) + 
+  geom_point( colour='#56B4E9', shape=19)+
+  xlab("Cantidad de vinos comprados")+
+  ylab("Income")+
+  theme_bw()
+```
+
+Trabajamos unicamente con las variables numéricas.
 
 ```{r}
 data_long <- df_sample |> 
@@ -139,6 +149,7 @@ plot3d(df_sample$MntWines, df_sample$NumWebPurchases, df_sample$Age,
 rglwidget()
 ```
 
+**Correlograma**
 
 ```{r}
 #Matriz de correlación
@@ -265,10 +276,17 @@ names(pca)
 
 `rotation`: contiene los *loadings*
 
+## Cargas o _loadings_
+
 ```{r}
 
 round(pca$rotation,2) |> knitr::kable(format = "html") |> 
   kable_styling() 
+```
+
+```{r}
+contrib <- as.matrix(round(pca$rotation,2))
+corrplot(contrib,is.corr=FALSE)
 ```
 
 ¿Cuál seria la combinación lineal de la primer componente?
@@ -276,8 +294,6 @@ round(pca$rotation,2) |> knitr::kable(format = "html") |>
 $\ PC1= 0.38*Income+ 0.34*MntWines + 0.30*MntFruits +0.36*MntMeatProducts +0.33*MntFishProducts +0.31*MntSweetProducts +0.28*MntGoldProds- 0.03*NumDealsPurchases+ 0.26*NumWebPurchases+ 0.38*NumCatalogPurchases+ 0.11*Age$
 
 Y de la segunda componente (PCA2)??
-
-## _Loadings_
 
 ```{r echo=TRUE}
 #loadings
@@ -315,10 +331,26 @@ prop_varianza
 ggplot(data = data.frame(prop_varianza, pc = 1:11),
        aes(x = pc, y = prop_varianza)) +
   geom_col(width = 0.4) +
-  scale_y_continuous(limits = c(0,0.2)) +
+  scale_y_continuous(limits = c(0,0.15)) +
   theme_bw() +
   labs(x = "Componente principal",
        y = "Prop. de varianza explicada")
+```
+
+```{r}
+prop_varianza <- pca$sdev^2 / sum(pca$sdev^2)
+prop_varianza_acum <- cumsum(prop_varianza)
+prop_varianza_acum
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza_acum, pc = 1:11),
+       aes(x = pc, y = prop_varianza_acum, group = 1)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
 ```
 
 ## Biplot
