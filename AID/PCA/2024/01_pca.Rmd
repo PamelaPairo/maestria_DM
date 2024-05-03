@@ -523,6 +523,80 @@ Para mas detalle de cada técnica mirar los papers correspondientes:
 Se agregan *outliers* a la base de datos
 
 ```{r}
+df_out<-rbind(c (5000, 8000, 3, 100, 20, 300, 5, 10, 150, 10, 81) ,
+              c (100000, 9000, 3, 1000, 20, 200, 500, 10, 15, 100, 11) ,
+              c (100000, 700, 100, 100, 20, 30, 500, 10, 100, 10, 15),
+              df_num)
+
+glimpse(df_out)
+```
+## 1- Mínimo Determinante de la Covariancia (MCD)
+
+```{r}
+pca_mcd <-princomp(df_out, 
+                   cor=TRUE,
+                   scores=TRUE,
+                   covmat=MASS::cov.mcd(df_out))#se especifica MCD
+summary(pca_mcd)
+```
+## 2- Elipsoide de volumen mínimo (MVE)
+
+Esta estimación busca el elipsoide de volumen mínimo que contiene al menos la mitad de los puntos del conjunto de datos.
+
+```{r}
+pca_mve <-princomp(df_out, 
+                   cor=TRUE, 
+                   scores=TRUE,
+                   covmat=MASS::cov.mve(df_out))#se especifica MVE
+summary(pca_mve)
+```
+
+```{r}
+library(ggpubr)
+
+par(mfrow=c(2,1))
+p1 <-fviz_eig(pca_mve, ncp =5, addlabels = TRUE, main="MVE")
+p2<- fviz_eig(pca_mcd, ncp =5, addlabels = TRUE, main="MCD")
+
+ggarrange(p1,p2, nrow = 1, ncol = 2)
+```
+
+
+```{r}
+screeplot(pca_mve, type = "l", npcs = 7)
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+col=c("red"), lty=5, cex=0.6)
+```
+
+
+## Comparando la varianza explicada entre PCA no robusto y MVE
+
+```{r}
+num.pca.out <- PCA(df_out,              
+               scale.unit= TRUE,
+               ncp=6,
+               graph = FALSE)
+
+fviz_pca_biplot(num.pca.out, 
+  col.var = "red", 
+  label = "var") +
+  scale_color_brewer(palette="Dark2")+
+  theme_minimal()
+```
+
+```{r}
+p3 <-fviz_eig(num.pca.out, 
+              ncp =5, 
+              addlabels = TRUE, 
+              main="No robusto",
+              barfill = "#69b3a2",
+              barcolor = "#69b3a2")
+
+ggarrange(p2,p3, nrow = 1, ncol = 2)
+```
+
+```{r}
 sessionInfo()
 ```
 
