@@ -1,0 +1,167 @@
+---
+title: "Regresión Lineal y Múltiple"
+author: "Pamela E. Pairo"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library("readxl")
+library(MASS)
+library(car)
+```
+
+Se dispone de un dataset con datos del precio de viviendas de CABA y información respecto a la antiguedad y la superficie.
+
+```{r}
+casas <-read_excel("casas.xlsx")
+summary(casas)
+```
+Se realiza un grafico de dispersión.
+
+```{r}
+p<-ggplot(casas, 
+          aes(x =surface_total , y = price)) + 
+          geom_point(aes(), colour ="deepskyblue", size=2)
+p + xlab("Superficie") +  ylab("Precio") 
+```
+
+## Regresión Lineal Simple
+
+Se plantea el modelo de Regresión
+
+```{r}
+modelo1<-lm(price ~ surface_total, 
+            data=casas)
+summary(modelo1)
+```
+Se calculan los residuos del modelo para chequear los supuestos.
+
+
+```{r}
+#Calculamos los residuos y los predichos
+e<-resid(modelo1) # residuos
+re<-rstandard(modelo1) #residuos estandarizados
+pre<-predict(modelo1) #predichos
+res<-cbind(casas$surface_total,casas$price,pre,e,round(re,2))
+colnames(res)<-c("superficie", "precio", "Predichos", "Residuos", "residuos std") 
+head(res)
+```
+
+Evaluamos el supuesto de normalidad de manera gráfica y mediante una prueba de hipótesis.
+
+```{r}
+#Supuestos
+par(mfrow = c(1, 2))
+plot(pre, re, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
+abline(0,0)
+qqPlot(e)
+```
+
+```{r}
+shapiro.test(e)
+```
+Como el p-valor= 0.284 es mayor a $\alpha$ =0.05, se asume normalidad en los datos.
+
+**Intervalo de Confianza**
+
+Se calcula el intervalo de confianza del 95% para la ordenada al origen y la pendiente del modelo de regresión. 
+
+Para cambiar el nivel de confianza cambiar el parámetro `level`
+
+```{r}
+confint(modelo1)#por default es del 95%
+```
+Se agrega la recta al gráfico y la banda de confianza.
+
+```{r}
+
+p + geom_smooth(method = "lm", 
+                se = TRUE)#para mostrar la banda de confianza
+```
+
+Entonces, se analiza el el modelo propuesto y como el p-valor dado que es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.
+
+```{r}
+summary(modelo1)
+```
+
+Por el valor obtenido de $\ R^2= 0.86$ se deduce que el modelo propuesto explica el 86,63% de la variabilidad de los datos.
+
+```{r}
+#coeficiente de determinación (en summary)
+summary(modelo1)$r.squared
+```
+
+## Regresión Lineal Múltiple
+
+Se incluye la variable `antiguedad` al modelo.
+
+$\LARGE Precio_{i}= \beta_{0} + \beta_{1} superficie + \beta_{2} antiguedad + \varepsilon_i$
+
+```{r}
+modelo2<-lm(price ~ surface_total + antiguedad, 
+            data=casas)
+```
+
+**Gráficos de dispersión**
+
+```{r}
+library(GGally)
+ggpairs(casas, diag = list(continuous = "blankDiag"))
+```
+Supuestos
+
+```{r}
+#Calculamos los residuos y los predichos
+e_m2<-resid(modelo2) # residuos
+re_m2<-rstandard(modelo2) #residuos estandarizados
+pre_m2<-predict(modelo2) #predichos
+res_m2<-cbind(casas$surface_total,casas$price,pre_m2,e_m2,round(re_m2,2))
+colnames(res_m2)<-c("superficie", "precio", "Predichos", "Residuos", "residuos std") 
+head(res_m2)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(pre_m2, re_m2, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
+abline(0,0)
+qqPlot(e_m2)
+```
+Se chequea normalidad
+
+```{r}
+shapiro.test(resid(modelo2))
+```
+Vemos los resultados del modelo
+
+```{r}
+summary(modelo2)
+```
+De acuerdo a los resultados obtenidos, el modelo propuesto es significativo y válido (p-valor < $\alpha=0.05$), resultando significativo únicamente el coeficiente para la variable `surface_total`(p<0.05). El 87% de la variabilidad de los datos es explicado por el modelo de regresión múltiple.
+
+## Bonus track: Residuos parciales
+
+Los gráficos de dispersión de Y vs cada X muestran el efecto sobre la variable respuesta (VR) de una variable explicatoria (VE) sin considerar el efecto de las otras VE. Los gráficos de residuos parciales muestran el efecto parcial sobre la VR de una VE cuando las otras VE son incluidas en el modelo y mantenidas constantes.
+
+```{r}
+library(faraway)
+prplot(modelo2,1)
+```
+```{r}
+p + geom_smooth(method = "lm", 
+                se = FALSE)
+```
+
+
+
