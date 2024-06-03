@@ -21,19 +21,34 @@ library(MASS)
 library(car)
 ```
 
-Se dispone de un dataset con datos del precio de viviendas de CABA y información respecto a la antiguedad y la superficie.
+
 
 ```{r}
-casas <-read_excel("casas.xlsx")
-summary(casas)
+df <-read_csv("prueba.csv")
+
+
+glimpse(df)
 ```
 Se realiza un grafico de dispersión.
 
+¿Hay valores faltantes?
+
 ```{r}
-p<-ggplot(casas, 
-          aes(x =surface_total , y = price)) + 
+sum(is.na(df))# para saber cuantos na hay en la base de datos
+```
+¿Hay datos duplicados?
+
+```{r}
+any(duplicated(df))
+```
+
+```{r}
+#df$work_years_in_company <- as.integer(df$work_years_in_company)
+#df$salary_satisfaction <- as.integer(df$salary_satisfaction)
+p<-ggplot(df, 
+          aes(x =`Previous Scores` , y = `Performance Index`)) + 
           geom_point(aes(), colour ="deepskyblue", size=2)
-p + xlab("Superficie") +  ylab("Precio") 
+p + xlab("Puntaje previo") +  ylab("Performance") 
 ```
 
 ## Regresión Lineal Simple
@@ -41,20 +56,20 @@ p + xlab("Superficie") +  ylab("Precio")
 Se plantea el modelo de Regresión
 
 ```{r}
-modelo1<-lm(price ~ surface_total, 
-            data=casas)
+modelo1<-lm(`Performance Index` ~ `Previous Scores`, 
+            data=df)
 summary(modelo1)
 ```
-Se calculan los residuos del modelo para chequear los supuestos.
 
+Se calculan los residuos del modelo para chequear los supuestos.
 
 ```{r}
 #Calculamos los residuos y los predichos
 e<-resid(modelo1) # residuos
 re<-rstandard(modelo1) #residuos estandarizados
 pre<-predict(modelo1) #predichos
-res<-cbind(casas$surface_total,casas$price,pre,e,round(re,2))
-colnames(res)<-c("superficie", "precio", "Predichos", "Residuos", "residuos std") 
+res<-cbind(df$`Previous Scores`,df$`Performance Index`,pre,e,round(re,2))
+colnames(res)<-c("Puntaje anterior", "Performance", "Predichos", "Residuos", "residuos std") 
 head(res)
 ```
 
@@ -96,7 +111,7 @@ Entonces, se analiza el el modelo propuesto y como el p-valor dado que es menor 
 summary(modelo1)
 ```
 
-Por el valor obtenido de $\ R^2= 0.86$ se deduce que el modelo propuesto explica el 86,63% de la variabilidad de los datos.
+Por el valor obtenido de $\ R^2= 0.84$ se deduce que el modelo propuesto explica el 86,63% de la variabilidad de los datos.
 
 ```{r}
 #coeficiente de determinación (en summary)
@@ -107,18 +122,18 @@ summary(modelo1)$r.squared
 
 Se incluye la variable `antiguedad` al modelo.
 
-$\LARGE Precio_{i}= \beta_{0} + \beta_{1} superficie + \beta_{2} antiguedad + \varepsilon_i$
+$\LARGE Performance_{i}= \beta_{0} + \beta_{1} PuntajePrevio + \beta_{2} HorasEstudiadas + \varepsilon_i$
 
 ```{r}
-modelo2<-lm(price ~ surface_total + antiguedad, 
-            data=casas)
+modelo2<-lm(`Performance Index` ~ `Previous Scores`+ `Hours Studied`, 
+            data=df)
 ```
 
 **Gráficos de dispersión**
 
 ```{r}
 library(GGally)
-ggpairs(casas, diag = list(continuous = "blankDiag"))
+ggpairs(df, diag = list(continuous = "blankDiag"))
 ```
 Supuestos
 
@@ -127,7 +142,7 @@ Supuestos
 e_m2<-resid(modelo2) # residuos
 re_m2<-rstandard(modelo2) #residuos estandarizados
 pre_m2<-predict(modelo2) #predichos
-res_m2<-cbind(casas$surface_total,casas$price,pre_m2,e_m2,round(re_m2,2))
+res_m2<-cbind(df$`Previous Scores`,df$`Performance Index`,pre_m2,e_m2,round(re_m2,2))
 colnames(res_m2)<-c("superficie", "precio", "Predichos", "Residuos", "residuos std") 
 head(res_m2)
 ```
@@ -159,9 +174,24 @@ library(faraway)
 prplot(modelo2,1)
 ```
 ```{r}
-p + geom_smooth(method = "lm", 
-                se = FALSE)
+library(plotly)
+
+grid_x1 <- seq(min(df$`Hours Studied`), max(df$`Hours Studied`))
+grid_x2 <- seq(min(df$`Previous Scores`), max(df$`Previous Scores`))
+grid <- expand.grid(`Hours Studied` = grid_x1, `Previous Scores` = grid_x2)
+grid$y_pred <- predict(modelo2, newdata = grid)
+
+
+plot_ly(df, x = ~`Hours Studied`, y = ~`Previous Scores`, z = ~`Performance Index`, type = "scatter3d", mode = "markers", name = "Datos") %>%
+  add_trace(x = grid$`Hours Studied`, y = grid$`Previous Scores`, z = grid$y_pred, type = "mesh3d", opacity = 0.5, name = "Superficie de Regresión") %>%
+  layout(scene = list(xaxis = list(title = 'Horas de estudio'),
+                      yaxis = list(title = 'Puntaje previo'),
+                      zaxis = list(title = 'Performance')),
+         title = "Regresión Múltiple")
 ```
+
+
+
 
 
 
