@@ -42,6 +42,11 @@ sum(is.na(df))# para saber cuantos na hay en la base de datos
 ```{r}
 any(duplicated(df))
 ```
+**Gráficos de dispersión**
+
+```{r}
+ggpairs(df, diag = list(continuous = "blankDiag"))
+```
 ## Datos de entrenamiento y test
 
 ```{r}
@@ -168,22 +173,41 @@ Otras métricas para evaluar modelos de regresión
 glance(modelo1)
 ```
 
-## Regresión Lineal Múltiple
+# Regresión Lineal Múltiple
 
 Se incluye la variable `Hours Studied` al modelo.
 
 $\LARGE Performance_{i}= \beta_{0} + \beta_{1} PuntajePrevio + \beta_{2} HorasEstudiadas + \varepsilon_i$
 
+ $\beta_{i}$ son los coeficientes de regresión parcial, ya que indican la influencia (parcial) de cada variable explicatoria sobre Y, cuando se mantiene constante la influencia de las otras variables explicatorias.
+
+
+```{r}
+set.seed(117)#setear la semilla
+
+df_rm <- df |> 
+      select(c(`Performance Index`,`Previous Scores`, `Hours Studied`))
+
+df_split_rm <- initial_split(df_rm,
+                          prop = 0.8)#para conservar la proporción de las clases
+
+df_train_rm <- df_split_rm %>%
+              training()
+
+df_test_rm <- df_split_rm %>%
+              testing()
+
+# Número de datos en test y train
+paste0("Total del dataset de entrenamiento: ", nrow(df_train_rm))
+paste0("Total del dataset de testeo: ", nrow(df_test_rm))
+```
+
 ```{r}
 modelo2<-lm(`Performance Index` ~ `Previous Scores`+ `Hours Studied`, 
-            data=df)
+            data=df_train_rm)
 ```
 
-**Gráficos de dispersión**
 
-```{r}
-ggpairs(df, diag = list(continuous = "blankDiag"))
-```
 Supuestos
 
 ```{r}
@@ -212,6 +236,31 @@ Vemos los resultados del modelo
 ```{r}
 summary(modelo2)
 ```
+
+```{r}
+predictions_rm <- modelo2 |>  
+               predict(df_test_rm)%>%
+               bind_cols(df_test_rm)
+predictions_rm
+```
+
+```{r}
+# Evaluamos en df_test
+
+rmse_result_rm <- predictions_rm %>%
+  metrics(truth = "Performance Index", estimate = "...1") %>%
+  filter(.metric == "rmse")
+
+# Mostrar el resultado del RMSE
+print(rmse_result_rm)
+```
+```{r}
+glance(modelo2)
+```
+## VIF (factor de inflación de la varianza o _variance inflation factor_)
+
+Mide para cada X el aumento de la varianza del coeficiente de regresión debido a la correlación entre VE. Valores superiores a 5 son considerados indicativos de colinealidad.
+
 ```{r}
 vif(modelo2)
 ```
@@ -241,6 +290,9 @@ plot_ly(df, x = ~`Hours Studied`, y = ~`Previous Scores`, z = ~`Performance Inde
 ```
 
 
+```{r}
+sessionInfo()
+```
 
 
 
