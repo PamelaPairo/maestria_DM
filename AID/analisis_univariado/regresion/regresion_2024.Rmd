@@ -28,7 +28,7 @@ library(GGally)
 Se quiere analizar los factores que pueden afectar en la performance de estudiantes en un examen.
 
 ```{r}
-df <-read_csv("prueba.csv")
+df <-read_csv("estudiantes.csv")
 glimpse(df)
 ```
 
@@ -53,7 +53,7 @@ ggpairs(df, diag = list(continuous = "blankDiag"))
 set.seed(117)#setear la semilla
 
 df_rs <- df |> 
-      select(c(`Performance Index`,`Previous Scores`))
+        select(c(`Performance Index`,`Previous Scores`))
 
 df_split <- initial_split(df_rs,
                           prop = 0.8)#para conservar la proporción de las clases
@@ -71,8 +71,6 @@ paste0("Total del dataset de entrenamiento: ", nrow(df_train))
 Se realiza un grafico de dispersión.
 
 ```{r}
-#df$work_years_in_company <- as.integer(df$work_years_in_company)
-#df$salary_satisfaction <- as.integer(df$salary_satisfaction)
 p<-ggplot(df_train, 
           aes(x =`Previous Scores` , y = `Performance Index`)) + 
           geom_point(aes(), colour ="deepskyblue", size=2)
@@ -81,9 +79,10 @@ p + xlab("Puntaje previo") +  ylab("Performance")
 
 # Regresión Lineal Simple
 
+Se plantea el modelo de Regresión
+
 $\LARGE Y_{i}= \beta_{0} + \beta_{1} X_1 + \varepsilon_i$
 
-Se plantea el modelo de Regresión
 
 ```{r}
 modelo1<-lm(`Performance Index` ~ `Previous Scores`, 
@@ -91,6 +90,8 @@ modelo1<-lm(`Performance Index` ~ `Previous Scores`,
 summary(modelo1)
 ```
 ## Supuestos
+
+$\LARGE \varepsilon_i \sim {\sf NID}(0, \sigma^{2})$
 
 Se calculan los residuos del modelo para chequear los supuestos.
 
@@ -119,7 +120,7 @@ qqPlot(e)
 ```{r}
 shapiro.test(e)
 ```
-Como el p-valor= 0.27 es mayor a $\alpha$ =0.05, se asume normalidad en los datos.
+Como el p-valor= 0.27 es mayor a $\alpha$ =0.05, se asume normalidad en los residuos.
 
 **Intervalo de Confianza**
 
@@ -150,17 +151,21 @@ Por el valor obtenido de $\ R^2= 0.83$ se deduce que el modelo propuesto explica
 #coeficiente de determinación (en summary)
 summary(modelo1)$r.squared
 ```
+## Evaluamos el modelo en df_test
+
 ```{r}
-predictions <- modelo1 |>  
-               predict(df_test)%>%
-               bind_cols(df_test)
-predictions
+pred_m1 <- modelo1 |>  
+           predict(df_test) |> 
+            bind_cols(df_test)
+pred_m1
 ```
+
+Cálculo del RMSE ( _Root Mean Squared Error_ o Error Cuadrático Medio)
 
 ```{r}
 # Evaluamos en df_test
 
-rmse_result <- predictions %>%
+rmse_result <- pred_m1 %>%
   metrics(truth = "Performance Index", estimate = "...1") %>%
   filter(.metric == "rmse")
 
@@ -183,13 +188,13 @@ $\LARGE Performance_{i}= \beta_{0} + \beta_{1} PuntajePrevio + \beta_{2} HorasEs
 
 
 ```{r}
-set.seed(117)#setear la semilla
+set.seed(11)#setear la semilla
 
 df_rm <- df |> 
       select(c(`Performance Index`,`Previous Scores`, `Hours Studied`))
 
 df_split_rm <- initial_split(df_rm,
-                          prop = 0.8)#para conservar la proporción de las clases
+                          prop = 0.8)
 
 df_train_rm <- df_split_rm %>%
               training()
@@ -208,7 +213,7 @@ modelo2<-lm(`Performance Index` ~ `Previous Scores`+ `Hours Studied`,
 ```
 
 
-Supuestos
+## Supuestos
 
 ```{r}
 #Calculamos los residuos y los predichos
@@ -236,22 +241,20 @@ Vemos los resultados del modelo
 ```{r}
 summary(modelo2)
 ```
+## Evaluamos en df_test_rm
 
 ```{r}
-predictions_rm <- modelo2 |>  
-               predict(df_test_rm)%>%
-               bind_cols(df_test_rm)
-predictions_rm
+pred_rm <- modelo2 |>  
+           predict(df_test_rm) |> 
+           bind_cols(df_test_rm)
+pred_rm
 ```
 
 ```{r}
-# Evaluamos en df_test
-
-rmse_result_rm <- predictions_rm %>%
+rmse_result_rm <- pred_rm %>%
   metrics(truth = "Performance Index", estimate = "...1") %>%
   filter(.metric == "rmse")
 
-# Mostrar el resultado del RMSE
 print(rmse_result_rm)
 ```
 ```{r}
@@ -259,12 +262,29 @@ glance(modelo2)
 ```
 ## VIF (factor de inflación de la varianza o _variance inflation factor_)
 
-Mide para cada X el aumento de la varianza del coeficiente de regresión debido a la correlación entre VE. Valores superiores a 5 son considerados indicativos de colinealidad.
+$\LARGE VIF= \frac{1}{1-R_{j}^{2}}$
+
+Mide para cada X el aumento de la varianza del coeficiente de regresión debido a la correlación entre VE. Valores superiores a 5 son considerados indicativos de **colinealidad**. Toma valores entre 1 e infinito. Valores superiores a 5 son considerados 
+indicativos de colinealidad
+
+
+¿Porqué importa la colinealidad?
+
+Los coeficientes de regresión tendrán varianzas muy altas, es decir que estarán estimados con poca precisión.
 
 ```{r}
 vif(modelo2)
 ```
 De acuerdo a los resultados obtenidos, el modelo propuesto es significativo y válido (p-valor < $\alpha=0.05$), resultando significativo ambos coeficientes(p<0.05). El 98% de la variabilidad de los datos es explicado por el modelo de regresión múltiple.
+
+## Importancia de las variables en el modelo
+
+```{r}
+library(vip)
+importancia <- vip(modelo2)
+
+plot(importancia)
+```
 
 ## Bonus track: Residuos parciales
 
