@@ -68,18 +68,17 @@ Al conocerse la especie de pertenencia de cada individuo, se puede comprobar la 
 ```{r}
 set.seed(123)#setear la semilla
 
-df <- df |> 
-  mutate(across(where(is.numeric), scale))
-
 df_split <- initial_split(df,
                           prop = 0.85,
                           strata = species)#para conservar la proporción de las clases
 
-df_train <- df_split %>%
-              training()
+df_train <- df_split |> 
+              training() |> 
+              mutate(across(where(is.numeric), scale))
 
-df_test <- df_split %>%
-              testing()
+df_test <- df_split |> 
+              testing()|> 
+              mutate(across(where(is.numeric), scale))
 
 # Número de datos en test y train
 paste0("Total del dataset de entrenamiento: ", nrow(df_train))
@@ -153,9 +152,9 @@ El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:
 
 Por ejemplo:
 
-$\ LD1= 0.07*bill_length - 1.02 *bill_depth - 0.07*flipper_length +0.001*body_mass$
+$\ LD1= 0.41*bill_length - 2.06 *bill_depth + 1.06*flipper_length +1.16*body_mass$
 
-LD1 explica el 99% de la proporción de varianza entre clases.
+LD1 explica el 85,1% de la proporción de varianza entre clases.
 
 La 2da función discriminante es independiente de la primera (ortogonal) y es la que mejor separa los grupos usando la variación remanente o residual, después que la 1ra función discriminante ha sido determinada
 
