@@ -15,6 +15,7 @@ format:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
+library(palmerpenguins)
 library(tidyverse)
 library(tidymodels)
 library(factoextra)
@@ -37,12 +38,12 @@ La idea es contruir funciones discriminantes (FD) que maximicen la variabilidad 
 
 # Base de datos
 
-Vamos a trabajar con la base de datos de `Iris`
+Vamos a trabajar con la base de datos de `penguins`
+
+![](https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png)
 
 
 ```{r}
-#data(iris)
-#glimpse(iris)
 df <- penguins |> 
     na.omit()|>
     dplyr::select(-island, -sex)
@@ -67,6 +68,9 @@ Al conocerse la especie de pertenencia de cada individuo, se puede comprobar la 
 ```{r}
 set.seed(123)#setear la semilla
 
+df <- df |> 
+  mutate(across(where(is.numeric), scale))
+
 df_split <- initial_split(df,
                           prop = 0.85,
                           strata = species)#para conservar la proporción de las clases
@@ -84,9 +88,9 @@ paste0("Total del dataset de testeo: ", nrow(df_test))
 Creamos tres subsets de datos para cada especie
 
 ```{r}
-setosa<- subset(df_train[,2:5], df_train$species == "Adelie")
-versicolor<- subset(df_train[,2:5], df_train$species == "Gentoo")
-virginica <- subset(df_train[,2:5], df_train$species=="Chinstrap")
+adelie<- subset(df_train[,2:5], df_train$species == "Adelie")
+gentoo<- subset(df_train[,2:5], df_train$species == "Gentoo")
+chinstrap <- subset(df_train[,2:5], df_train$species=="Chinstrap")
 ```
 
 # Análisis Discriminante Lineal (LDA)
@@ -106,9 +110,9 @@ Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos
 ¿Cuál es la hipótesis estadística?
 
 ```{r}
-mvShapiro.Test(as.matrix(setosa))
-mvShapiro.Test(as.matrix(versicolor))  
-mvShapiro.Test(as.matrix(virginica))
+mvShapiro.Test(as.matrix(adelie))
+mvShapiro.Test(as.matrix(gentoo))  
+mvShapiro.Test(as.matrix(chinstrap))
 ```
 
 2- Independencia de las observaciones
@@ -149,7 +153,7 @@ El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:
 
 Por ejemplo:
 
-$\ LD1= 0.78*Sepal.Length+ 1.79*Sepal.Width - 2.13*Petal.Length -3.03*Petal.Width$
+$\ LD1= 0.07*bill_length - 1.02 *bill_depth - 0.07*flipper_length +0.001*body_mass$
 
 LD1 explica el 99% de la proporción de varianza entre clases.
 
@@ -200,7 +204,7 @@ table(df_test$lda,df_test$species)
 #library(devtools)
 #install_github("fawda123/ggord")
 library(ggord)
-ggord(model_lda, df_train$species, xlim = c(-10, 11))
+ggord(model_lda, df_train$species)
 ```
 
 # Análisis discriminante cuadrático (QDA)
@@ -308,6 +312,9 @@ table(predict(lda_fit, df_train)$.pred_class,df_train$species)
 Predicciones para el dataset de testeo
 ```{r}
 table(predict(lda_fit, df_test)$.pred_class,df_test$species)
+```
+```{r}
+sessionInfo()
 ```
 
 

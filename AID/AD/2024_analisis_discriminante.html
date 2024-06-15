@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pamela E. Pairo">
+
+<title>Análisis Discriminante</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="2024_analisis_discriminante_files/libs/clipboard/clipboard.min.js"></script>
+<script src="2024_analisis_discriminante_files/libs/quarto-html/quarto.js"></script>
+<script src="2024_analisis_discriminante_files/libs/quarto-html/popper.min.js"></script>
+<script src="2024_analisis_discriminante_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="2024_analisis_discriminante_files/libs/quarto-html/anchor.min.js"></script>
+<link href="2024_analisis_discriminante_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="2024_analisis_discriminante_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="2024_analisis_discriminante_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="2024_analisis_discriminante_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="2024_analisis_discriminante_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#base-de-datos" id="toc-base-de-datos" class="nav-link active" data-scroll-target="#base-de-datos">Base de datos</a></li>
+  <li><a href="#análisis-discriminante-lineal-lda" id="toc-análisis-discriminante-lineal-lda" class="nav-link" data-scroll-target="#análisis-discriminante-lineal-lda">Análisis Discriminante Lineal (LDA)</a>
+  <ul class="collapse">
+  <li><a href="#verefiquemos-supuestos" id="toc-verefiquemos-supuestos" class="nav-link" data-scroll-target="#verefiquemos-supuestos">Verefiquemos supuestos</a></li>
+  <li><a href="#lda" id="toc-lda" class="nav-link" data-scroll-target="#lda">LDA</a>
+  <ul class="collapse">
+  <li><a href="#biplot" id="toc-biplot" class="nav-link" data-scroll-target="#biplot">Biplot</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#análisis-discriminante-cuadrático-qda" id="toc-análisis-discriminante-cuadrático-qda" class="nav-link" data-scroll-target="#análisis-discriminante-cuadrático-qda">Análisis discriminante cuadrático (QDA)</a></li>
+  <li><a href="#análisis-discriminante-robusto" id="toc-análisis-discriminante-robusto" class="nav-link" data-scroll-target="#análisis-discriminante-robusto">Análisis Discriminante Robusto</a></li>
+  <li><a href="#algunos-comentarios" id="toc-algunos-comentarios" class="nav-link" data-scroll-target="#algunos-comentarios">Algunos comentarios</a>
+  <ul class="collapse">
+  <li><a href="#qué-hacer-si-no-se-cumple-el-supuesto-de-normalidad-multivariada" id="toc-qué-hacer-si-no-se-cumple-el-supuesto-de-normalidad-multivariada" class="nav-link" data-scroll-target="#qué-hacer-si-no-se-cumple-el-supuesto-de-normalidad-multivariada">¿Qué hacer si no se cumple el supuesto de normalidad multivariada?</a></li>
+  </ul></li>
+  <li><a href="#bonus-track-lda-con-tidymodels" id="toc-bonus-track-lda-con-tidymodels" class="nav-link" data-scroll-target="#bonus-track-lda-con-tidymodels">Bonus track: LDA con <code>Tidymodels</code></a>
+  <ul class="collapse">
+  <li><a href="#preprocesamiento-de-datos-usando-recipe" id="toc-preprocesamiento-de-datos-usando-recipe" class="nav-link" data-scroll-target="#preprocesamiento-de-datos-usando-recipe">Preprocesamiento de datos usando <code>recipe</code></a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Análisis Discriminante</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Código</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Mostrar todo el código</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Ocultar todo el código</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Ver el código fuente</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Pamela E. Pairo </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Es una técnica de <strong>clasificación</strong> cuyo objetivo es:</p>
+<ul>
+<li><p>Separar los grupos, identificando las variables que permiten esa separación</p></li>
+<li><p>Clasificar a nuevos individuos</p></li>
+</ul>
+<p>La idea es contruir funciones discriminantes (FD) que maximicen la variabilidad entre grupos con el objetivo de discriminarlos mejor. Esto se logra al maximizar la varianza entre grupos en relación con la varianza total</p>
+<section id="base-de-datos" class="level1">
+<h1>Base de datos</h1>
+<p>Vamos a trabajar con la base de datos de <code>penguins</code></p>
+<p><img src="https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png" class="img-fluid"></p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> penguins <span class="sc">|&gt;</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">na.omit</span>()<span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>island, <span class="sc">-</span>sex)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 333
+Columns: 5
+$ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel~
+$ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 39.2, 41.1, 38.6~
+$ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, 19.3, 20.6, 17.8, 19.6, 17.6, 21.2~
+$ flipper_length_mm &lt;int&gt; 181, 186, 195, 193, 190, 181, 195, 182, 191, 198, 18~
+$ body_mass_g       &lt;int&gt; 3750, 3800, 3250, 3450, 3650, 3625, 4675, 3200, 3800~</code></pre>
+</div>
+</div>
+<p>Realicemos algunos <em>scatterplots</em></p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(df, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend =</span> <span class="dv">1</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">columns =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">color =</span> species, <span class="at">alpha =</span> <span class="fl">0.5</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="st">"points"</span>))<span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="2024_analisis_discriminante_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Al conocerse la especie de pertenencia de cada individuo, se puede comprobar la efectividad del método de clasificación observando el porcentaje de casos bien clasificados. Para ello, vamos a separar el dataset en train y test</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)<span class="co">#setear la semilla</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), scale))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.85</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                          <span class="at">strata =</span> species)<span class="co">#para conservar la proporción de las clases</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>df_test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en test y train</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(df_train))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Total del dataset de entrenamiento: 282"</code></pre>
+</div>
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de testeo: "</span>, <span class="fu">nrow</span>(df_test))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Total del dataset de testeo: 51"</code></pre>
+</div>
+</div>
+<p>Creamos tres subsets de datos para cada especie</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>adelie<span class="ot">&lt;-</span> <span class="fu">subset</span>(df_train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>], df_train<span class="sc">$</span>species <span class="sc">==</span> <span class="st">"Adelie"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gentoo<span class="ot">&lt;-</span> <span class="fu">subset</span>(df_train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>], df_train<span class="sc">$</span>species <span class="sc">==</span> <span class="st">"Gentoo"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>chinstrap <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>], df_train<span class="sc">$</span>species<span class="sc">==</span><span class="st">"Chinstrap"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="análisis-discriminante-lineal-lda" class="level1">
+<h1>Análisis Discriminante Lineal (LDA)</h1>
+<p>Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos:</p>
+<p>1- Normalidad multivariada</p>
+<p>2- Independencia de las observaciones</p>
+<p>3- Homocedasticidad.</p>
+<section id="verefiquemos-supuestos" class="level2">
+<h2 class="anchored" data-anchor-id="verefiquemos-supuestos">Verefiquemos supuestos</h2>
+<p>1- Normalidad multivariada</p>
+<p>¿Cuál es la hipótesis estadística?</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mvShapiro.Test</span>(<span class="fu">as.matrix</span>(adelie))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Generalized Shapiro-Wilk test for Multivariate Normality by
+    Villasenor-Alva and Gonzalez-Estrada
+
+data:  as.matrix(adelie)
+MVW = 0.98553, p-value = 0.1079</code></pre>
+</div>
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mvShapiro.Test</span>(<span class="fu">as.matrix</span>(gentoo))  </span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Generalized Shapiro-Wilk test for Multivariate Normality by
+    Villasenor-Alva and Gonzalez-Estrada
+
+data:  as.matrix(gentoo)
+MVW = 0.98201, p-value = 0.07942</code></pre>
+</div>
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mvShapiro.Test</span>(<span class="fu">as.matrix</span>(chinstrap))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Generalized Shapiro-Wilk test for Multivariate Normality by
+    Villasenor-Alva and Gonzalez-Estrada
+
+data:  as.matrix(chinstrap)
+MVW = 0.97535, p-value = 0.2379</code></pre>
+</div>
+</div>
+<p>2- Independencia de las observaciones</p>
+<p>Viene dada por el diseño</p>
+<p>3- Homocedasticidad</p>
+<p>Ho las matrices de varianzas-covarianzas de los grupos son iguales.</p>
+<p>Analizamos igualdad de matrices de varianzas y covarianzas:</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxM</span>(df_train[,<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>     df_train<span class="sc">$</span>species)<span class="co"># las especies</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box's M-test for Homogeneity of Covariance Matrices
+
+data:  df_train[, -1]
+Chi-Sq (approx.) = 68.26, df = 20, p-value = 3.494e-07</code></pre>
+</div>
+</div>
+<p>Entonces ¿qué concluimos?</p>
+<p>Vamos a proseguir como si se hubiese cumplido todos los supuestos. Tener en cuenta que los resultados del LDA <strong>no van a ser confiables en este caso</strong>.</p>
+</section>
+<section id="lda" class="level2">
+<h2 class="anchored" data-anchor-id="lda">LDA</h2>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(species<span class="sc">~</span>., <span class="at">data =</span>df_train)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>model_lda</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+lda(species ~ ., data = df_train)
+
+Prior probabilities of groups:
+   Adelie Chinstrap    Gentoo 
+0.4397163 0.2021277 0.3581560 
+
+Group means:
+          bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+Adelie        -0.9364288     0.6300822        -0.7508273  -0.5989185
+Chinstrap      0.9197878     0.6797785        -0.3331050  -0.5485563
+Gentoo         0.6295593    -1.1119124         1.1375707   1.1046450
+
+Coefficients of linear discriminants:
+                         LD1          LD2
+bill_length_mm     0.4115672  2.373283797
+bill_depth_mm     -2.0212829  0.006721632
+flipper_length_mm  1.0820295 -0.282629382
+body_mass_g        1.1753195 -1.304649017
+
+Proportion of trace:
+   LD1    LD2 
+0.8513 0.1487 </code></pre>
+</div>
+</div>
+<p>El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:</p>
+<p><em>prior</em>: las probabilidades previas utilizadas.</p>
+<p><em>means</em>: la media de cada clase.</p>
+<p><em>svd</em>: son los valores singulares, informan el cociente entre desvíos estándar entre y dentro de grupos para cada FD; si se elevan al cuadrado se obtiene el autovalor de cada FD</p>
+<p><em>counts</em>: El número de observaciones por clase.</p>
+<p><strong>Coefficients of linear discriminants</strong>: Muestra la combinación lineal de variables predictoras que se utilizan para formar la regla de decisión LDA.</p>
+<p>Por ejemplo:</p>
+<p><span class="math inline">\(\ LD1= 0.07*bill_length - 1.02 *bill_depth - 0.07*flipper_length +0.001*body_mass\)</span></p>
+<p>LD1 explica el 99% de la proporción de varianza entre clases.</p>
+<p>La 2da función discriminante es independiente de la primera (ortogonal) y es la que mejor separa los grupos usando la variación remanente o residual, después que la 1ra función discriminante ha sido determinada</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>prop <span class="ot">=</span> model_lda<span class="sc">$</span>svd<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="fu">sum</span>(model_lda<span class="sc">$</span>svd<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>prop <span class="co">#varianza entre grupos explicada por cada FD</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8513316 0.1486684</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lda.data <span class="ot">&lt;-</span> <span class="fu">cbind</span>(df_train, <span class="fu">predict</span>(model_lda)<span class="sc">$</span>x)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(lda.data, <span class="fu">aes</span>(LD1, LD2)) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> species))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="2024_analisis_discriminante_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Veamos que predice el modelo en df_test</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> model_lda <span class="sc">|&gt;</span>  </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">predict</span>(df_test)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>predictions</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$class
+ [1] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   
+ [8] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   
+[15] Adelie    Adelie    Adelie    Adelie    Adelie    Adelie    Adelie   
+[22] Adelie    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   
+[29] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Gentoo   
+[36] Gentoo    Gentoo    Gentoo    Gentoo    Gentoo    Chinstrap Chinstrap
+[43] Chinstrap Chinstrap Chinstrap Chinstrap Adelie    Chinstrap Chinstrap
+[50] Chinstrap Chinstrap
+Levels: Adelie Chinstrap Gentoo
+
+$posterior
+         Adelie    Chinstrap       Gentoo
+1  9.999717e-01 2.827990e-05 4.931409e-19
+2  9.997718e-01 2.282368e-04 1.549346e-12
+3  9.999991e-01 8.970247e-07 5.118993e-16
+4  1.000000e+00 2.701562e-08 6.244250e-20
+5  9.999962e-01 3.763842e-06 2.893193e-15
+6  9.981438e-01 1.856191e-03 9.796136e-16
+7  9.630849e-01 3.691510e-02 4.169498e-18
+8  9.991002e-01 8.997783e-04 5.965056e-15
+9  9.999906e-01 9.432281e-06 5.929537e-15
+10 9.993174e-01 6.826237e-04 3.136996e-14
+11 9.999993e-01 6.787263e-07 3.770232e-21
+12 9.998909e-01 1.091248e-04 1.140079e-17
+13 9.999954e-01 4.638305e-06 1.423291e-09
+14 9.999931e-01 6.877913e-06 4.015727e-10
+15 9.991392e-01 8.608462e-04 2.429598e-21
+16 9.835934e-01 1.640660e-02 5.970688e-12
+17 1.000000e+00 3.370610e-08 4.076136e-15
+18 9.998001e-01 1.999211e-04 1.326989e-19
+19 9.999975e-01 2.539848e-06 5.171937e-14
+20 9.992894e-01 7.105677e-04 1.252745e-14
+21 9.999160e-01 8.402925e-05 2.499167e-15
+22 9.973258e-01 2.674205e-03 1.149175e-10
+23 4.088597e-14 8.491759e-14 1.000000e+00
+24 3.348731e-10 5.680249e-08 9.999999e-01
+25 3.346099e-13 6.328591e-12 1.000000e+00
+26 6.314539e-18 3.874302e-15 1.000000e+00
+27 1.252588e-12 2.749357e-10 1.000000e+00
+28 8.673549e-12 4.307136e-11 1.000000e+00
+29 1.463685e-19 7.909300e-17 1.000000e+00
+30 1.078628e-14 1.275062e-12 1.000000e+00
+31 4.359679e-16 5.972314e-15 1.000000e+00
+32 1.099436e-13 2.745376e-11 1.000000e+00
+33 9.276098e-15 7.955506e-18 1.000000e+00
+34 2.982715e-21 1.172735e-16 1.000000e+00
+35 1.055407e-15 2.037116e-12 1.000000e+00
+36 4.887468e-15 3.014983e-13 1.000000e+00
+37 3.193928e-17 1.405021e-13 1.000000e+00
+38 4.278936e-17 9.341873e-11 1.000000e+00
+39 6.426724e-21 5.401322e-19 1.000000e+00
+40 1.800782e-18 2.143604e-16 1.000000e+00
+41 4.320776e-03 9.956792e-01 6.796366e-11
+42 6.897410e-06 9.999931e-01 1.030933e-21
+43 1.609922e-12 1.000000e+00 2.612997e-19
+44 1.347550e-02 9.865245e-01 1.214761e-13
+45 1.146650e-06 9.999989e-01 2.706247e-15
+46 1.242750e-04 9.998757e-01 4.364067e-14
+47 8.404900e-01 1.595100e-01 1.630473e-11
+48 2.749488e-03 9.972505e-01 3.875195e-12
+49 5.831994e-03 9.941680e-01 1.487530e-12
+50 1.570064e-04 9.998430e-01 2.336847e-08
+51 3.536943e-01 6.463057e-01 2.649294e-11
+
+$x
+          LD1          LD2
+1  -4.1555180 -0.943446087
+2  -2.3320690 -0.956129963
+3  -3.1840567 -2.031112049
+4  -4.2189736 -2.572803449
+5  -3.0066630 -1.740784568
+6  -3.3180558 -0.184971016
+7  -4.0860562  0.745418846
+8  -3.0703620 -0.425633832
+9  -2.9423407 -1.541076996
+10 -2.8537041 -0.551389441
+11 -4.6633345 -1.685574724
+12 -3.7984962 -0.722921435
+13 -1.3634160 -2.148513947
+14 -1.5337721 -2.007799106
+15 -4.9205515  0.078670814
+16 -2.2815883  0.046279747
+17 -2.8302173 -2.906798044
+18 -4.3759726 -0.418822182
+19 -2.6327137 -1.937996984
+20 -2.9703393 -0.509427667
+21 -3.1128793 -0.975589257
+22 -1.8595306 -0.504108418
+23  4.7110368 -0.756611438
+24  3.4527426  0.636314909
+25  4.3840682 -0.142418563
+26  5.6544718  0.328239882
+27  4.1486661  0.503732072
+28  4.0122871 -0.355725720
+29  6.1317502  0.165358945
+30  4.7644480  0.185817794
+31  5.2290996 -0.453935878
+32  4.4511663  0.450112306
+33  5.1179818 -2.715507906
+34  6.5004432  1.078237375
+35  4.9779646  0.787934195
+36  4.8824428 -0.001063111
+37  5.3948120  0.867072093
+38  5.1825291  2.396369846
+39  6.5776643 -0.399484976
+40  5.8587029 -0.116995048
+41 -1.5620954  2.104202939
+42 -4.0685959  4.328018785
+43 -1.8823150  7.336685583
+44 -2.4689348  2.084917152
+45 -2.0336897  4.186833066
+46 -2.1409538  3.106803621
+47 -2.2041409  0.600692594
+48 -1.8784677  2.299668528
+49 -2.0722199  2.174738521
+50 -0.5039395  2.595942765
+51 -2.0981727  1.107630238</code></pre>
+</div>
+</div>
+<p>Veamos la matriz de confusión en df_train</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(model_lda,<span class="at">type=</span><span class="st">"class"</span>)<span class="sc">$</span>class,df_train<span class="sc">$</span>species)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Adelie Chinstrap Gentoo
+  Adelie       123         2      0
+  Chinstrap      1        55      0
+  Gentoo         0         0    101</code></pre>
+</div>
+</div>
+<p><code>partimat</code> muestra una matriz de gráficos para cada combinación de dos variables. Cada gráfico muestra una vista diferente de los mismos datos. Las regiones coloreadas delimitan cada área de clasificación. Se predice que cualquier observación que se encuentre dentro de una región pertenece a una clase específica. Cada gráfico también incluye la tasa de error aparente para esa vista de los datos.</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(klaR) </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">partimat</span> (species<span class="sc">~</span>. , <span class="at">data=</span>df_train , <span class="at">method=</span><span class="st">"lda"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="2024_analisis_discriminante_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Veamos la <em>performance</em> en df_test</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lda.test <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_lda,df_test)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>df_test<span class="sc">$</span>lda <span class="ot">&lt;-</span> lda.test<span class="sc">$</span>class</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df_test<span class="sc">$</span>lda,df_test<span class="sc">$</span>species)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Adelie Chinstrap Gentoo
+  Adelie        22         1      0
+  Chinstrap      0        10      0
+  Gentoo         0         0     18</code></pre>
+</div>
+</div>
+<section id="biplot" class="level3">
+<h3 class="anchored" data-anchor-id="biplot">Biplot</h3>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("devtools")</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#library(devtools)</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">#install_github("fawda123/ggord")</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggord)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggord</span>(model_lda, df_train<span class="sc">$</span>species)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="2024_analisis_discriminante_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="análisis-discriminante-cuadrático-qda" class="level1">
+<h1>Análisis discriminante cuadrático (QDA)</h1>
+<p>El discriminante se dice cuadrático porque el término de segundo orden no se cancela como en el caso del discriminante lineal. QDA no asume la igualdad en la matriz de varianzas/covarianzas. En otras palabras, para QDA la matriz de covarianza puede ser diferente para cada clase.</p>
+<p>Vamos a aplicar QDA, a pesar de que no se satisface el supuesto de normalidad multivariada.</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>model_qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(species <span class="sc">~</span> ., df_train)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>model_qda</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+qda(species ~ ., data = df_train)
+
+Prior probabilities of groups:
+   Adelie Chinstrap    Gentoo 
+0.4397163 0.2021277 0.3581560 
+
+Group means:
+          bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+Adelie        -0.9364288     0.6300822        -0.7508273  -0.5989185
+Chinstrap      0.9197878     0.6797785        -0.3331050  -0.5485563
+Gentoo         0.6295593    -1.1119124         1.1375707   1.1046450</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">partimat</span>(species <span class="sc">~</span> ., </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">data=</span>df_train, </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">method=</span><span class="st">"qda"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="2024_analisis_discriminante_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(model_qda,<span class="at">type=</span><span class="st">"class"</span>)<span class="sc">$</span>class,df_train<span class="sc">$</span>species)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Adelie Chinstrap Gentoo
+  Adelie       123         1      0
+  Chinstrap      1        56      0
+  Gentoo         0         0    101</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>lda.test_qda <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_qda,df_test)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>df_test<span class="sc">$</span>qda <span class="ot">&lt;-</span> lda.test_qda<span class="sc">$</span>class</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df_test<span class="sc">$</span>qda,df_test<span class="sc">$</span>species)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Adelie Chinstrap Gentoo
+  Adelie        22         2      0
+  Chinstrap      0         9      0
+  Gentoo         0         0     18</code></pre>
+</div>
+</div>
+</section>
+<section id="análisis-discriminante-robusto" class="level1">
+<h1>Análisis Discriminante Robusto</h1>
+<p>En el parámetro <code>method</code> se especifica el método, en el ejemplo se aplica el Minimun Covariance Determinant. Las <em>priors</em> por default son las proporciones de las clases.</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rrcov)<span class="co"># instalar este paquete para ADR</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>robusto_lda <span class="ot">&lt;-</span> <span class="fu">Linda</span>(species <span class="sc">~</span> .,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">method=</span> <span class="st">"mcd"</span>, </span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                     df_train)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(robusto_lda)<span class="co"># devuelve la matriz de confusion para df_train</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                          
+Apparent error rate 0.0106
+
+Classification table 
+           Predicted
+Actual      Adelie Chinstrap Gentoo
+  Adelie       123         1      0
+  Chinstrap      2        55      0
+  Gentoo         0         0    101
+
+Confusion matrix 
+           Predicted
+Actual      Adelie Chinstrap Gentoo
+  Adelie     0.992     0.008      0
+  Chinstrap  0.035     0.965      0
+  Gentoo     0.000     0.000      1</code></pre>
+</div>
+</div>
+</section>
+<section id="algunos-comentarios" class="level1">
+<h1>Algunos comentarios</h1>
+<ul>
+<li><p>El ánalisis discriminante es una técnica sensible a la presencia de <em>outliers</em></p></li>
+<li><p>Si el supuesto de normalidad multivariada se sostiene pero hay <em>outliers</em> es recomendable recurrir a la versión robusta de QDA.</p></li>
+<li><p>Si se rechaza la normalidad multivariada, el modelo robusto no es adecuado.</p></li>
+</ul>
+<section id="qué-hacer-si-no-se-cumple-el-supuesto-de-normalidad-multivariada" class="level2">
+<h2 class="anchored" data-anchor-id="qué-hacer-si-no-se-cumple-el-supuesto-de-normalidad-multivariada">¿Qué hacer si no se cumple el supuesto de normalidad multivariada?</h2>
+<p>Hay diversas opiniones al respecto. Algunos mencionan que LDA es robusto a la falta de normalidad multivariada si los datos son lo suficientemente grandes.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Sin embargo, <em>Lachenbruch et al.&nbsp;(1973)</em><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> han demostrado que los resultados de aplicar LDA si se ven muy afectados por la falta de normalidad multivariada luego de usar tres tipos de distribuciones no normales. Por otra parte, también se ha encontrado que QDA si es robusto a la falta de normalidad si las distribuciones de los datos se alejan ligeramente de distribución teórica<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>Actualmente, se han propuesto alternativas no paramétricas para los casos en que el supuesto de normalidad no se cumple.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> haciendo uso de matrices de dispersión, por ejemplo. Además, <em>Sharipah Soaad Syed Yahaya et al.&nbsp;(2016)</em><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> proponen el uso de dos estimadores robusto llamados one-step M-estimator (MOM) y winsorized modified one-step M-estimator (WMOM), que permiten trabajar con aquellos datos que no solo <strong>no</strong> siguen una distribución normal sino que tambien son heterocedásticos.</p>
+<p>Finalmente, se propone también el uso de algoritmos mas complejos que permiten proseguir cuando no se cumplen los supuestos y no hay necesidad de transformar los datos para ello. Uno de los modelos propuestos es el uso de Árboles de decisión para clasificación<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
+</section>
+</section>
+<section id="bonus-track-lda-con-tidymodels" class="level1">
+<h1>Bonus track: LDA con <code>Tidymodels</code></h1>
+<p>Al igual que <code>tidyverse</code>, <code>tidymodels</code> está compuesto por un conjunto de paquetes como los siguientes:</p>
+<ul>
+<li><p><code>rsample</code>: para realizar la división del dataset en entrenamiento, validación y testeo.</p></li>
+<li><p><code>recipes</code>: para el preprocesamiento</p></li>
+<li><p><code>parnship</code>: para especificar el modelo</p></li>
+<li><p><code>yardstick</code>: para evaluar el modelo</p></li>
+</ul>
+<p>Mayores especificaciones y ejemplos de uso de <code>tidymodels</code>, en su <a href="https://www.tidymodels.org/packages/">página</a></p>
+<p>Para mas información sobre las funciones disponibles para realizar análisis discriminante ver <a href="https://discrim.tidymodels.org/">aquí</a></p>
+<section id="preprocesamiento-de-datos-usando-recipe" class="level2">
+<h2 class="anchored" data-anchor-id="preprocesamiento-de-datos-usando-recipe">Preprocesamiento de datos usando <code>recipe</code></h2>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>rec_lda <span class="ot">&lt;-</span> <span class="fu">recipe</span>(species<span class="sc">~</span>., <span class="at">data =</span>df_train) <span class="sc">|&gt;</span> </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">step_scale</span>(<span class="fu">all_predictors</span>()) <span class="sc">|&gt;</span> <span class="fu">prep</span>()</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Bake</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">&lt;-</span> <span class="fu">bake</span>(rec_lda, <span class="at">new_data=</span>df_train)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>df_test <span class="ot">&lt;-</span> <span class="fu">bake</span>(rec_lda, <span class="at">new_data=</span>df_test)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>lda <span class="ot">&lt;-</span> <span class="fu">discrim_linear</span>() <span class="sc">|&gt;</span> <span class="co"># para hacer QDA poner discrim_quad</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"MASS"</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>lda_fit <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lda) <span class="sc">|&gt;</span> </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(rec_lda) <span class="sc">|&gt;</span> </span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(df_train)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>lda_fit</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>== Workflow [trained] ==========================================================
+Preprocessor: Recipe
+Model: discrim_linear()
+
+-- Preprocessor ----------------------------------------------------------------
+1 Recipe Step
+
+* step_scale()
+
+-- Model -----------------------------------------------------------------------
+Call:
+lda(..y ~ ., data = data)
+
+Prior probabilities of groups:
+   Adelie Chinstrap    Gentoo 
+0.4397163 0.2021277 0.3581560 
+
+Group means:
+          bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+Adelie        -0.9457356     0.6173964        -0.7655539  -0.6042237
+Chinstrap      0.9289291     0.6660920        -0.3396385  -0.5534153
+Gentoo         0.6358162    -1.0895255         1.1598830   1.1144298
+
+Coefficients of linear discriminants:
+                        LD1          LD2
+bill_length_mm     0.407517  2.349928839
+bill_depth_mm     -2.062815  0.006859745
+flipper_length_mm  1.061215 -0.277192542
+body_mass_g        1.165000 -1.293194008
+
+Proportion of trace:
+   LD1    LD2 
+0.8513 0.1487 </code></pre>
+</div>
+</div>
+<p>Predicciones para el dataset de entrenamiento</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(lda_fit, df_train)<span class="sc">$</span>.pred_class,df_train<span class="sc">$</span>species)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Adelie Chinstrap Gentoo
+  Adelie       123         2      0
+  Chinstrap      1        55      0
+  Gentoo         0         0    101</code></pre>
+</div>
+</div>
+<p>Predicciones para el dataset de testeo</p>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(lda_fit, df_test)<span class="sc">$</span>.pred_class,df_test<span class="sc">$</span>species)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Adelie Chinstrap Gentoo
+  Adelie        22         1      0
+  Chinstrap      0        10      0
+  Gentoo         0         0     18</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.1.3 (2022-03-10)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 19045)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] rrcov_1.7-2          robustbase_0.95-1    ggord_1.1.7         
+ [4] GGally_2.1.2         discrim_1.0.0        klaR_1.7-0          
+ [7] biotools_4.2         MASS_7.3-55          mvShapiroTest_1.0   
+[10] factoextra_1.0.7     yardstick_1.2.0      workflowsets_1.0.1  
+[13] workflows_1.1.3      tune_1.1.1           rsample_1.1.1       
+[16] recipes_1.0.7        parsnip_1.1.1        modeldata_1.1.0     
+[19] infer_1.0.4          dials_1.2.0          scales_1.2.0        
+[22] broom_1.0.5          tidymodels_1.1.0     lubridate_1.9.2     
+[25] forcats_1.0.0        stringr_1.5.0        dplyr_1.1.2         
+[28] purrr_1.0.1          readr_2.1.4          tidyr_1.3.0         
+[31] tibble_3.2.1         ggplot2_3.4.3        tidyverse_2.0.0     
+[34] palmerpenguins_0.1.0
+
+loaded via a namespace (and not attached):
+ [1] colorspace_2.0-3   ellipsis_0.3.2     class_7.3-20       rstudioapi_0.15.0 
+ [5] farver_2.1.1       listenv_0.8.0      furrr_0.3.0        ggrepel_0.9.1     
+ [9] mvtnorm_1.1-3      prodlim_2019.11.13 fansi_1.0.3        codetools_0.2-18  
+[13] splines_4.1.3      knitr_1.39         jsonlite_1.8.4     shiny_1.7.1       
+[17] compiler_4.1.3     backports_1.4.1    Matrix_1.4-0       fastmap_1.1.0     
+[21] cli_3.6.1          later_1.3.0        htmltools_0.5.2    tools_4.1.3       
+[25] gtable_0.3.1       glue_1.6.2         Rcpp_1.0.8.3       DiceDesign_1.9    
+[29] vctrs_0.6.1        iterators_1.0.14   timeDate_3043.102  gower_1.0.0       
+[33] xfun_0.31          globals_0.15.0     timechange_0.2.0   mime_0.12         
+[37] miniUI_0.1.1.1     lifecycle_1.0.3    future_1.26.1      DEoptimR_1.0-14   
+[41] ipred_0.9-13       hms_1.1.3          promises_1.2.0.1   parallel_4.1.3    
+[45] RColorBrewer_1.1-3 yaml_2.3.5         labelled_2.9.1     rpart_4.1.16      
+[49] reshape_0.8.9      stringi_1.7.6      highr_0.9          pcaPP_2.0-3       
+[53] foreach_1.5.2      lhs_1.1.5          hardhat_1.3.0      boot_1.3-28       
+[57] lava_1.6.10        rlang_1.1.0        pkgconfig_2.0.3    evaluate_0.15     
+[61] lattice_0.20-45    labeling_0.4.2     htmlwidgets_1.5.4  tidyselect_1.2.0  
+[65] parallelly_1.32.0  plyr_1.8.7         magrittr_2.0.3     R6_2.5.1          
+[69] generics_0.1.2     combinat_0.0-8     pillar_1.9.0       haven_2.5.2       
+[73] withr_2.5.0        survival_3.2-13    nnet_7.3-17        future.apply_1.9.0
+[77] questionr_0.7.7    utf8_1.2.2         tzdb_0.3.0         rmarkdown_2.15    
+[81] grid_4.1.3         digest_0.6.29      xtable_1.8-4       httpuv_1.6.5      
+[85] stats4_4.1.3       GPfit_1.0-8        munsell_0.5.0     </code></pre>
+</div>
+</div>
+<!-- -->
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Notas</h2>
+
+<ol>
+<li id="fn1"><p><a href="https://docs.tibco.com/data-science/GUID-B34E0CEC-ECEF-4CA0-AF56-7D91E7695397.html"><em>Discriminant Function Analysis Introductory Overview - Assumptions</em></a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://sci-hub.se/10.1080/03610927308827006"><em>Robustness of the linear and quadratic discriminant function to certain types of non-normality</em></a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://sci-hub.se/10.1080/03610927908827830"><em>How non-normality affects the quadratic discriminant function</em></a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p><a href="https://sci-hub.se/10.1109/TPAMI.1983.4767461"><em>Nonparametric Discriminant Analysis</em></a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p><a href="https://thescipub.com/pdf/jmssp.2016.312.316.pdf"><em>Robust Linear Discriminant Analysis </em></a><a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p><a href="https://www.researchgate.net/publication/11093785_Classification_Trees_as_an_Alternative_to_Linear_Discriminant_Analysis"><em>Classification Trees as an Alternative to Linear Discriminant Analysis</em></a><a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb48" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Análisis Discriminante"</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela E. Pairo"</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme:  flatly</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">message =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">warning =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mvShapiroTest)</span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(biotools)</span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(klaR)</span>
+<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(discrim)</span>
+<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-28"><a href="#cb48-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-29"><a href="#cb48-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-30"><a href="#cb48-30" aria-hidden="true" tabindex="-1"></a>Es una técnica de **clasificación** cuyo objetivo es:</span>
+<span id="cb48-31"><a href="#cb48-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-32"><a href="#cb48-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Separar los grupos, identificando las variables que permiten esa separación</span>
+<span id="cb48-33"><a href="#cb48-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-34"><a href="#cb48-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Clasificar a nuevos individuos</span>
+<span id="cb48-35"><a href="#cb48-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-36"><a href="#cb48-36" aria-hidden="true" tabindex="-1"></a>La idea es contruir funciones discriminantes (FD) que maximicen la variabilidad entre grupos con el objetivo de discriminarlos mejor. Esto se logra al maximizar la varianza entre grupos en relación con la varianza total</span>
+<span id="cb48-37"><a href="#cb48-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-38"><a href="#cb48-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-39"><a href="#cb48-39" aria-hidden="true" tabindex="-1"></a><span class="fu"># Base de datos</span></span>
+<span id="cb48-40"><a href="#cb48-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-41"><a href="#cb48-41" aria-hidden="true" tabindex="-1"></a>Vamos a trabajar con la base de datos de <span class="in">`penguins`</span></span>
+<span id="cb48-42"><a href="#cb48-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-43"><a href="#cb48-43" aria-hidden="true" tabindex="-1"></a><span class="al">![](https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png)</span></span>
+<span id="cb48-44"><a href="#cb48-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-45"><a href="#cb48-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-48"><a href="#cb48-48" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-49"><a href="#cb48-49" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> penguins <span class="sc">|&gt;</span> </span>
+<span id="cb48-50"><a href="#cb48-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">na.omit</span>()<span class="sc">|&gt;</span></span>
+<span id="cb48-51"><a href="#cb48-51" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>island, <span class="sc">-</span>sex)</span>
+<span id="cb48-52"><a href="#cb48-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-53"><a href="#cb48-53" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span>
+<span id="cb48-54"><a href="#cb48-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-55"><a href="#cb48-55" aria-hidden="true" tabindex="-1"></a>Realicemos algunos _scatterplots_</span>
+<span id="cb48-56"><a href="#cb48-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-59"><a href="#cb48-59" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-60"><a href="#cb48-60" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb48-61"><a href="#cb48-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-62"><a href="#cb48-62" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(df, </span>
+<span id="cb48-63"><a href="#cb48-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend =</span> <span class="dv">1</span>, </span>
+<span id="cb48-64"><a href="#cb48-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">columns =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, </span>
+<span id="cb48-65"><a href="#cb48-65" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">color =</span> species, <span class="at">alpha =</span> <span class="fl">0.5</span>),</span>
+<span id="cb48-66"><a href="#cb48-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="st">"points"</span>))<span class="sc">+</span></span>
+<span id="cb48-67"><a href="#cb48-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb48-68"><a href="#cb48-68" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-69"><a href="#cb48-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-70"><a href="#cb48-70" aria-hidden="true" tabindex="-1"></a>Al conocerse la especie de pertenencia de cada individuo, se puede comprobar la efectividad del método de clasificación observando el porcentaje de casos bien clasificados. Para ello, vamos a separar el dataset en train y test</span>
+<span id="cb48-71"><a href="#cb48-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-74"><a href="#cb48-74" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-75"><a href="#cb48-75" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)<span class="co">#setear la semilla</span></span>
+<span id="cb48-76"><a href="#cb48-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-77"><a href="#cb48-77" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
+<span id="cb48-78"><a href="#cb48-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), scale))</span>
+<span id="cb48-79"><a href="#cb48-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-80"><a href="#cb48-80" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df,</span>
+<span id="cb48-81"><a href="#cb48-81" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.85</span>,</span>
+<span id="cb48-82"><a href="#cb48-82" aria-hidden="true" tabindex="-1"></a>                          <span class="at">strata =</span> species)<span class="co">#para conservar la proporción de las clases</span></span>
+<span id="cb48-83"><a href="#cb48-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-84"><a href="#cb48-84" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb48-85"><a href="#cb48-85" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb48-86"><a href="#cb48-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-87"><a href="#cb48-87" aria-hidden="true" tabindex="-1"></a>df_test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb48-88"><a href="#cb48-88" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb48-89"><a href="#cb48-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-90"><a href="#cb48-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en test y train</span></span>
+<span id="cb48-91"><a href="#cb48-91" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(df_train))</span>
+<span id="cb48-92"><a href="#cb48-92" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de testeo: "</span>, <span class="fu">nrow</span>(df_test))</span>
+<span id="cb48-93"><a href="#cb48-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-94"><a href="#cb48-94" aria-hidden="true" tabindex="-1"></a>Creamos tres subsets de datos para cada especie</span>
+<span id="cb48-95"><a href="#cb48-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-98"><a href="#cb48-98" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-99"><a href="#cb48-99" aria-hidden="true" tabindex="-1"></a>adelie<span class="ot">&lt;-</span> <span class="fu">subset</span>(df_train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>], df_train<span class="sc">$</span>species <span class="sc">==</span> <span class="st">"Adelie"</span>)</span>
+<span id="cb48-100"><a href="#cb48-100" aria-hidden="true" tabindex="-1"></a>gentoo<span class="ot">&lt;-</span> <span class="fu">subset</span>(df_train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>], df_train<span class="sc">$</span>species <span class="sc">==</span> <span class="st">"Gentoo"</span>)</span>
+<span id="cb48-101"><a href="#cb48-101" aria-hidden="true" tabindex="-1"></a>chinstrap <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_train[,<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>], df_train<span class="sc">$</span>species<span class="sc">==</span><span class="st">"Chinstrap"</span>)</span>
+<span id="cb48-102"><a href="#cb48-102" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-103"><a href="#cb48-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-104"><a href="#cb48-104" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis Discriminante Lineal (LDA)</span></span>
+<span id="cb48-105"><a href="#cb48-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-106"><a href="#cb48-106" aria-hidden="true" tabindex="-1"></a>Este tipo de análisis es válido solo si se satisfacen los siguientes supuestos:</span>
+<span id="cb48-107"><a href="#cb48-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-108"><a href="#cb48-108" aria-hidden="true" tabindex="-1"></a>1- Normalidad multivariada</span>
+<span id="cb48-109"><a href="#cb48-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-110"><a href="#cb48-110" aria-hidden="true" tabindex="-1"></a>2- Independencia de las observaciones</span>
+<span id="cb48-111"><a href="#cb48-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-112"><a href="#cb48-112" aria-hidden="true" tabindex="-1"></a>3- Homocedasticidad.</span>
+<span id="cb48-113"><a href="#cb48-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-114"><a href="#cb48-114" aria-hidden="true" tabindex="-1"></a><span class="fu">## Verefiquemos supuestos</span></span>
+<span id="cb48-115"><a href="#cb48-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-116"><a href="#cb48-116" aria-hidden="true" tabindex="-1"></a>1- Normalidad multivariada</span>
+<span id="cb48-117"><a href="#cb48-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-118"><a href="#cb48-118" aria-hidden="true" tabindex="-1"></a>¿Cuál es la hipótesis estadística?</span>
+<span id="cb48-119"><a href="#cb48-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-122"><a href="#cb48-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-123"><a href="#cb48-123" aria-hidden="true" tabindex="-1"></a><span class="fu">mvShapiro.Test</span>(<span class="fu">as.matrix</span>(adelie))</span>
+<span id="cb48-124"><a href="#cb48-124" aria-hidden="true" tabindex="-1"></a><span class="fu">mvShapiro.Test</span>(<span class="fu">as.matrix</span>(gentoo))  </span>
+<span id="cb48-125"><a href="#cb48-125" aria-hidden="true" tabindex="-1"></a><span class="fu">mvShapiro.Test</span>(<span class="fu">as.matrix</span>(chinstrap))</span>
+<span id="cb48-126"><a href="#cb48-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-127"><a href="#cb48-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-128"><a href="#cb48-128" aria-hidden="true" tabindex="-1"></a>2- Independencia de las observaciones</span>
+<span id="cb48-129"><a href="#cb48-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-130"><a href="#cb48-130" aria-hidden="true" tabindex="-1"></a>Viene dada por el diseño</span>
+<span id="cb48-131"><a href="#cb48-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-132"><a href="#cb48-132" aria-hidden="true" tabindex="-1"></a>3- Homocedasticidad</span>
+<span id="cb48-133"><a href="#cb48-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-134"><a href="#cb48-134" aria-hidden="true" tabindex="-1"></a>Ho las matrices de varianzas-covarianzas de los grupos son iguales.</span>
+<span id="cb48-135"><a href="#cb48-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-136"><a href="#cb48-136" aria-hidden="true" tabindex="-1"></a>Analizamos igualdad de matrices de varianzas y covarianzas:</span>
+<span id="cb48-137"><a href="#cb48-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-140"><a href="#cb48-140" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-141"><a href="#cb48-141" aria-hidden="true" tabindex="-1"></a><span class="fu">boxM</span>(df_train[,<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb48-142"><a href="#cb48-142" aria-hidden="true" tabindex="-1"></a>     df_train<span class="sc">$</span>species)<span class="co"># las especies</span></span>
+<span id="cb48-143"><a href="#cb48-143" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-144"><a href="#cb48-144" aria-hidden="true" tabindex="-1"></a>Entonces ¿qué concluimos?</span>
+<span id="cb48-145"><a href="#cb48-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-146"><a href="#cb48-146" aria-hidden="true" tabindex="-1"></a>Vamos a proseguir como si se hubiese cumplido todos los supuestos. Tener en cuenta que los resultados del LDA **no van a ser confiables en este caso**.</span>
+<span id="cb48-147"><a href="#cb48-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-148"><a href="#cb48-148" aria-hidden="true" tabindex="-1"></a><span class="fu">## LDA</span></span>
+<span id="cb48-149"><a href="#cb48-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-152"><a href="#cb48-152" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-153"><a href="#cb48-153" aria-hidden="true" tabindex="-1"></a>model_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(species<span class="sc">~</span>., <span class="at">data =</span>df_train)</span>
+<span id="cb48-154"><a href="#cb48-154" aria-hidden="true" tabindex="-1"></a>model_lda</span>
+<span id="cb48-155"><a href="#cb48-155" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-156"><a href="#cb48-156" aria-hidden="true" tabindex="-1"></a>El objeto lda (en este ejemplo, model_lda) contiene los siguientes componentes:</span>
+<span id="cb48-157"><a href="#cb48-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-158"><a href="#cb48-158" aria-hidden="true" tabindex="-1"></a>*prior*: las probabilidades previas utilizadas.</span>
+<span id="cb48-159"><a href="#cb48-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-160"><a href="#cb48-160" aria-hidden="true" tabindex="-1"></a>*means*: la media de cada clase.</span>
+<span id="cb48-161"><a href="#cb48-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-162"><a href="#cb48-162" aria-hidden="true" tabindex="-1"></a>*svd*: son los valores singulares, informan el cociente entre desvíos estándar entre y dentro de grupos para cada FD; si se elevan al cuadrado se obtiene el autovalor de cada FD</span>
+<span id="cb48-163"><a href="#cb48-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-164"><a href="#cb48-164" aria-hidden="true" tabindex="-1"></a>*counts*: El número de observaciones por clase.</span>
+<span id="cb48-165"><a href="#cb48-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-166"><a href="#cb48-166" aria-hidden="true" tabindex="-1"></a>**Coefficients of linear discriminants**: Muestra la combinación lineal de variables predictoras que se utilizan para formar la regla de decisión LDA.</span>
+<span id="cb48-167"><a href="#cb48-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-168"><a href="#cb48-168" aria-hidden="true" tabindex="-1"></a>Por ejemplo:</span>
+<span id="cb48-169"><a href="#cb48-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-170"><a href="#cb48-170" aria-hidden="true" tabindex="-1"></a>$\ LD1= 0.07*bill_length - 1.02 *bill_depth - 0.07*flipper_length +0.001*body_mass$</span>
+<span id="cb48-171"><a href="#cb48-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-172"><a href="#cb48-172" aria-hidden="true" tabindex="-1"></a>LD1 explica el 99% de la proporción de varianza entre clases.</span>
+<span id="cb48-173"><a href="#cb48-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-174"><a href="#cb48-174" aria-hidden="true" tabindex="-1"></a>La 2da función discriminante es independiente de la primera (ortogonal) y es la que mejor separa los grupos usando la variación remanente o residual, después que la 1ra función discriminante ha sido determinada</span>
+<span id="cb48-175"><a href="#cb48-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-178"><a href="#cb48-178" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-179"><a href="#cb48-179" aria-hidden="true" tabindex="-1"></a>prop <span class="ot">=</span> model_lda<span class="sc">$</span>svd<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="fu">sum</span>(model_lda<span class="sc">$</span>svd<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb48-180"><a href="#cb48-180" aria-hidden="true" tabindex="-1"></a>prop <span class="co">#varianza entre grupos explicada por cada FD</span></span>
+<span id="cb48-181"><a href="#cb48-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-182"><a href="#cb48-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-185"><a href="#cb48-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-186"><a href="#cb48-186" aria-hidden="true" tabindex="-1"></a>lda.data <span class="ot">&lt;-</span> <span class="fu">cbind</span>(df_train, <span class="fu">predict</span>(model_lda)<span class="sc">$</span>x)</span>
+<span id="cb48-187"><a href="#cb48-187" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(lda.data, <span class="fu">aes</span>(LD1, LD2)) <span class="sc">+</span></span>
+<span id="cb48-188"><a href="#cb48-188" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> species))</span>
+<span id="cb48-189"><a href="#cb48-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-190"><a href="#cb48-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-191"><a href="#cb48-191" aria-hidden="true" tabindex="-1"></a>Veamos que predice el modelo en df_test</span>
+<span id="cb48-192"><a href="#cb48-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-195"><a href="#cb48-195" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-196"><a href="#cb48-196" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> model_lda <span class="sc">|&gt;</span>  </span>
+<span id="cb48-197"><a href="#cb48-197" aria-hidden="true" tabindex="-1"></a>                <span class="fu">predict</span>(df_test)</span>
+<span id="cb48-198"><a href="#cb48-198" aria-hidden="true" tabindex="-1"></a>predictions</span>
+<span id="cb48-199"><a href="#cb48-199" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-200"><a href="#cb48-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-201"><a href="#cb48-201" aria-hidden="true" tabindex="-1"></a>Veamos la matriz de confusión en df_train</span>
+<span id="cb48-202"><a href="#cb48-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-205"><a href="#cb48-205" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-206"><a href="#cb48-206" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(model_lda,<span class="at">type=</span><span class="st">"class"</span>)<span class="sc">$</span>class,df_train<span class="sc">$</span>species)</span>
+<span id="cb48-207"><a href="#cb48-207" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-208"><a href="#cb48-208" aria-hidden="true" tabindex="-1"></a><span class="in">`partimat`</span> muestra una matriz de gráficos para cada combinación de dos variables. Cada gráfico muestra una vista diferente de los mismos datos. Las regiones coloreadas delimitan cada área de clasificación. Se predice que cualquier observación que se encuentre dentro de una región pertenece a una clase específica. Cada gráfico también incluye la tasa de error aparente para esa vista de los datos.</span>
+<span id="cb48-209"><a href="#cb48-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-212"><a href="#cb48-212" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-213"><a href="#cb48-213" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(klaR) </span>
+<span id="cb48-214"><a href="#cb48-214" aria-hidden="true" tabindex="-1"></a><span class="fu">partimat</span> (species<span class="sc">~</span>. , <span class="at">data=</span>df_train , <span class="at">method=</span><span class="st">"lda"</span>)</span>
+<span id="cb48-215"><a href="#cb48-215" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-216"><a href="#cb48-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-217"><a href="#cb48-217" aria-hidden="true" tabindex="-1"></a>Veamos la _performance_ en df_test</span>
+<span id="cb48-218"><a href="#cb48-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-221"><a href="#cb48-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-222"><a href="#cb48-222" aria-hidden="true" tabindex="-1"></a>lda.test <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_lda,df_test)</span>
+<span id="cb48-223"><a href="#cb48-223" aria-hidden="true" tabindex="-1"></a>df_test<span class="sc">$</span>lda <span class="ot">&lt;-</span> lda.test<span class="sc">$</span>class</span>
+<span id="cb48-224"><a href="#cb48-224" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df_test<span class="sc">$</span>lda,df_test<span class="sc">$</span>species)</span>
+<span id="cb48-225"><a href="#cb48-225" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-226"><a href="#cb48-226" aria-hidden="true" tabindex="-1"></a><span class="fu">### Biplot</span></span>
+<span id="cb48-227"><a href="#cb48-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-230"><a href="#cb48-230" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-231"><a href="#cb48-231" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("devtools")</span></span>
+<span id="cb48-232"><a href="#cb48-232" aria-hidden="true" tabindex="-1"></a><span class="co">#library(devtools)</span></span>
+<span id="cb48-233"><a href="#cb48-233" aria-hidden="true" tabindex="-1"></a><span class="co">#install_github("fawda123/ggord")</span></span>
+<span id="cb48-234"><a href="#cb48-234" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggord)</span>
+<span id="cb48-235"><a href="#cb48-235" aria-hidden="true" tabindex="-1"></a><span class="fu">ggord</span>(model_lda, df_train<span class="sc">$</span>species)</span>
+<span id="cb48-236"><a href="#cb48-236" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-237"><a href="#cb48-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-238"><a href="#cb48-238" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis discriminante cuadrático (QDA)</span></span>
+<span id="cb48-239"><a href="#cb48-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-240"><a href="#cb48-240" aria-hidden="true" tabindex="-1"></a>El discriminante se dice cuadrático porque el término de segundo orden no se cancela como en el caso del discriminante lineal. QDA no asume la igualdad en la matriz de varianzas/covarianzas. En otras palabras, para QDA la matriz de covarianza puede ser diferente para cada clase.</span>
+<span id="cb48-241"><a href="#cb48-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-242"><a href="#cb48-242" aria-hidden="true" tabindex="-1"></a>Vamos a aplicar QDA, a pesar de que no se satisface el supuesto de normalidad multivariada.</span>
+<span id="cb48-243"><a href="#cb48-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-246"><a href="#cb48-246" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-247"><a href="#cb48-247" aria-hidden="true" tabindex="-1"></a>model_qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(species <span class="sc">~</span> ., df_train)</span>
+<span id="cb48-248"><a href="#cb48-248" aria-hidden="true" tabindex="-1"></a>model_qda</span>
+<span id="cb48-249"><a href="#cb48-249" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-250"><a href="#cb48-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-253"><a href="#cb48-253" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-254"><a href="#cb48-254" aria-hidden="true" tabindex="-1"></a><span class="fu">partimat</span>(species <span class="sc">~</span> ., </span>
+<span id="cb48-255"><a href="#cb48-255" aria-hidden="true" tabindex="-1"></a>         <span class="at">data=</span>df_train, </span>
+<span id="cb48-256"><a href="#cb48-256" aria-hidden="true" tabindex="-1"></a>         <span class="at">method=</span><span class="st">"qda"</span>)</span>
+<span id="cb48-257"><a href="#cb48-257" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-258"><a href="#cb48-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-261"><a href="#cb48-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-262"><a href="#cb48-262" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(model_qda,<span class="at">type=</span><span class="st">"class"</span>)<span class="sc">$</span>class,df_train<span class="sc">$</span>species)</span>
+<span id="cb48-263"><a href="#cb48-263" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-264"><a href="#cb48-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-267"><a href="#cb48-267" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-268"><a href="#cb48-268" aria-hidden="true" tabindex="-1"></a>lda.test_qda <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_qda,df_test)</span>
+<span id="cb48-269"><a href="#cb48-269" aria-hidden="true" tabindex="-1"></a>df_test<span class="sc">$</span>qda <span class="ot">&lt;-</span> lda.test_qda<span class="sc">$</span>class</span>
+<span id="cb48-270"><a href="#cb48-270" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df_test<span class="sc">$</span>qda,df_test<span class="sc">$</span>species)</span>
+<span id="cb48-271"><a href="#cb48-271" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-272"><a href="#cb48-272" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis Discriminante Robusto</span></span>
+<span id="cb48-273"><a href="#cb48-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-274"><a href="#cb48-274" aria-hidden="true" tabindex="-1"></a>En el parámetro <span class="in">`method`</span> se especifica el método, en el ejemplo se aplica el Minimun Covariance Determinant. Las _priors_ por default son las proporciones de las clases.</span>
+<span id="cb48-275"><a href="#cb48-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-278"><a href="#cb48-278" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-279"><a href="#cb48-279" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rrcov)<span class="co"># instalar este paquete para ADR</span></span>
+<span id="cb48-280"><a href="#cb48-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-281"><a href="#cb48-281" aria-hidden="true" tabindex="-1"></a>robusto_lda <span class="ot">&lt;-</span> <span class="fu">Linda</span>(species <span class="sc">~</span> .,</span>
+<span id="cb48-282"><a href="#cb48-282" aria-hidden="true" tabindex="-1"></a>                     <span class="at">method=</span> <span class="st">"mcd"</span>, </span>
+<span id="cb48-283"><a href="#cb48-283" aria-hidden="true" tabindex="-1"></a>                     df_train)</span>
+<span id="cb48-284"><a href="#cb48-284" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(robusto_lda)<span class="co"># devuelve la matriz de confusion para df_train</span></span>
+<span id="cb48-285"><a href="#cb48-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-286"><a href="#cb48-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-287"><a href="#cb48-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-288"><a href="#cb48-288" aria-hidden="true" tabindex="-1"></a><span class="fu"># Algunos comentarios </span></span>
+<span id="cb48-289"><a href="#cb48-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-290"><a href="#cb48-290" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El ánalisis discriminante es una técnica sensible a la presencia de _outliers_</span>
+<span id="cb48-291"><a href="#cb48-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-292"><a href="#cb48-292" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si el supuesto de normalidad multivariada se sostiene pero hay _outliers_ es recomendable recurrir a la versión robusta de QDA.</span>
+<span id="cb48-293"><a href="#cb48-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-294"><a href="#cb48-294" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Si se rechaza la normalidad multivariada, el modelo robusto no es adecuado.</span>
+<span id="cb48-295"><a href="#cb48-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-296"><a href="#cb48-296" aria-hidden="true" tabindex="-1"></a><span class="fu">## ¿Qué hacer si no se cumple el supuesto de normalidad multivariada?</span></span>
+<span id="cb48-297"><a href="#cb48-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-298"><a href="#cb48-298" aria-hidden="true" tabindex="-1"></a>Hay diversas opiniones al respecto. Algunos mencionan que LDA es robusto a la falta de normalidad multivariada si los datos son lo suficientemente grandes.^[<span class="co">[</span><span class="ot">_Discriminant Function Analysis Introductory Overview - Assumptions_</span><span class="co">](https://docs.tibco.com/data-science/GUID-B34E0CEC-ECEF-4CA0-AF56-7D91E7695397.html)</span>] Sin embargo, _Lachenbruch et al. (1973)_^[[_Robustness of the linear and quadratic discriminant function to certain types of non-normality_](https://sci-hub.se/10.1080/03610927308827006)] han demostrado que los resultados de aplicar LDA si se ven muy afectados por la falta de normalidad multivariada luego de usar tres tipos de distribuciones no normales. Por otra parte, también se ha encontrado que QDA si es robusto a la falta de normalidad si las distribuciones de los datos se alejan ligeramente de distribución teórica^[[_How non-normality affects the quadratic discriminant function_](https://sci-hub.se/10.1080/03610927908827830)]</span>
+<span id="cb48-299"><a href="#cb48-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-300"><a href="#cb48-300" aria-hidden="true" tabindex="-1"></a>Actualmente, se han propuesto alternativas no paramétricas para los casos en que el supuesto de normalidad no se cumple.^[<span class="co">[</span><span class="ot">_Nonparametric Discriminant Analysis_</span><span class="co">](https://sci-hub.se/10.1109/TPAMI.1983.4767461)</span>] haciendo uso de matrices de dispersión, por ejemplo. Además, _Sharipah Soaad Syed Yahaya et al. (2016)_^[[_Robust Linear Discriminant Analysis _](https://thescipub.com/pdf/jmssp.2016.312.316.pdf)] proponen el uso de dos estimadores robusto llamados one-step M-estimator (MOM) y winsorized modified one-step M-estimator (WMOM), que permiten trabajar con aquellos datos que no solo **no** siguen una distribución normal sino que tambien son heterocedásticos.</span>
+<span id="cb48-301"><a href="#cb48-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-302"><a href="#cb48-302" aria-hidden="true" tabindex="-1"></a>Finalmente, se propone también el uso de algoritmos mas complejos que permiten proseguir cuando no se cumplen los supuestos y no hay necesidad de transformar los datos para ello. Uno de los modelos propuestos es el uso de Árboles de decisión para clasificación^[<span class="co">[</span><span class="ot">_Classification Trees as an Alternative to Linear Discriminant Analysis_</span><span class="co">](https://www.researchgate.net/publication/11093785_Classification_Trees_as_an_Alternative_to_Linear_Discriminant_Analysis)</span>]</span>
+<span id="cb48-303"><a href="#cb48-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-304"><a href="#cb48-304" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bonus track: LDA con `Tidymodels`</span></span>
+<span id="cb48-305"><a href="#cb48-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-306"><a href="#cb48-306" aria-hidden="true" tabindex="-1"></a>Al igual que <span class="in">`tidyverse`</span>, <span class="in">`tidymodels`</span> está compuesto por un conjunto de paquetes como los siguientes:</span>
+<span id="cb48-307"><a href="#cb48-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-308"><a href="#cb48-308" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`rsample`</span>: para realizar la división del dataset en entrenamiento, validación y testeo.</span>
+<span id="cb48-309"><a href="#cb48-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-310"><a href="#cb48-310" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`recipes`</span>: para el preprocesamiento</span>
+<span id="cb48-311"><a href="#cb48-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-312"><a href="#cb48-312" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`parnship`</span>: para especificar el modelo</span>
+<span id="cb48-313"><a href="#cb48-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-314"><a href="#cb48-314" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`yardstick`</span>: para evaluar el modelo</span>
+<span id="cb48-315"><a href="#cb48-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-316"><a href="#cb48-316" aria-hidden="true" tabindex="-1"></a>Mayores especificaciones y ejemplos de uso de <span class="in">`tidymodels`</span>, en su <span class="co">[</span><span class="ot">página</span><span class="co">](https://www.tidymodels.org/packages/)</span></span>
+<span id="cb48-317"><a href="#cb48-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-318"><a href="#cb48-318" aria-hidden="true" tabindex="-1"></a>Para mas información sobre las funciones disponibles para realizar análisis discriminante ver <span class="co">[</span><span class="ot">aquí</span><span class="co">](https://discrim.tidymodels.org/)</span></span>
+<span id="cb48-319"><a href="#cb48-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-320"><a href="#cb48-320" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preprocesamiento de datos usando `recipe`</span></span>
+<span id="cb48-321"><a href="#cb48-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-324"><a href="#cb48-324" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-325"><a href="#cb48-325" aria-hidden="true" tabindex="-1"></a>rec_lda <span class="ot">&lt;-</span> <span class="fu">recipe</span>(species<span class="sc">~</span>., <span class="at">data =</span>df_train) <span class="sc">|&gt;</span> </span>
+<span id="cb48-326"><a href="#cb48-326" aria-hidden="true" tabindex="-1"></a>           <span class="fu">step_scale</span>(<span class="fu">all_predictors</span>()) <span class="sc">|&gt;</span> <span class="fu">prep</span>()</span>
+<span id="cb48-327"><a href="#cb48-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-328"><a href="#cb48-328" aria-hidden="true" tabindex="-1"></a><span class="co"># Bake</span></span>
+<span id="cb48-329"><a href="#cb48-329" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">&lt;-</span> <span class="fu">bake</span>(rec_lda, <span class="at">new_data=</span>df_train)</span>
+<span id="cb48-330"><a href="#cb48-330" aria-hidden="true" tabindex="-1"></a>df_test <span class="ot">&lt;-</span> <span class="fu">bake</span>(rec_lda, <span class="at">new_data=</span>df_test)</span>
+<span id="cb48-331"><a href="#cb48-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-332"><a href="#cb48-332" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-333"><a href="#cb48-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-336"><a href="#cb48-336" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-337"><a href="#cb48-337" aria-hidden="true" tabindex="-1"></a>lda <span class="ot">&lt;-</span> <span class="fu">discrim_linear</span>() <span class="sc">|&gt;</span> <span class="co"># para hacer QDA poner discrim_quad</span></span>
+<span id="cb48-338"><a href="#cb48-338" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"MASS"</span>)</span>
+<span id="cb48-339"><a href="#cb48-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-340"><a href="#cb48-340" aria-hidden="true" tabindex="-1"></a>lda_fit <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb48-341"><a href="#cb48-341" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lda) <span class="sc">|&gt;</span> </span>
+<span id="cb48-342"><a href="#cb48-342" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(rec_lda) <span class="sc">|&gt;</span> </span>
+<span id="cb48-343"><a href="#cb48-343" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(df_train)</span>
+<span id="cb48-344"><a href="#cb48-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-345"><a href="#cb48-345" aria-hidden="true" tabindex="-1"></a>lda_fit</span>
+<span id="cb48-346"><a href="#cb48-346" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-347"><a href="#cb48-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-348"><a href="#cb48-348" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-349"><a href="#cb48-349" aria-hidden="true" tabindex="-1"></a>Predicciones para el dataset de entrenamiento</span>
+<span id="cb48-352"><a href="#cb48-352" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-353"><a href="#cb48-353" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(lda_fit, df_train)<span class="sc">$</span>.pred_class,df_train<span class="sc">$</span>species)</span>
+<span id="cb48-354"><a href="#cb48-354" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-355"><a href="#cb48-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-356"><a href="#cb48-356" aria-hidden="true" tabindex="-1"></a>Predicciones para el dataset de testeo</span>
+<span id="cb48-359"><a href="#cb48-359" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-360"><a href="#cb48-360" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">predict</span>(lda_fit, df_test)<span class="sc">$</span>.pred_class,df_test<span class="sc">$</span>species)</span>
+<span id="cb48-361"><a href="#cb48-361" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-364"><a href="#cb48-364" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb48-365"><a href="#cb48-365" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb48-366"><a href="#cb48-366" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb48-367"><a href="#cb48-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-368"><a href="#cb48-368" aria-hidden="true" tabindex="-1"></a></span>
+</code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+</body></html>
