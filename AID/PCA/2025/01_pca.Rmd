@@ -31,6 +31,8 @@ library(kableExtra)
 Una empresa de alimentos está planeando lanzar una campaña de marketing el próximo mes con el objetivo de maximizar las ganancias. En una campaña piloto con 2,240 clientes, aquellos que compraron la oferta fueron etiquetados como exitosos.
 
 
+# Parte 1
+
 # Análisis exploratorio 📊
 
 Carga de la base de datos
@@ -255,7 +257,7 @@ Reducir el número de variables generando **nuevas variables que resuman la info
 
 - Reducción de dimensionalidad
 - Detección de anomalías
-- Decorrelación: Algunos algoritmos de aprendizaje automático tienen dificultades con características altamente correlacionadas. PCA transforma características correlacionadas en componentes no correlacionados, lo que podría ser más fácil para que tu algoritmo trabaje con ellas
+- Decorrelación: Algunos algoritmos de aprendizaje automático tienen dificultades con características altamente correlacionadas. PCA transforma características correlacionadas en componentes no correlacionados, lo que podría ser más fácil para que el algoritmo trabaje con ellas
 
 Por defecto, `prcomp()` centra las variables para que tengan media cero, pero si se quiere además que su desviación estándar sea de uno, hay que indicar *scale = TRUE*.
 
@@ -288,7 +290,7 @@ corrplot(contrib,is.corr=FALSE)
 
 $\ PC1= 0.39*Income+ 0.35*MntWines + 0.33*MntFruits +0.36*MntMeatProducts +0.32*MntFishProducts +0.33*MntSweetProducts +0.27*MntGoldProds- 0.06*NumDealsPurchases+ 0.25*NumWebPurchases+ 0.37*NumCatalogPurchases+ 0.08*Age$
 
-Y de la segunda componente (PCA2)??
+Y de la segunda componente (PCA 2)??
 
 ```{r echo=TRUE}
 #loadings
@@ -379,6 +381,8 @@ library(factoextra)
 
 fviz_eig(pca, ncp =11, addlabels = TRUE, main="")
 ```
+
+# Parte 2
 
 # Vizualización
 

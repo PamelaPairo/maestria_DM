@@ -1,0 +1,55 @@
+---
+title: "TP Análisis de Componentes Principales"
+author: "Docentes AID 2025"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Para este trabajo práctico se trabajará sobre la base de datos de FIFA 2024 MEN. Setear la semilla con los últimos 3 digitos del DNI para obtener una muestra de 2000 individuos.
+
+```{r}
+library (tydiverse)
+
+wd <- "ruta del dataset"
+
+df <- read.csv(wd)
+
+seed(123)#cambiar por los 3 digitos del DNI.
+
+sample <- df %>% 
+          sample_n(2000)# muestreo aletorio de 2000 individuos
+```
+
+# Objetivo
+
+Aplicar el Análisis de Componentes Principales (PCA) para reducir la dimensionalidad del dataset de FIFA 2024 Men, identificar patrones en los datos y visualizar cómo se agrupan los jugadores en función de sus características.
+
+# Análisis exploratorio de datos y preprocesamiento
+
+1- Analice la presencia de valores faltantes y datos duplicados.
+
+2- Seleccione un subconjunto de variables relevantes para realizar el PCA. Justifique la selección.
+
+3- Realice una descripción de las variables numéricas seleccionadas.
+
+4- ¿Se estandarizaron las variables? Justifique.
+
+# PCA e interpretación.
+
+5- Realice el PCA sobre las variables seleccionadas. ¿Con cuantas componentes decide quedarse luego de la reduccion de dimensionalidad? 
+
+6- Interprete las cargas factoriales de las primeras dos componentes principales. ¿Qué atributos de los jugadores están más representados en cada componente? Mostrar el biplot del PCA realizado.
+
+7- Identifique si hay agrupamientos naturales de jugadores en función de las características seleccionadas. Interprete y concluya.
+
+8- Elegir una técnica de PCA robusto y aplicarla sobre la base de datos. Compare los resultados con los obtenidos anteriormente. Concluir.
