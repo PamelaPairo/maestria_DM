@@ -26,6 +26,11 @@ data(housetasks)
 housetasks
 
 ```
+
+```{r}
+summary(housetasks)
+```
+
 # Análisis de Correspondencia Simple
 ## Test de Independencia
 
@@ -34,6 +39,25 @@ chisq.test(housetasks)
 ```
 ## Análisis de perfiles
 ### Perfil Fila
+
+```{r}
+# Perfiles fila (la suma de las frecuencias de cada fila da 1)
+pf_ht <-  round(prop.table(as.matrix(housetasks),1),3)
+pf_ht
+```
+```{r}
+df_pf_ht <- as.data.frame(pf_ht) 
+df_pf_ht$tareas <- rownames(pf_ht)
+df_pf_ht <- df_pf_ht %>% pivot_longer(!tareas, names_to = "Variable", values_to = "valor")
+
+ggplot(data=df_pf_ht, aes(y = valor, x= tareas, color=Variable))+geom_line(aes(group = Variable))+
+  labs(title = 'Distribución del responsable de las tareas del hogar según tareas',
+              y = 'Frecuencia', x = 'Tareas') +
+  scale_color_viridis_d(name='responsable tareas del hogar')+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
 ### Perfil Columna
 
 # Análisis de Correspondencia Múltiple
