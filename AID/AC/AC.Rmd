@@ -18,6 +18,7 @@ knitr::opts_chunk$set(warning = FALSE)
 library(tidyverse)
 library(factoextra)
 library(FactoMineR)
+library(gmodels)
 ```
 
 ```{r}
@@ -31,8 +32,26 @@ housetasks
 summary(housetasks)
 ```
 
+```{r}
+dt <- as.table(as.matrix(housetasks))
+gplots::balloonplot(t(dt), 
+                    main ="Tareas del hogar", 
+                    xlab ="", 
+                    ylab="",
+                    label = FALSE, 
+                    show.margins = FALSE)
+```
+
 # Análisis de Correspondencia Simple
 ## Test de Independencia
+
+**Supuestos**
+
+- El tamaño de muestra n debe ser mayor a 50
+- Las observaciones deben ser independientes
+- Las frecuencias esperadas deben ser mayores a 5. Se admite como máximo un 20% de casillas con frecuencias esperadas menores a 5. Si no se cumple, puede solucionarse aumentando el tamaño de la muestra o agrupando categorías.
+
+Ho Las tareas de hogar y quien las realiza son independientes.
 
 ```{r}
 chisq.test(housetasks)
@@ -41,11 +60,30 @@ chisq.test(housetasks)
 ### Perfil Fila
 
 ```{r}
-# Perfiles fila (la suma de las frecuencias de cada fila da 1)
-pf_ht <-  round(prop.table(as.matrix(housetasks),1),3)
-pf_ht
+CrossTable(as.matrix(housetasks),
+           prop.t=FALSE,
+           prop.r=TRUE, #proporciones filas
+           prop.c=FALSE, 
+           prop.chisq=FALSE)
 ```
+
 ```{r}
+# Calcular perfiles fila
+perfil_fila <- prop.table(as.matrix(housetasks), margin = 1)
+
+# Calcular perfil fila medio (promedio entre filas)
+perfil_fila_medio <- colMeans(perfil_fila)
+perfil_fila_medio_df <- data.frame(
+  tareas = "Promedio filas",
+  Variable = names(perfil_fila_medio),
+  valor = as.numeric(perfil_fila_medio)
+)
+```
+
+```{r}
+# Perfiles fila (la suma de las frecuencias de cada fila da 1)
+
+pf_ht <-  round(prop.table(as.matrix(housetasks),1),3)#los perfiles fila
 df_pf_ht <- as.data.frame(pf_ht) 
 df_pf_ht$tareas <- rownames(pf_ht)
 df_pf_ht <- df_pf_ht %>% pivot_longer(!tareas, names_to = "Variable", values_to = "valor")
@@ -56,9 +94,150 @@ ggplot(data=df_pf_ht, aes(y = valor, x= tareas, color=Variable))+geom_line(aes(g
   scale_color_viridis_d(name='responsable tareas del hogar')+theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+```{r}
+# Calcular perfiles fila
+perfil_fila <- prop.table(as.matrix(housetasks), margin = 1)
+
+# Convertir a data frame largo
+df <- as.data.frame(perfil_fila)
+df$fila <- rownames(perfil_fila)
+df_long <- pivot_longer(df, -fila, names_to = "columna", values_to = "proporcion")
+
+# Calcular perfil fila medio (promedio entre filas)
+perfil_fila_medio <- colMeans(perfil_fila)
+perfil_fila_medio_df <- data.frame(
+  fila = "Promedio filas",
+  columna = names(perfil_fila_medio),
+  proporcion = as.numeric(perfil_fila_medio)
+)
+
+# Unir todo
+df_plot <- bind_rows(df_long, perfil_fila_medio_df)
+
+# Definir estilo de línea: solo "Fila3" será punteada
+df_plot$linetype <- ifelse(df_plot$fila == "Promedio filas", "Destacada", "Normal")
+
+# Graficar
+ggplot(df_plot, aes(x = columna, y = proporcion, color=fila))+ geom_line(aes(group = fila))+
+  scale_linetype_manual(values = c("Normal" = "solid", "Destacada" = "dashed"))+
+  labs(title = "Perfiles fila con perfil fila medio",
+       x = "Categoría (columnas)",
+       y = "Frecuencia relativa") 
+  theme_minimal()
+
+```
+
+```{r}
+library(tidyverse)
+
+# Calcular perfiles fila
+perfil_fila <- prop.table(as.matrix(housetasks), margin = 1)
+
+# Convertir a data frame largo
+df <- as.data.frame(perfil_fila)
+df$fila <- rownames(perfil_fila)
+df_long <- pivot_longer(df, -fila, names_to = "columna", values_to = "proporcion")
+
+# Calcular perfil fila medio
+perfil_fila_medio <- colMeans(perfil_fila)
+perfil_fila_medio_df <- data.frame(
+  fila = "Promedio filas",
+  columna = names(perfil_fila_medio),
+  proporcion = as.numeric(perfil_fila_medio)
+)
+
+# Unir ambos
+df_plot <- bind_rows(df_long, perfil_fila_medio_df)
+
+# Graficar
+ggplot(df_plot, aes(x = columna, y = proporcion, group = fila)) +
+  # Líneas normales con color automático
+  geom_line(data = subset(df_plot, fila != "Promedio filas"),
+            aes(color = fila),
+            linewidth = 0.5) +
+  # Línea negra y punteada para el promedio
+  geom_line(data = subset(df_plot, fila == "Promedio filas"),
+            color = "black", linetype = "dashed", linewidth = 1.2) +
+  labs(title = "Perfiles fila con perfil fila medio punteado",
+       x = " ",
+       y = "Frecuencia relativa",
+       color = "Fila") +
+  theme_minimal()
+
+```
+
 
 
 ### Perfil Columna
+
+```{r}
+
+graficar_distribucion <- function(matriz, nombre_x = "Variable") {
+  # Convertir matriz a data frame
+  df <- as.data.frame(matriz)
+  
+  # Crear nueva columna con los nombres de fila
+  df[[nombre_x]] <- rownames(matriz)
+  
+  # Reorganizar a formato largo
+  df_long <- df %>% 
+    pivot_longer(cols = -all_of(nombre_x), names_to = "Variable", values_to = "valor")
+  
+  # Graficar
+  ggplot(data = df_long, aes(y = valor, x = Variable, color = .data[[nombre_x]])) +
+    geom_line(aes(group = .data[[nombre_x]])) +
+    labs(
+      title = paste("Distribución categoría de nivel de", nombre_x, "según nivel SC padres"),
+      y = "Frecuencia de niños",
+      x = "Nivel SC padres"
+    ) +
+    scale_color_viridis_d(name = nombre_x) +
+    theme_minimal()
+}
+
+```
+
+
+```{r}
+# Perfiles columna (frecuencias de niveles de atención, condicional a cada columna (categoría SC padres))
+df_col_ht <- round(prop.table(as.matrix(housetasks),2),3)
+df_col_ht
+```
+```{r}
+# Supongamos que bd_col es una matriz de frecuencias
+graficar_distribucion(df_col_ht, nombre_x = "tareas")
+```
+## Biplot
+
+¿Están relacionadas Las tareas del hogar con quien realiza la tarea en la pareja?
+
+```{r}
+house.ca <- CA(housetasks, graph = FALSE)
+
+# Análisis de correspondencias de filas y columnas en simultáneo
+fviz_ca_biplot(house.ca) +
+ theme(axis.text.x = element_text(angle=0)) + labs(title = 'Biplot de Análisis de Correspondencia Housetasks')+theme(panel.background = element_rect(fill = "grey95"))
+```
+
+** Inercia**
+
+- Es una medida de la falta de independencia, resume la información total
+contenida en la tabla de doble entrada.
+
+- Está directamente relacionada con el estadístico 
+
+```{r}
+fviz_screeplot(house.ca, addlabels = TRUE, ylim = c(0, 50))+
+ theme(axis.text.x = element_text(angle=0)) + labs(title = 'Scree plot',  x = 'Dimensión', y = 'Contribución inercia explicada')+theme(panel.background = element_rect(fill = "grey95"))
+```
+
+```{r}
+fviz_ca_row(house.ca, 
+            repel = TRUE, 
+            col.row = "blue", # color de puntos
+            label = "all", 
+            title = "Perfiles fila - Análisis de Correspondencias")
+```
 
 # Análisis de Correspondencia Múltiple
 
