@@ -224,7 +224,14 @@ fviz_ca_biplot(house.ca) +
 - Es una medida de la falta de independencia, resume la información total
 contenida en la tabla de doble entrada.
 
-- Está directamente relacionada con el estadístico 
+- Está directamente relacionada con el estadístico $\chi^{2}$: $I =\frac{\chi^{2}}{n}$
+
+- Cuanto mayor sea la diferencia entre las frecuencias observadas y las
+esperadas, y por lo tanto mayor dependencia entre filas y columnas, mayor
+inercia, mayor $\chi^{2}$
+
+- Equivale a la **varianza total** en ACP
+
 
 ```{r}
 fviz_screeplot(house.ca, addlabels = TRUE, ylim = c(0, 50))+

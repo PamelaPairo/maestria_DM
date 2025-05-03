@@ -600,6 +600,21 @@ p3 <-fviz_eig(num.pca.out,
 ggarrange(p2,p3, nrow = 1, ncol = 2)
 ```
 
+# Ejercitación 🤔
+
+![](ejercicio.png)
+
+La primer componente explica el 29,37% de la variabilidad total de clientes. 
+
+Las variables que mas se asocian positivamente con la primer componente son... 
+En cambio, ... se asociaron negativamente a la primer componente. 
+
+La primer componente diferencia a los vinos tintos de los vinos blancos especialmente referido a los minerales que posee y los sulfitos.
+
+La segunda componente parece captar la variabilidad relacionada con los años en barrica (mayor acidez y alcohol).
+
+
+
 ```{r}
 sessionInfo()
 ```
