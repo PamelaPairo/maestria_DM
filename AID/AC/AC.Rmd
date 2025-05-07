@@ -66,70 +66,9 @@ CrossTable(as.matrix(housetasks),
            prop.c=FALSE, 
            prop.chisq=FALSE)
 ```
+Si hay independencia, los perfiles fila serán homogéneos y similares al perfil medio
 
 ```{r}
-# Calcular perfiles fila
-perfil_fila <- prop.table(as.matrix(housetasks), margin = 1)
-
-# Calcular perfil fila medio (promedio entre filas)
-perfil_fila_medio <- colMeans(perfil_fila)
-perfil_fila_medio_df <- data.frame(
-  tareas = "Promedio filas",
-  Variable = names(perfil_fila_medio),
-  valor = as.numeric(perfil_fila_medio)
-)
-```
-
-```{r}
-# Perfiles fila (la suma de las frecuencias de cada fila da 1)
-
-pf_ht <-  round(prop.table(as.matrix(housetasks),1),3)#los perfiles fila
-df_pf_ht <- as.data.frame(pf_ht) 
-df_pf_ht$tareas <- rownames(pf_ht)
-df_pf_ht <- df_pf_ht %>% pivot_longer(!tareas, names_to = "Variable", values_to = "valor")
-
-ggplot(data=df_pf_ht, aes(y = valor, x= tareas, color=Variable))+geom_line(aes(group = Variable))+
-  labs(title = 'Distribución del responsable de las tareas del hogar según tareas',
-              y = 'Frecuencia', x = 'Tareas') +
-  scale_color_viridis_d(name='responsable tareas del hogar')+theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-```{r}
-# Calcular perfiles fila
-perfil_fila <- prop.table(as.matrix(housetasks), margin = 1)
-
-# Convertir a data frame largo
-df <- as.data.frame(perfil_fila)
-df$fila <- rownames(perfil_fila)
-df_long <- pivot_longer(df, -fila, names_to = "columna", values_to = "proporcion")
-
-# Calcular perfil fila medio (promedio entre filas)
-perfil_fila_medio <- colMeans(perfil_fila)
-perfil_fila_medio_df <- data.frame(
-  fila = "Promedio filas",
-  columna = names(perfil_fila_medio),
-  proporcion = as.numeric(perfil_fila_medio)
-)
-
-# Unir todo
-df_plot <- bind_rows(df_long, perfil_fila_medio_df)
-
-# Definir estilo de línea: solo "Fila3" será punteada
-df_plot$linetype <- ifelse(df_plot$fila == "Promedio filas", "Destacada", "Normal")
-
-# Graficar
-ggplot(df_plot, aes(x = columna, y = proporcion, color=fila))+ geom_line(aes(group = fila))+
-  scale_linetype_manual(values = c("Normal" = "solid", "Destacada" = "dashed"))+
-  labs(title = "Perfiles fila con perfil fila medio",
-       x = "Categoría (columnas)",
-       y = "Frecuencia relativa") 
-  theme_minimal()
-
-```
-
-```{r}
-library(tidyverse)
-
 # Calcular perfiles fila
 perfil_fila <- prop.table(as.matrix(housetasks), margin = 1)
 
@@ -171,52 +110,103 @@ ggplot(df_plot, aes(x = columna, y = proporcion, group = fila)) +
 ### Perfil Columna
 
 ```{r}
+CrossTable(as.matrix(housetasks),
+           prop.t=FALSE,
+           prop.r=FALSE, #proporciones filas
+           prop.c=TRUE, 
+           prop.chisq=FALSE)
 
-graficar_distribucion <- function(matriz, nombre_x = "Variable") {
-  # Convertir matriz a data frame
-  df <- as.data.frame(matriz)
-  
-  # Crear nueva columna con los nombres de fila
-  df[[nombre_x]] <- rownames(matriz)
-  
-  # Reorganizar a formato largo
-  df_long <- df %>% 
-    pivot_longer(cols = -all_of(nombre_x), names_to = "Variable", values_to = "valor")
-  
-  # Graficar
-  ggplot(data = df_long, aes(y = valor, x = Variable, color = .data[[nombre_x]])) +
-    geom_line(aes(group = .data[[nombre_x]])) +
-    labs(
-      title = paste("Distribución categoría de nivel de", nombre_x, "según nivel SC padres"),
-      y = "Frecuencia de niños",
-      x = "Nivel SC padres"
-    ) +
-    scale_color_viridis_d(name = nombre_x) +
-    theme_minimal()
-}
 
 ```
-
 
 ```{r}
-# Perfiles columna (frecuencias de niveles de atención, condicional a cada columna (categoría SC padres))
-df_col_ht <- round(prop.table(as.matrix(housetasks),2),3)
-df_col_ht
+
+# Calcular perfiles columna
+perfil_columna <- prop.table(as.matrix(housetasks), margin = 2)
+
+# Convertir a data frame largo, primero transponer
+df_col <- as.data.frame(perfil_columna)
+df_col$fila <- rownames(df_col)
+df_col_long <- pivot_longer(df_col, -fila, names_to = "columna", values_to = "proporcion")
+
+
+# Calcular perfil columna medio (promedio por fila)
+perfil_columna_medio <- rowMeans(perfil_columna)
+perfil_columna_medio_df <- data.frame(
+  columna = "Promedio columnas",
+  fila = names(perfil_columna_medio),
+  proporcion = as.numeric(perfil_columna_medio)
+)
+
+# Unir ambos
+df_plot_col <- bind_rows(df_col_long, perfil_columna_medio_df)
+
+ggplot(df_plot_col, aes(x = fila, y = proporcion, group = columna)) +
+  geom_line(data = subset(df_plot_col, columna != "Promedio columnas"),
+            aes(color = columna),
+            linewidth = 0.5) +
+  geom_line(data = subset(df_plot_col, columna == "Promedio columnas"),
+            color = "black", linetype = "dashed", linewidth = 1.2) +
+  labs(title = "Perfiles columna con perfil columna medio punteado",
+       x = " ",
+       y = "Frecuencia relativa",
+       color = "Columna") +
+  theme_minimal()+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ```
-```{r}
-# Supongamos que bd_col es una matriz de frecuencias
-graficar_distribucion(df_col_ht, nombre_x = "tareas")
-```
+
 ## Biplot
+
+- El AC es similar a PCA, pero para **variables categóricas**
+
+- Es una técnica descriptiva que busca representar gráficamente datos categóricos a fin de identificar correspondencia o asociación entre las categorías de filas y columnas. 
+
+- El **objetivo es reducir la dimensionalidad** (en general 2 ejes principales): se pretende proyectar los puntos fila en un espacio de dimensión menor de manera que las filas que tengan la misma estructura estén próximas y las que tengan una estructura muy diferente, alejadas (ídem columnas)
+
+- En lugar de trabajar con la matriz varianzas/covarianzas o correlaciones como en PCA, se utiliza la matriz de distancias chicuadrado
+
+- Se extraen los ejes principalesde manera de maximizar la asociación entre filas y columnas (máxima inercia)
+
+- Estos ejes son combinaciones linealesde las variables originales y son independientes entre sí
+
 
 ¿Están relacionadas Las tareas del hogar con quien realiza la tarea en la pareja?
 
 ```{r}
 house.ca <- CA(housetasks, graph = FALSE)
+```
 
-# Análisis de correspondencias de filas y columnas en simultáneo
-fviz_ca_biplot(house.ca) +
- theme(axis.text.x = element_text(angle=0)) + labs(title = 'Biplot de Análisis de Correspondencia Housetasks')+theme(panel.background = element_rect(fill = "grey95"))
+```{r}
+# Distancia chi² de filas al perfil medio
+dist_filas <- rowSums(house.ca$row$coord^2)
+
+# Distancia chi² de columnas al perfil medio
+dist_columnas <- rowSums(house.ca$col$coord^2)
+
+# a data frame
+df_dist_filas <- data.frame(
+  Categoria = rownames(housetasks),
+  Distancia_Chi2 = dist_filas,
+  Tipo = "Fila"
+)
+
+df_dist_columnas <- data.frame(
+  Categoria = colnames(housetasks),
+  Distancia_Chi2 = dist_columnas,
+  Tipo = "Columna"
+)
+
+df_dists <- bind_rows(df_dist_filas, df_dist_columnas)
+
+# Gráfico
+ggplot(df_dists, aes(x = reorder(Categoria, Distancia_Chi2), y = Distancia_Chi2, fill = Tipo)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~Tipo, scales = "free") +
+  coord_flip() +
+  labs(title = "Distancias chi² de filas y columnas",
+       x = "", y = "Distancia chi² al perfil medio") +
+  theme_minimal()
+
 ```
 
 ** Inercia**
@@ -231,6 +221,13 @@ esperadas, y por lo tanto mayor dependencia entre filas y columnas, mayor
 inercia, mayor $\chi^{2}$
 
 - Equivale a la **varianza total** en ACP
+
+```{r}
+# Análisis de correspondencias de filas y columnas en simultáneo
+fviz_ca_biplot(house.ca) +
+ theme(axis.text.x = element_text(angle=0)) + labs(title = 'Biplot de Análisis de Correspondencia Housetasks')+theme(panel.background = element_rect(fill = "grey95"))
+```
+
 
 
 ```{r}
