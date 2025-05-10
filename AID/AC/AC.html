@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.55">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pamela E. Pairo">
+
+<title>Análisis de Correspondencia Simple y Múltiple</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="AC_files/libs/clipboard/clipboard.min.js"></script>
+<script src="AC_files/libs/quarto-html/quarto.js"></script>
+<script src="AC_files/libs/quarto-html/popper.min.js"></script>
+<script src="AC_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="AC_files/libs/quarto-html/anchor.min.js"></script>
+<link href="AC_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="AC_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="AC_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="AC_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="AC_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#análisis-de-correspondencia-simple" id="toc-análisis-de-correspondencia-simple" class="nav-link active" data-scroll-target="#análisis-de-correspondencia-simple">Análisis de Correspondencia Simple</a>
+  <ul class="collapse">
+  <li><a href="#test-de-independencia" id="toc-test-de-independencia" class="nav-link" data-scroll-target="#test-de-independencia">Test de Independencia</a></li>
+  <li><a href="#análisis-de-perfiles" id="toc-análisis-de-perfiles" class="nav-link" data-scroll-target="#análisis-de-perfiles">Análisis de perfiles</a>
+  <ul class="collapse">
+  <li><a href="#perfil-fila" id="toc-perfil-fila" class="nav-link" data-scroll-target="#perfil-fila">Perfil Fila</a></li>
+  <li><a href="#perfil-columna" id="toc-perfil-columna" class="nav-link" data-scroll-target="#perfil-columna">Perfil Columna</a></li>
+  </ul></li>
+  <li><a href="#biplot" id="toc-biplot" class="nav-link" data-scroll-target="#biplot">Biplot</a></li>
+  </ul></li>
+  <li><a href="#análisis-de-correspondencia-múltiple" id="toc-análisis-de-correspondencia-múltiple" class="nav-link" data-scroll-target="#análisis-de-correspondencia-múltiple">Análisis de Correspondencia Múltiple</a>
+  <ul class="collapse">
+  <li><a href="#mca" id="toc-mca" class="nav-link" data-scroll-target="#mca">MCA</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Análisis de Correspondencia Simple y Múltiple</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Código</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Mostrar todo el código</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Ocultar todo el código</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Ver el código fuente</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Pamela E. Pairo </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(housetasks)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>housetasks</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Wife Alternating Husband Jointly
+Laundry     156          14       2       4
+Main_meal   124          20       5       4
+Dinner       77          11       7      13
+Breakfeast   82          36      15       7
+Tidying      53          11       1      57
+Dishes       32          24       4      53
+Shopping     33          23       9      55
+Official     12          46      23      15
+Driving      10          51      75       3
+Finances     13          13      21      66
+Insurance     8           1      53      77
+Repairs       0           3     160       2
+Holidays      0           1       6     153</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">as.table</span>(<span class="fu">as.matrix</span>(housetasks))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>gplots<span class="sc">::</span><span class="fu">balloonplot</span>(<span class="fu">t</span>(dt), </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">main =</span><span class="st">"Tareas del hogar"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">xlab =</span><span class="st">""</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ylab=</span><span class="st">""</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">label =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">show.margins =</span> <span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="análisis-de-correspondencia-simple" class="level1">
+<h1>Análisis de Correspondencia Simple</h1>
+<section id="test-de-independencia" class="level2">
+<h2 class="anchored" data-anchor-id="test-de-independencia">Test de Independencia</h2>
+<p><strong>Supuestos</strong></p>
+<ul>
+<li>El tamaño de muestra n debe ser mayor a 50</li>
+<li>Las observaciones deben ser independientes</li>
+<li>Las frecuencias esperadas deben ser mayores a 5. Se admite como máximo un 20% de casillas con frecuencias esperadas menores a 5. Si no se cumple, puede solucionarse aumentando el tamaño de la muestra o agrupando categorías.</li>
+</ul>
+<p>Ho Las tareas de hogar y quien las realiza son independientes.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(housetasks)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  housetasks
+X-squared = 1944.5, df = 36, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+<section id="análisis-de-perfiles" class="level2">
+<h2 class="anchored" data-anchor-id="análisis-de-perfiles">Análisis de perfiles</h2>
+<section id="perfil-fila" class="level3">
+<h3 class="anchored" data-anchor-id="perfil-fila">Perfil Fila</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(<span class="fu">as.matrix</span>(housetasks),</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.t=</span><span class="cn">FALSE</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r=</span><span class="cn">TRUE</span>, <span class="co">#proporciones filas</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.c=</span><span class="cn">FALSE</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq=</span><span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 
+   Cell Contents
+|-------------------------|
+|                       N |
+|           N / Row Total |
+|-------------------------|
+
+ 
+Total Observations in Table:  1744 
+
+ 
+             |  
+             |        Wife | Alternating |     Husband |     Jointly |   Row Total | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Laundry |         156 |          14 |           2 |           4 |         176 | 
+             |       0.886 |       0.080 |       0.011 |       0.023 |       0.101 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+   Main_meal |         124 |          20 |           5 |           4 |         153 | 
+             |       0.810 |       0.131 |       0.033 |       0.026 |       0.088 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+      Dinner |          77 |          11 |           7 |          13 |         108 | 
+             |       0.713 |       0.102 |       0.065 |       0.120 |       0.062 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+  Breakfeast |          82 |          36 |          15 |           7 |         140 | 
+             |       0.586 |       0.257 |       0.107 |       0.050 |       0.080 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Tidying |          53 |          11 |           1 |          57 |         122 | 
+             |       0.434 |       0.090 |       0.008 |       0.467 |       0.070 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+      Dishes |          32 |          24 |           4 |          53 |         113 | 
+             |       0.283 |       0.212 |       0.035 |       0.469 |       0.065 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Shopping |          33 |          23 |           9 |          55 |         120 | 
+             |       0.275 |       0.192 |       0.075 |       0.458 |       0.069 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Official |          12 |          46 |          23 |          15 |          96 | 
+             |       0.125 |       0.479 |       0.240 |       0.156 |       0.055 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Driving |          10 |          51 |          75 |           3 |         139 | 
+             |       0.072 |       0.367 |       0.540 |       0.022 |       0.080 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Finances |          13 |          13 |          21 |          66 |         113 | 
+             |       0.115 |       0.115 |       0.186 |       0.584 |       0.065 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+   Insurance |           8 |           1 |          53 |          77 |         139 | 
+             |       0.058 |       0.007 |       0.381 |       0.554 |       0.080 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Repairs |           0 |           3 |         160 |           2 |         165 | 
+             |       0.000 |       0.018 |       0.970 |       0.012 |       0.095 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Holidays |           0 |           1 |           6 |         153 |         160 | 
+             |       0.000 |       0.006 |       0.037 |       0.956 |       0.092 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+Column Total |         600 |         254 |         381 |         509 |        1744 | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+
+ </code></pre>
+</div>
+</div>
+<p>Si hay independencia, los perfiles fila serán homogéneos y similares al perfil medio</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfiles fila</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>perfil_fila <span class="ot">&lt;-</span> <span class="fu">prop.table</span>(<span class="fu">as.matrix</span>(housetasks), <span class="at">margin =</span> <span class="dv">1</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a data frame largo</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(perfil_fila)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>fila <span class="ot">&lt;-</span> <span class="fu">rownames</span>(perfil_fila)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df, <span class="sc">-</span>fila, <span class="at">names_to =</span> <span class="st">"columna"</span>, <span class="at">values_to =</span> <span class="st">"proporcion"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfil fila medio</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>perfil_fila_medio <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(perfil_fila)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>perfil_fila_medio_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">fila =</span> <span class="st">"Promedio filas"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">columna =</span> <span class="fu">names</span>(perfil_fila_medio),</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">proporcion =</span> <span class="fu">as.numeric</span>(perfil_fila_medio)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Unir ambos</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_long, perfil_fila_medio_df)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Graficar</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_plot, <span class="fu">aes</span>(<span class="at">x =</span> columna, <span class="at">y =</span> proporcion, <span class="at">group =</span> fila)) <span class="sc">+</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Líneas normales con color automático</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot, fila <span class="sc">!=</span> <span class="st">"Promedio filas"</span>),</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">color =</span> fila),</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Línea negra y punteada para el promedio</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot, fila <span class="sc">==</span> <span class="st">"Promedio filas"</span>),</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Perfiles fila con perfil fila medio punteado"</span>,</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">" "</span>,</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frecuencia relativa"</span>,</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Fila"</span>) <span class="sc">+</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="perfil-columna" class="level3">
+<h3 class="anchored" data-anchor-id="perfil-columna">Perfil Columna</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(<span class="fu">as.matrix</span>(housetasks),</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.t=</span><span class="cn">FALSE</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r=</span><span class="cn">FALSE</span>, <span class="co">#proporciones filas</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.c=</span><span class="cn">TRUE</span>, </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq=</span><span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 
+   Cell Contents
+|-------------------------|
+|                       N |
+|           N / Col Total |
+|-------------------------|
+
+ 
+Total Observations in Table:  1744 
+
+ 
+             |  
+             |        Wife | Alternating |     Husband |     Jointly |   Row Total | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Laundry |         156 |          14 |           2 |           4 |         176 | 
+             |       0.260 |       0.055 |       0.005 |       0.008 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+   Main_meal |         124 |          20 |           5 |           4 |         153 | 
+             |       0.207 |       0.079 |       0.013 |       0.008 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+      Dinner |          77 |          11 |           7 |          13 |         108 | 
+             |       0.128 |       0.043 |       0.018 |       0.026 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+  Breakfeast |          82 |          36 |          15 |           7 |         140 | 
+             |       0.137 |       0.142 |       0.039 |       0.014 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Tidying |          53 |          11 |           1 |          57 |         122 | 
+             |       0.088 |       0.043 |       0.003 |       0.112 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+      Dishes |          32 |          24 |           4 |          53 |         113 | 
+             |       0.053 |       0.094 |       0.010 |       0.104 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Shopping |          33 |          23 |           9 |          55 |         120 | 
+             |       0.055 |       0.091 |       0.024 |       0.108 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Official |          12 |          46 |          23 |          15 |          96 | 
+             |       0.020 |       0.181 |       0.060 |       0.029 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Driving |          10 |          51 |          75 |           3 |         139 | 
+             |       0.017 |       0.201 |       0.197 |       0.006 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Finances |          13 |          13 |          21 |          66 |         113 | 
+             |       0.022 |       0.051 |       0.055 |       0.130 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+   Insurance |           8 |           1 |          53 |          77 |         139 | 
+             |       0.013 |       0.004 |       0.139 |       0.151 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+     Repairs |           0 |           3 |         160 |           2 |         165 | 
+             |       0.000 |       0.012 |       0.420 |       0.004 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+    Holidays |           0 |           1 |           6 |         153 |         160 | 
+             |       0.000 |       0.004 |       0.016 |       0.301 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+Column Total |         600 |         254 |         381 |         509 |        1744 | 
+             |       0.344 |       0.146 |       0.218 |       0.292 |             | 
+-------------|-------------|-------------|-------------|-------------|-------------|
+
+ </code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfiles columna</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>perfil_columna <span class="ot">&lt;-</span> <span class="fu">prop.table</span>(<span class="fu">as.matrix</span>(housetasks), <span class="at">margin =</span> <span class="dv">2</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a data frame largo, primero transponer</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df_col <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(perfil_columna)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>df_col<span class="sc">$</span>fila <span class="ot">&lt;-</span> <span class="fu">rownames</span>(df_col)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>df_col_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df_col, <span class="sc">-</span>fila, <span class="at">names_to =</span> <span class="st">"columna"</span>, <span class="at">values_to =</span> <span class="st">"proporcion"</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfil columna medio (promedio por fila)</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>perfil_columna_medio <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(perfil_columna)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>perfil_columna_medio_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">columna =</span> <span class="st">"Promedio columnas"</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">fila =</span> <span class="fu">names</span>(perfil_columna_medio),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">proporcion =</span> <span class="fu">as.numeric</span>(perfil_columna_medio)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Unir ambos</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>df_plot_col <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_col_long, perfil_columna_medio_df)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_plot_col, <span class="fu">aes</span>(<span class="at">x =</span> fila, <span class="at">y =</span> proporcion, <span class="at">group =</span> columna)) <span class="sc">+</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot_col, columna <span class="sc">!=</span> <span class="st">"Promedio columnas"</span>),</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">color =</span> columna),</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot_col, columna <span class="sc">==</span> <span class="st">"Promedio columnas"</span>),</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Perfiles columna con perfil columna medio punteado"</span>,</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">" "</span>,</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frecuencia relativa"</span>,</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Columna"</span>) <span class="sc">+</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="biplot" class="level2">
+<h2 class="anchored" data-anchor-id="biplot">Biplot</h2>
+<ul>
+<li><p>El AC es similar a PCA, pero para <strong>variables categóricas</strong></p></li>
+<li><p>Es una técnica descriptiva que busca representar gráficamente datos categóricos a fin de identificar correspondencia o asociación entre las categorías de filas y columnas.</p></li>
+<li><p>El <strong>objetivo es reducir la dimensionalidad</strong> (en general 2 ejes principales): se pretende proyectar los puntos fila en un espacio de dimensión menor de manera que las filas que tengan la misma estructura estén próximas y las que tengan una estructura muy diferente, alejadas (ídem columnas)</p></li>
+<li><p>En lugar de trabajar con la matriz varianzas/covarianzas o correlaciones como en PCA, se utiliza la matriz de distancias chi-cuadrado</p></li>
+<li><p>Se extraen los ejes principales de manera de maximizar la asociación entre filas y columnas (máxima inercia)</p></li>
+<li><p>Estos ejes son combinaciones lineales de las variables originales y son independientes entre sí</p></li>
+</ul>
+<p>¿Están relacionadas Las tareas del hogar con quien realiza la tarea en la pareja?</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>house.ca <span class="ot">&lt;-</span> <span class="fu">CA</span>(housetasks, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distancia chi² de filas al perfil medio</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dist_filas <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(house.ca<span class="sc">$</span>row<span class="sc">$</span>coord<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Distancia chi² de columnas al perfil medio</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>dist_columnas <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(house.ca<span class="sc">$</span>col<span class="sc">$</span>coord<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># a data frame</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>df_dist_filas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Categoria =</span> <span class="fu">rownames</span>(housetasks),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Distancia_Chi2 =</span> dist_filas,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tipo =</span> <span class="st">"Fila"</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>df_dist_columnas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Categoria =</span> <span class="fu">colnames</span>(housetasks),</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Distancia_Chi2 =</span> dist_columnas,</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tipo =</span> <span class="st">"Columna"</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>df_dists <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_dist_filas, df_dist_columnas)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Gráfico</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_dists, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(Categoria, Distancia_Chi2), <span class="at">y =</span> Distancia_Chi2, <span class="at">fill =</span> Tipo)) <span class="sc">+</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Tipo, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distancias chi² de filas y columnas"</span>,</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Distancia chi² al perfil medio"</span>) <span class="sc">+</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Inercia</strong></p>
+<ul>
+<li><p>Es una medida de la falta de independencia, resume la información total contenida en la tabla de doble entrada.</p></li>
+<li><p>Está directamente relacionada con el estadístico <span class="math inline">\(\chi^{2}\)</span>: <span class="math inline">\(I =\frac{\chi^{2}}{n}\)</span></p></li>
+<li><p>Cuanto mayor sea la diferencia entre las frecuencias observadas y las esperadas, y por lo tanto mayor dependencia entre filas y columnas, mayor inercia, mayor <span class="math inline">\(\chi^{2}\)</span></p></li>
+<li><p>Equivale a la <strong>varianza total</strong> en ACP</p></li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de correspondencias de filas y columnas en simultáneo</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_biplot</span>(house.ca) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Biplot de Análisis de Correspondencia Housetasks'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Cuanto mayor la distancia al origen, mayor es la contribución a la falta de independencia</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(house.ca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">50</span>))<span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Scree plot'</span>,  <span class="at">x =</span> <span class="st">'Dimensión'</span>, <span class="at">y =</span> <span class="st">'Contribución inercia explicada'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_row</span>(house.ca, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">repel =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">col.row =</span> <span class="st">"cos2"</span>, <span class="co"># color de puntos</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">label =</span> <span class="st">"all"</span>, </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">title =</span> <span class="st">"Perfiles fila - Análisis de Correspondencias"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="análisis-de-correspondencia-múltiple" class="level1">
+<h1>Análisis de Correspondencia Múltiple</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Titanic"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Paso a data frame</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando la tabla de frecuencias</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> titanic[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(titanic), titanic[,<span class="dv">5</span>]),<span class="sc">-</span><span class="dv">5</span>]</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Reseteo nombre de filas</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(titanic) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(titanic)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Class  Sex   Age Survived
+1   3rd Male Child       No
+2   3rd Male Child       No
+3   3rd Male Child       No
+4   3rd Male Child       No
+5   3rd Male Child       No
+6   3rd Male Child       No</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Armo matriz de Burt</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(anacor)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>burt <span class="ot">&lt;-</span> <span class="fu">burtTable</span>(titanic)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>burt</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Class.1st Class.2nd Class.3rd Class.Crew Sex.Male Sex.Female
+Class.1st          325         0         0          0      180        145
+Class.2nd            0       285         0          0      179        106
+Class.3rd            0         0       706          0      510        196
+Class.Crew           0         0         0        885      862         23
+Sex.Male           180       179       510        862     1731          0
+Sex.Female         145       106       196         23        0        470
+Age.Child            6        24        79          0       64         45
+Age.Adult          319       261       627        885     1667        425
+Survived.No        122       167       528        673     1364        126
+Survived.Yes       203       118       178        212      367        344
+             Age.Child Age.Adult Survived.No Survived.Yes
+Class.1st            6       319         122          203
+Class.2nd           24       261         167          118
+Class.3rd           79       627         528          178
+Class.Crew           0       885         673          212
+Sex.Male            64      1667        1364          367
+Sex.Female          45       425         126          344
+Age.Child          109         0          52           57
+Age.Adult            0      2092        1438          654
+Survived.No         52      1438        1490            0
+Survived.Yes        57       654           0          711</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Grafico matriz de Burt</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>burt2 <span class="ot">&lt;-</span> <span class="fu">as.table</span>(<span class="fu">as.matrix</span>(burt))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>gplots<span class="sc">::</span><span class="fu">balloonplot</span>((burt2), <span class="at">main=</span><span class="st">'Matriz de Burt de datos Titanic'</span>, <span class="at">label=</span>F, <span class="at">show.margins =</span> F,<span class="at">dotcolor=</span><span class="st">"pink"</span>, <span class="at">text.size=</span><span class="fl">0.7</span>,<span class="at">colsrt=</span><span class="dv">45</span>,<span class="at">colmar=</span><span class="fl">2.5</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="mca" class="level2">
+<h2 class="anchored" data-anchor-id="mca">MCA</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>titanic_mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(titanic, <span class="at">graph=</span>F)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(titanic_mca)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+MCA(X = titanic, graph = F) 
+
+
+Eigenvalues
+                       Dim.1   Dim.2   Dim.3   Dim.4   Dim.5   Dim.6
+Variance               0.445   0.305   0.250   0.205   0.179   0.116
+% of var.             29.672  20.336  16.667  13.669  11.901   7.755
+Cumulative % of var.  29.672  50.008  66.675  80.344  92.245 100.000
+
+Individuals (the 10 first)
+          Dim.1    ctr   cos2    Dim.2    ctr   cos2    Dim.3    ctr   cos2  
+1      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+2      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+3      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+4      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+5      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+6      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+7      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+8      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+9      |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+10     |  0.186  0.004  0.006 |  1.901  0.538  0.656 | -0.318  0.018  0.018 |
+
+Categories
+           Dim.1     ctr    cos2  v.test     Dim.2     ctr    cos2  v.test  
+1st    |   1.152  11.006   0.230  22.489 |  -1.231  18.351   0.263 -24.040 |
+2nd    |   0.651   3.085   0.063  11.781 |   0.253   0.677   0.009   4.568 |
+3rd    |   0.131   0.307   0.008   4.210 |   1.070  30.100   0.541  34.490 |
+Crew   |  -0.737  12.266   0.365 -28.346 |  -0.483   7.679   0.157 -18.568 |
+Male   |  -0.428   8.077   0.673 -38.489 |  -0.002   0.000   0.000  -0.218 |
+Female |   1.575  29.746   0.673  38.489 |   0.009   0.001   0.000   0.218 |
+Child  |   1.302   4.714   0.088  13.938 |   2.943  35.145   0.451  31.505 |
+Adult  |  -0.068   0.246   0.088 -13.938 |  -0.153   1.831   0.451 -31.505 |
+No     |  -0.509   9.870   0.544 -34.593 |   0.190   2.008   0.076  12.917 |
+Yes    |   1.068  20.684   0.544  34.593 |  -0.399   4.208   0.076 -12.917 |
+         Dim.3     ctr    cos2  v.test  
+1st     -0.890  11.696   0.137 -17.375 |
+2nd      2.392  74.091   0.851  43.272 |
+3rd     -0.659  13.933   0.205 -21.243 |
+Crew     0.082   0.272   0.005   3.165 |
+Male     0.003   0.000   0.000   0.227 |
+Female  -0.009   0.002   0.000  -0.227 |
+Child    0.024   0.003   0.000   0.255 |
+Adult   -0.001   0.000   0.000  -0.255 |
+No      -0.004   0.001   0.000  -0.255 |
+Yes      0.008   0.002   0.000   0.255 |
+
+Categorical variables (eta2)
+           Dim.1 Dim.2 Dim.3  
+Class    | 0.475 0.693 1.000 |
+Sex      | 0.673 0.000 0.000 |
+Age      | 0.088 0.451 0.000 |
+Survived | 0.544 0.076 0.000 |</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(titanic_mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_biplot</span>(titanic_mca, </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">label=</span><span class="st">"var"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.ind=</span><span class="st">'gray'</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">invisible=</span><span class="st">"quali"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según representatividad</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(titanic_mca,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha.var=</span><span class="st">"cos2"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 1 </span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 2</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">2</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensiones 1 y 2 </span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Análisis de individuos</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de individuos</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_ind</span>(titanic_mca,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.ind =</span> <span class="st">"cos2"</span>, </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">rapel=</span><span class="cn">TRUE</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co">#             select.ind = list(contrib = 400)</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Re-analisis de datos Titanic</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten a 2-D, paso a dataframe y reseteo índice de filas</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>Titanic_2D <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">structable</span>(Class<span class="sc">+</span>Survived<span class="sc">~</span>Sex<span class="sc">+</span>Age, Titanic))</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic_2D)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>df_t2D<span class="sc">$</span>combinacion <span class="ot">&lt;-</span> <span class="fu">rownames</span>(df_t2D)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando dataframe</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df_t2D, <span class="at">cols=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>),<span class="at">names_to=</span><span class="st">'sobrevivió'</span>,<span class="at">values_to=</span><span class="st">'valores'</span> )</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(df_t2D)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>df_t2D_exp <span class="ot">&lt;-</span> df_t2D[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(df_t2D), df_t2D[,<span class="dv">3</span>]),<span class="sc">-</span><span class="dv">3</span>]</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D_exp) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>Tit2.mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(df_t2D_exp, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Tit2.mca)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+MCA(X = df_t2D_exp, graph = FALSE) 
+
+
+Eigenvalues
+                       Dim.1   Dim.2   Dim.3   Dim.4   Dim.5   Dim.6   Dim.7
+Variance               0.823   0.608   0.536   0.500   0.500   0.500   0.500
+% of var.             16.460  12.157  10.714  10.000  10.000  10.000  10.000
+Cumulative % of var.  16.460  28.618  39.332  49.332  59.332  69.332  79.332
+                       Dim.8   Dim.9  Dim.10
+Variance               0.464   0.392   0.177
+% of var.              9.286   7.843   3.540
+Cumulative % of var.  88.618  96.460 100.000
+
+Individuals (the 10 first)
+                Dim.1    ctr   cos2    Dim.2    ctr   cos2    Dim.3    ctr
+1            |  1.516  0.127  0.106 |  0.657  0.032  0.020 | -2.599  0.573
+2            |  1.516  0.127  0.106 |  0.657  0.032  0.020 | -2.599  0.573
+3            |  1.516  0.127  0.106 |  0.657  0.032  0.020 | -2.599  0.573
+4            |  1.516  0.127  0.106 |  0.657  0.032  0.020 | -2.599  0.573
+5            |  1.516  0.127  0.106 |  0.657  0.032  0.020 | -2.599  0.573
+6            |  1.775  0.174  0.123 |  2.431  0.442  0.232 | -1.173  0.117
+7            |  1.775  0.174  0.123 |  2.431  0.442  0.232 | -1.173  0.117
+8            |  1.775  0.174  0.123 |  2.431  0.442  0.232 | -1.173  0.117
+9            |  1.775  0.174  0.123 |  2.431  0.442  0.232 | -1.173  0.117
+10           |  1.775  0.174  0.123 |  2.431  0.442  0.232 | -1.173  0.117
+               cos2  
+1             0.312 |
+2             0.312 |
+3             0.312 |
+4             0.312 |
+5             0.312 |
+6             0.054 |
+7             0.054 |
+8             0.054 |
+9             0.054 |
+10            0.054 |
+
+Categories (the 10 first)
+                 Dim.1     ctr    cos2  v.test     Dim.2     ctr    cos2
+Female_Adult |   1.671  32.759   0.668  38.343 |  -0.691   7.585   0.114
+Female_Child |   1.541   2.948   0.050  10.439 |   3.675  22.708   0.282
+Male_Adult   |  -0.511  12.022   0.816 -42.361 |  -0.033   0.068   0.003
+Male_Child   |   1.134   2.271   0.039   9.203 |   2.865  19.639   0.246
+1st_No       |  -0.680   1.559   0.027  -7.732 |  -0.253   0.292   0.004
+1st_Yes      |   1.617  14.645   0.266  24.171 |  -1.841  25.718   0.344
+2nd_No       |  -0.528   1.286   0.023  -7.100 |  -0.391   0.952   0.013
+2nd_Yes      |   2.086  14.174   0.247  23.289 |   0.925   3.772   0.048
+3rd_No       |   0.049   0.035   0.001   1.296 |   0.777  11.906   0.190
+3rd_Yes      |   1.087   5.803   0.104  15.120 |   0.878   5.123   0.068
+              v.test     Dim.3     ctr    cos2  v.test  
+Female_Adult -15.857 |   0.008   0.001   0.000   0.175 |
+Female_Child  24.900 |   3.496  23.322   0.255  23.690 |
+Male_Adult    -2.736 |   0.024   0.041   0.002   1.986 |
+Male_Child    23.259 |  -3.133  26.637   0.294 -25.430 |
+1st_No        -2.875 |   0.328   0.556   0.006   3.726 |
+1st_Yes      -27.527 |  -0.671   3.881   0.046 -10.038 |
+2nd_No        -5.248 |   0.318   0.715   0.008   4.269 |
+2nd_Yes       10.324 |   1.415  10.021   0.113  15.798 |
+3rd_No        20.468 |  -1.067  25.513   0.360 -28.128 |
+3rd_Yes       12.210 |   0.833   5.236   0.061  11.588 |
+
+Categorical variables (eta2)
+               Dim.1 Dim.2 Dim.3  
+combinacion  | 0.823 0.608 0.536 |
+sobrevivió   | 0.823 0.608 0.536 |</code></pre>
+</div>
+</div>
+<p>Scree plot</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scree plot</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(Tit2.mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>colorest1 <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca,<span class="at">invisible=</span><span class="st">"quali"</span>, <span class="at">col.var=</span>colorest1)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca, </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.var=</span> <span class="st">"contrib"</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel=</span><span class="cn">TRUE</span>, </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de contribución de variables a dimensión 1</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(Tit2.mca,<span class="at">choice=</span><span class="st">"var"</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes=</span><span class="dv">1</span>, </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span><span class="st">"royalblue"</span>,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span><span class="st">"black"</span>)<span class="sc">+</span> </span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Contribución de variables'</span>,  <span class="at">x =</span> <span class="st">'Variables'</span>, <span class="at">y =</span> <span class="st">'Contribución (%)'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="AC_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<!-- -->
+
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb38" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Análisis de Correspondencia Simple y Múltiple"</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela E. Pairo"</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme:  flatly</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(echo = TRUE)</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(message = FALSE)</span></span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = FALSE)</span></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a><span class="in">library(factoextra)</span></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a><span class="in">library(FactoMineR)</span></span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a><span class="in">library(gmodels)</span></span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a><span class="in">library(vcdExtra)</span></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(housetasks)</span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>housetasks</span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">as.table</span>(<span class="fu">as.matrix</span>(housetasks))</span>
+<span id="cb38-37"><a href="#cb38-37" aria-hidden="true" tabindex="-1"></a>gplots<span class="sc">::</span><span class="fu">balloonplot</span>(<span class="fu">t</span>(dt), </span>
+<span id="cb38-38"><a href="#cb38-38" aria-hidden="true" tabindex="-1"></a>                    <span class="at">main =</span><span class="st">"Tareas del hogar"</span>, </span>
+<span id="cb38-39"><a href="#cb38-39" aria-hidden="true" tabindex="-1"></a>                    <span class="at">xlab =</span><span class="st">""</span>, </span>
+<span id="cb38-40"><a href="#cb38-40" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ylab=</span><span class="st">""</span>,</span>
+<span id="cb38-41"><a href="#cb38-41" aria-hidden="true" tabindex="-1"></a>                    <span class="at">label =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb38-42"><a href="#cb38-42" aria-hidden="true" tabindex="-1"></a>                    <span class="at">show.margins =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb38-43"><a href="#cb38-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-44"><a href="#cb38-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-45"><a href="#cb38-45" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis de Correspondencia Simple</span></span>
+<span id="cb38-46"><a href="#cb38-46" aria-hidden="true" tabindex="-1"></a><span class="fu">## Test de Independencia</span></span>
+<span id="cb38-47"><a href="#cb38-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-48"><a href="#cb38-48" aria-hidden="true" tabindex="-1"></a>**Supuestos**</span>
+<span id="cb38-49"><a href="#cb38-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-50"><a href="#cb38-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El tamaño de muestra n debe ser mayor a 50</span>
+<span id="cb38-51"><a href="#cb38-51" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las observaciones deben ser independientes</span>
+<span id="cb38-52"><a href="#cb38-52" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las frecuencias esperadas deben ser mayores a 5. Se admite como máximo un 20% de casillas con frecuencias esperadas menores a 5. Si no se cumple, puede solucionarse aumentando el tamaño de la muestra o agrupando categorías.</span>
+<span id="cb38-53"><a href="#cb38-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-54"><a href="#cb38-54" aria-hidden="true" tabindex="-1"></a>Ho Las tareas de hogar y quien las realiza son independientes.</span>
+<span id="cb38-55"><a href="#cb38-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-58"><a href="#cb38-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-59"><a href="#cb38-59" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(housetasks)</span>
+<span id="cb38-60"><a href="#cb38-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-61"><a href="#cb38-61" aria-hidden="true" tabindex="-1"></a><span class="fu">## Análisis de perfiles</span></span>
+<span id="cb38-62"><a href="#cb38-62" aria-hidden="true" tabindex="-1"></a><span class="fu">### Perfil Fila</span></span>
+<span id="cb38-63"><a href="#cb38-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-66"><a href="#cb38-66" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-67"><a href="#cb38-67" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(<span class="fu">as.matrix</span>(housetasks),</span>
+<span id="cb38-68"><a href="#cb38-68" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.t=</span><span class="cn">FALSE</span>,</span>
+<span id="cb38-69"><a href="#cb38-69" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r=</span><span class="cn">TRUE</span>, <span class="co">#proporciones filas</span></span>
+<span id="cb38-70"><a href="#cb38-70" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.c=</span><span class="cn">FALSE</span>, </span>
+<span id="cb38-71"><a href="#cb38-71" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq=</span><span class="cn">FALSE</span>)</span>
+<span id="cb38-72"><a href="#cb38-72" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-73"><a href="#cb38-73" aria-hidden="true" tabindex="-1"></a>Si hay independencia, los perfiles fila serán homogéneos y similares al perfil medio</span>
+<span id="cb38-74"><a href="#cb38-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-77"><a href="#cb38-77" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-78"><a href="#cb38-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfiles fila</span></span>
+<span id="cb38-79"><a href="#cb38-79" aria-hidden="true" tabindex="-1"></a>perfil_fila <span class="ot">&lt;-</span> <span class="fu">prop.table</span>(<span class="fu">as.matrix</span>(housetasks), <span class="at">margin =</span> <span class="dv">1</span>)</span>
+<span id="cb38-80"><a href="#cb38-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-81"><a href="#cb38-81" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a data frame largo</span></span>
+<span id="cb38-82"><a href="#cb38-82" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(perfil_fila)</span>
+<span id="cb38-83"><a href="#cb38-83" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>fila <span class="ot">&lt;-</span> <span class="fu">rownames</span>(perfil_fila)</span>
+<span id="cb38-84"><a href="#cb38-84" aria-hidden="true" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df, <span class="sc">-</span>fila, <span class="at">names_to =</span> <span class="st">"columna"</span>, <span class="at">values_to =</span> <span class="st">"proporcion"</span>)</span>
+<span id="cb38-85"><a href="#cb38-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-86"><a href="#cb38-86" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfil fila medio</span></span>
+<span id="cb38-87"><a href="#cb38-87" aria-hidden="true" tabindex="-1"></a>perfil_fila_medio <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(perfil_fila)</span>
+<span id="cb38-88"><a href="#cb38-88" aria-hidden="true" tabindex="-1"></a>perfil_fila_medio_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb38-89"><a href="#cb38-89" aria-hidden="true" tabindex="-1"></a>  <span class="at">fila =</span> <span class="st">"Promedio filas"</span>,</span>
+<span id="cb38-90"><a href="#cb38-90" aria-hidden="true" tabindex="-1"></a>  <span class="at">columna =</span> <span class="fu">names</span>(perfil_fila_medio),</span>
+<span id="cb38-91"><a href="#cb38-91" aria-hidden="true" tabindex="-1"></a>  <span class="at">proporcion =</span> <span class="fu">as.numeric</span>(perfil_fila_medio)</span>
+<span id="cb38-92"><a href="#cb38-92" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-93"><a href="#cb38-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-94"><a href="#cb38-94" aria-hidden="true" tabindex="-1"></a><span class="co"># Unir ambos</span></span>
+<span id="cb38-95"><a href="#cb38-95" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_long, perfil_fila_medio_df)</span>
+<span id="cb38-96"><a href="#cb38-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-97"><a href="#cb38-97" aria-hidden="true" tabindex="-1"></a><span class="co"># Graficar</span></span>
+<span id="cb38-98"><a href="#cb38-98" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_plot, <span class="fu">aes</span>(<span class="at">x =</span> columna, <span class="at">y =</span> proporcion, <span class="at">group =</span> fila)) <span class="sc">+</span></span>
+<span id="cb38-99"><a href="#cb38-99" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Líneas normales con color automático</span></span>
+<span id="cb38-100"><a href="#cb38-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot, fila <span class="sc">!=</span> <span class="st">"Promedio filas"</span>),</span>
+<span id="cb38-101"><a href="#cb38-101" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">color =</span> fila),</span>
+<span id="cb38-102"><a href="#cb38-102" aria-hidden="true" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb38-103"><a href="#cb38-103" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Línea negra y punteada para el promedio</span></span>
+<span id="cb38-104"><a href="#cb38-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot, fila <span class="sc">==</span> <span class="st">"Promedio filas"</span>),</span>
+<span id="cb38-105"><a href="#cb38-105" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb38-106"><a href="#cb38-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Perfiles fila con perfil fila medio punteado"</span>,</span>
+<span id="cb38-107"><a href="#cb38-107" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">" "</span>,</span>
+<span id="cb38-108"><a href="#cb38-108" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frecuencia relativa"</span>,</span>
+<span id="cb38-109"><a href="#cb38-109" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Fila"</span>) <span class="sc">+</span></span>
+<span id="cb38-110"><a href="#cb38-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb38-111"><a href="#cb38-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-112"><a href="#cb38-112" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-113"><a href="#cb38-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-114"><a href="#cb38-114" aria-hidden="true" tabindex="-1"></a><span class="fu">### Perfil Columna</span></span>
+<span id="cb38-115"><a href="#cb38-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-118"><a href="#cb38-118" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-119"><a href="#cb38-119" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(<span class="fu">as.matrix</span>(housetasks),</span>
+<span id="cb38-120"><a href="#cb38-120" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.t=</span><span class="cn">FALSE</span>,</span>
+<span id="cb38-121"><a href="#cb38-121" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r=</span><span class="cn">FALSE</span>, <span class="co">#proporciones filas</span></span>
+<span id="cb38-122"><a href="#cb38-122" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.c=</span><span class="cn">TRUE</span>, </span>
+<span id="cb38-123"><a href="#cb38-123" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq=</span><span class="cn">FALSE</span>)</span>
+<span id="cb38-124"><a href="#cb38-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-125"><a href="#cb38-125" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-126"><a href="#cb38-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-129"><a href="#cb38-129" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-130"><a href="#cb38-130" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfiles columna</span></span>
+<span id="cb38-131"><a href="#cb38-131" aria-hidden="true" tabindex="-1"></a>perfil_columna <span class="ot">&lt;-</span> <span class="fu">prop.table</span>(<span class="fu">as.matrix</span>(housetasks), <span class="at">margin =</span> <span class="dv">2</span>)</span>
+<span id="cb38-132"><a href="#cb38-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-133"><a href="#cb38-133" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a data frame largo, primero transponer</span></span>
+<span id="cb38-134"><a href="#cb38-134" aria-hidden="true" tabindex="-1"></a>df_col <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(perfil_columna)</span>
+<span id="cb38-135"><a href="#cb38-135" aria-hidden="true" tabindex="-1"></a>df_col<span class="sc">$</span>fila <span class="ot">&lt;-</span> <span class="fu">rownames</span>(df_col)</span>
+<span id="cb38-136"><a href="#cb38-136" aria-hidden="true" tabindex="-1"></a>df_col_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df_col, <span class="sc">-</span>fila, <span class="at">names_to =</span> <span class="st">"columna"</span>, <span class="at">values_to =</span> <span class="st">"proporcion"</span>)</span>
+<span id="cb38-137"><a href="#cb38-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-138"><a href="#cb38-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-139"><a href="#cb38-139" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular perfil columna medio (promedio por fila)</span></span>
+<span id="cb38-140"><a href="#cb38-140" aria-hidden="true" tabindex="-1"></a>perfil_columna_medio <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(perfil_columna)</span>
+<span id="cb38-141"><a href="#cb38-141" aria-hidden="true" tabindex="-1"></a>perfil_columna_medio_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb38-142"><a href="#cb38-142" aria-hidden="true" tabindex="-1"></a>  <span class="at">columna =</span> <span class="st">"Promedio columnas"</span>,</span>
+<span id="cb38-143"><a href="#cb38-143" aria-hidden="true" tabindex="-1"></a>  <span class="at">fila =</span> <span class="fu">names</span>(perfil_columna_medio),</span>
+<span id="cb38-144"><a href="#cb38-144" aria-hidden="true" tabindex="-1"></a>  <span class="at">proporcion =</span> <span class="fu">as.numeric</span>(perfil_columna_medio)</span>
+<span id="cb38-145"><a href="#cb38-145" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-146"><a href="#cb38-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-147"><a href="#cb38-147" aria-hidden="true" tabindex="-1"></a><span class="co"># Unir ambos</span></span>
+<span id="cb38-148"><a href="#cb38-148" aria-hidden="true" tabindex="-1"></a>df_plot_col <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_col_long, perfil_columna_medio_df)</span>
+<span id="cb38-149"><a href="#cb38-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-150"><a href="#cb38-150" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_plot_col, <span class="fu">aes</span>(<span class="at">x =</span> fila, <span class="at">y =</span> proporcion, <span class="at">group =</span> columna)) <span class="sc">+</span></span>
+<span id="cb38-151"><a href="#cb38-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot_col, columna <span class="sc">!=</span> <span class="st">"Promedio columnas"</span>),</span>
+<span id="cb38-152"><a href="#cb38-152" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">color =</span> columna),</span>
+<span id="cb38-153"><a href="#cb38-153" aria-hidden="true" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb38-154"><a href="#cb38-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">subset</span>(df_plot_col, columna <span class="sc">==</span> <span class="st">"Promedio columnas"</span>),</span>
+<span id="cb38-155"><a href="#cb38-155" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb38-156"><a href="#cb38-156" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Perfiles columna con perfil columna medio punteado"</span>,</span>
+<span id="cb38-157"><a href="#cb38-157" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">" "</span>,</span>
+<span id="cb38-158"><a href="#cb38-158" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frecuencia relativa"</span>,</span>
+<span id="cb38-159"><a href="#cb38-159" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Columna"</span>) <span class="sc">+</span></span>
+<span id="cb38-160"><a href="#cb38-160" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb38-161"><a href="#cb38-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-162"><a href="#cb38-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-163"><a href="#cb38-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-164"><a href="#cb38-164" aria-hidden="true" tabindex="-1"></a><span class="fu">## Biplot</span></span>
+<span id="cb38-165"><a href="#cb38-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-166"><a href="#cb38-166" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El AC es similar a PCA, pero para **variables categóricas**</span>
+<span id="cb38-167"><a href="#cb38-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-168"><a href="#cb38-168" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Es una técnica descriptiva que busca representar gráficamente datos categóricos a fin de identificar correspondencia o asociación entre las categorías de filas y columnas. </span>
+<span id="cb38-169"><a href="#cb38-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-170"><a href="#cb38-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El **objetivo es reducir la dimensionalidad** (en general 2 ejes principales): se pretende proyectar los puntos fila en un espacio de dimensión menor de manera que las filas que tengan la misma estructura estén próximas y las que tengan una estructura muy diferente, alejadas (ídem columnas)</span>
+<span id="cb38-171"><a href="#cb38-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-172"><a href="#cb38-172" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>En lugar de trabajar con la matriz varianzas/covarianzas o correlaciones como en PCA, se utiliza la matriz de distancias chi-cuadrado</span>
+<span id="cb38-173"><a href="#cb38-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-174"><a href="#cb38-174" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se extraen los ejes principales de manera de maximizar la asociación entre filas y columnas (máxima inercia)</span>
+<span id="cb38-175"><a href="#cb38-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-176"><a href="#cb38-176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Estos ejes son combinaciones lineales de las variables originales y son independientes entre sí</span>
+<span id="cb38-177"><a href="#cb38-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-178"><a href="#cb38-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-179"><a href="#cb38-179" aria-hidden="true" tabindex="-1"></a>¿Están relacionadas Las tareas del hogar con quien realiza la tarea en la pareja?</span>
+<span id="cb38-180"><a href="#cb38-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-183"><a href="#cb38-183" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-184"><a href="#cb38-184" aria-hidden="true" tabindex="-1"></a>house.ca <span class="ot">&lt;-</span> <span class="fu">CA</span>(housetasks, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb38-185"><a href="#cb38-185" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-186"><a href="#cb38-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-189"><a href="#cb38-189" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-190"><a href="#cb38-190" aria-hidden="true" tabindex="-1"></a><span class="co"># Distancia chi² de filas al perfil medio</span></span>
+<span id="cb38-191"><a href="#cb38-191" aria-hidden="true" tabindex="-1"></a>dist_filas <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(house.ca<span class="sc">$</span>row<span class="sc">$</span>coord<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb38-192"><a href="#cb38-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-193"><a href="#cb38-193" aria-hidden="true" tabindex="-1"></a><span class="co"># Distancia chi² de columnas al perfil medio</span></span>
+<span id="cb38-194"><a href="#cb38-194" aria-hidden="true" tabindex="-1"></a>dist_columnas <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(house.ca<span class="sc">$</span>col<span class="sc">$</span>coord<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb38-195"><a href="#cb38-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-196"><a href="#cb38-196" aria-hidden="true" tabindex="-1"></a><span class="co"># a data frame</span></span>
+<span id="cb38-197"><a href="#cb38-197" aria-hidden="true" tabindex="-1"></a>df_dist_filas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb38-198"><a href="#cb38-198" aria-hidden="true" tabindex="-1"></a>  <span class="at">Categoria =</span> <span class="fu">rownames</span>(housetasks),</span>
+<span id="cb38-199"><a href="#cb38-199" aria-hidden="true" tabindex="-1"></a>  <span class="at">Distancia_Chi2 =</span> dist_filas,</span>
+<span id="cb38-200"><a href="#cb38-200" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tipo =</span> <span class="st">"Fila"</span></span>
+<span id="cb38-201"><a href="#cb38-201" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-202"><a href="#cb38-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-203"><a href="#cb38-203" aria-hidden="true" tabindex="-1"></a>df_dist_columnas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb38-204"><a href="#cb38-204" aria-hidden="true" tabindex="-1"></a>  <span class="at">Categoria =</span> <span class="fu">colnames</span>(housetasks),</span>
+<span id="cb38-205"><a href="#cb38-205" aria-hidden="true" tabindex="-1"></a>  <span class="at">Distancia_Chi2 =</span> dist_columnas,</span>
+<span id="cb38-206"><a href="#cb38-206" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tipo =</span> <span class="st">"Columna"</span></span>
+<span id="cb38-207"><a href="#cb38-207" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-208"><a href="#cb38-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-209"><a href="#cb38-209" aria-hidden="true" tabindex="-1"></a>df_dists <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_dist_filas, df_dist_columnas)</span>
+<span id="cb38-210"><a href="#cb38-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-211"><a href="#cb38-211" aria-hidden="true" tabindex="-1"></a><span class="co"># Gráfico</span></span>
+<span id="cb38-212"><a href="#cb38-212" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_dists, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(Categoria, Distancia_Chi2), <span class="at">y =</span> Distancia_Chi2, <span class="at">fill =</span> Tipo)) <span class="sc">+</span></span>
+<span id="cb38-213"><a href="#cb38-213" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb38-214"><a href="#cb38-214" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Tipo, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb38-215"><a href="#cb38-215" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb38-216"><a href="#cb38-216" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distancias chi² de filas y columnas"</span>,</span>
+<span id="cb38-217"><a href="#cb38-217" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Distancia chi² al perfil medio"</span>) <span class="sc">+</span></span>
+<span id="cb38-218"><a href="#cb38-218" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb38-219"><a href="#cb38-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-220"><a href="#cb38-220" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-221"><a href="#cb38-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-222"><a href="#cb38-222" aria-hidden="true" tabindex="-1"></a>**Inercia**</span>
+<span id="cb38-223"><a href="#cb38-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-224"><a href="#cb38-224" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Es una medida de la falta de independencia, resume la información total</span>
+<span id="cb38-225"><a href="#cb38-225" aria-hidden="true" tabindex="-1"></a>contenida en la tabla de doble entrada.</span>
+<span id="cb38-226"><a href="#cb38-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-227"><a href="#cb38-227" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Está directamente relacionada con el estadístico $\chi^{2}$: $I =\frac{\chi^{2}}{n}$</span>
+<span id="cb38-228"><a href="#cb38-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-229"><a href="#cb38-229" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cuanto mayor sea la diferencia entre las frecuencias observadas y las</span>
+<span id="cb38-230"><a href="#cb38-230" aria-hidden="true" tabindex="-1"></a>esperadas, y por lo tanto mayor dependencia entre filas y columnas, mayor</span>
+<span id="cb38-231"><a href="#cb38-231" aria-hidden="true" tabindex="-1"></a>inercia, mayor $\chi^{2}$</span>
+<span id="cb38-232"><a href="#cb38-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-233"><a href="#cb38-233" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Equivale a la **varianza total** en ACP</span>
+<span id="cb38-234"><a href="#cb38-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-237"><a href="#cb38-237" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-238"><a href="#cb38-238" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de correspondencias de filas y columnas en simultáneo</span></span>
+<span id="cb38-239"><a href="#cb38-239" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_biplot</span>(house.ca) <span class="sc">+</span></span>
+<span id="cb38-240"><a href="#cb38-240" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Biplot de Análisis de Correspondencia Housetasks'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span>
+<span id="cb38-241"><a href="#cb38-241" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-242"><a href="#cb38-242" aria-hidden="true" tabindex="-1"></a>Cuanto mayor la distancia al origen, mayor es la contribución a la falta de independencia</span>
+<span id="cb38-243"><a href="#cb38-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-244"><a href="#cb38-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-247"><a href="#cb38-247" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-248"><a href="#cb38-248" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(house.ca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">50</span>))<span class="sc">+</span></span>
+<span id="cb38-249"><a href="#cb38-249" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Scree plot'</span>,  <span class="at">x =</span> <span class="st">'Dimensión'</span>, <span class="at">y =</span> <span class="st">'Contribución inercia explicada'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span>
+<span id="cb38-250"><a href="#cb38-250" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-251"><a href="#cb38-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-254"><a href="#cb38-254" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-255"><a href="#cb38-255" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_row</span>(house.ca, </span>
+<span id="cb38-256"><a href="#cb38-256" aria-hidden="true" tabindex="-1"></a>            <span class="at">repel =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb38-257"><a href="#cb38-257" aria-hidden="true" tabindex="-1"></a>            <span class="at">col.row =</span> <span class="st">"cos2"</span>, <span class="co"># color de puntos</span></span>
+<span id="cb38-258"><a href="#cb38-258" aria-hidden="true" tabindex="-1"></a>            <span class="at">label =</span> <span class="st">"all"</span>, </span>
+<span id="cb38-259"><a href="#cb38-259" aria-hidden="true" tabindex="-1"></a>            <span class="at">title =</span> <span class="st">"Perfiles fila - Análisis de Correspondencias"</span>)</span>
+<span id="cb38-260"><a href="#cb38-260" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-261"><a href="#cb38-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-262"><a href="#cb38-262" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis de Correspondencia Múltiple</span></span>
+<span id="cb38-263"><a href="#cb38-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-266"><a href="#cb38-266" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-267"><a href="#cb38-267" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Titanic"</span>)</span>
+<span id="cb38-268"><a href="#cb38-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-269"><a href="#cb38-269" aria-hidden="true" tabindex="-1"></a><span class="co"># Paso a data frame</span></span>
+<span id="cb38-270"><a href="#cb38-270" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic)</span>
+<span id="cb38-271"><a href="#cb38-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-272"><a href="#cb38-272" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando la tabla de frecuencias</span></span>
+<span id="cb38-273"><a href="#cb38-273" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> titanic[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(titanic), titanic[,<span class="dv">5</span>]),<span class="sc">-</span><span class="dv">5</span>]</span>
+<span id="cb38-274"><a href="#cb38-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-275"><a href="#cb38-275" aria-hidden="true" tabindex="-1"></a><span class="co"># Reseteo nombre de filas</span></span>
+<span id="cb38-276"><a href="#cb38-276" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(titanic) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb38-277"><a href="#cb38-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-278"><a href="#cb38-278" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(titanic)</span>
+<span id="cb38-279"><a href="#cb38-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-280"><a href="#cb38-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-283"><a href="#cb38-283" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-284"><a href="#cb38-284" aria-hidden="true" tabindex="-1"></a><span class="co"># Armo matriz de Burt</span></span>
+<span id="cb38-285"><a href="#cb38-285" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(anacor)</span>
+<span id="cb38-286"><a href="#cb38-286" aria-hidden="true" tabindex="-1"></a>burt <span class="ot">&lt;-</span> <span class="fu">burtTable</span>(titanic)</span>
+<span id="cb38-287"><a href="#cb38-287" aria-hidden="true" tabindex="-1"></a>burt</span>
+<span id="cb38-288"><a href="#cb38-288" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-291"><a href="#cb38-291" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-292"><a href="#cb38-292" aria-hidden="true" tabindex="-1"></a><span class="co">#Grafico matriz de Burt</span></span>
+<span id="cb38-293"><a href="#cb38-293" aria-hidden="true" tabindex="-1"></a>burt2 <span class="ot">&lt;-</span> <span class="fu">as.table</span>(<span class="fu">as.matrix</span>(burt))</span>
+<span id="cb38-294"><a href="#cb38-294" aria-hidden="true" tabindex="-1"></a>gplots<span class="sc">::</span><span class="fu">balloonplot</span>((burt2), <span class="at">main=</span><span class="st">'Matriz de Burt de datos Titanic'</span>, <span class="at">label=</span>F, <span class="at">show.margins =</span> F,<span class="at">dotcolor=</span><span class="st">"pink"</span>, <span class="at">text.size=</span><span class="fl">0.7</span>,<span class="at">colsrt=</span><span class="dv">45</span>,<span class="at">colmar=</span><span class="fl">2.5</span>)</span>
+<span id="cb38-295"><a href="#cb38-295" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-296"><a href="#cb38-296" aria-hidden="true" tabindex="-1"></a><span class="fu">## MCA</span></span>
+<span id="cb38-297"><a href="#cb38-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-300"><a href="#cb38-300" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-301"><a href="#cb38-301" aria-hidden="true" tabindex="-1"></a>titanic_mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(titanic, <span class="at">graph=</span>F)</span>
+<span id="cb38-302"><a href="#cb38-302" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(titanic_mca)</span>
+<span id="cb38-303"><a href="#cb38-303" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-304"><a href="#cb38-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-307"><a href="#cb38-307" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-308"><a href="#cb38-308" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(titanic_mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-309"><a href="#cb38-309" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-312"><a href="#cb38-312" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-313"><a href="#cb38-313" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_biplot</span>(titanic_mca, </span>
+<span id="cb38-314"><a href="#cb38-314" aria-hidden="true" tabindex="-1"></a>                <span class="at">label=</span><span class="st">"var"</span>,</span>
+<span id="cb38-315"><a href="#cb38-315" aria-hidden="true" tabindex="-1"></a>                <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb38-316"><a href="#cb38-316" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.ind=</span><span class="st">'gray'</span>,</span>
+<span id="cb38-317"><a href="#cb38-317" aria-hidden="true" tabindex="-1"></a>                <span class="at">invisible=</span><span class="st">"quali"</span>)</span>
+<span id="cb38-318"><a href="#cb38-318" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-319"><a href="#cb38-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-322"><a href="#cb38-322" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-323"><a href="#cb38-323" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según representatividad</span></span>
+<span id="cb38-324"><a href="#cb38-324" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(titanic_mca,</span>
+<span id="cb38-325"><a href="#cb38-325" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb38-326"><a href="#cb38-326" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb38-327"><a href="#cb38-327" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha.var=</span><span class="st">"cos2"</span>)</span>
+<span id="cb38-328"><a href="#cb38-328" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-329"><a href="#cb38-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-332"><a href="#cb38-332" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-333"><a href="#cb38-333" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 1 </span></span>
+<span id="cb38-334"><a href="#cb38-334" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb38-335"><a href="#cb38-335" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
+<span id="cb38-336"><a href="#cb38-336" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span>)</span>
+<span id="cb38-337"><a href="#cb38-337" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-338"><a href="#cb38-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-341"><a href="#cb38-341" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-342"><a href="#cb38-342" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 2</span></span>
+<span id="cb38-343"><a href="#cb38-343" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb38-344"><a href="#cb38-344" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
+<span id="cb38-345"><a href="#cb38-345" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">2</span>)</span>
+<span id="cb38-346"><a href="#cb38-346" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-347"><a href="#cb38-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-350"><a href="#cb38-350" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-351"><a href="#cb38-351" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensiones 1 y 2 </span></span>
+<span id="cb38-352"><a href="#cb38-352" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb38-353"><a href="#cb38-353" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>,</span>
+<span id="cb38-354"><a href="#cb38-354" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span>
+<span id="cb38-355"><a href="#cb38-355" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-356"><a href="#cb38-356" aria-hidden="true" tabindex="-1"></a>Análisis de individuos</span>
+<span id="cb38-357"><a href="#cb38-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-360"><a href="#cb38-360" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-361"><a href="#cb38-361" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de individuos</span></span>
+<span id="cb38-362"><a href="#cb38-362" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_ind</span>(titanic_mca,</span>
+<span id="cb38-363"><a href="#cb38-363" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb38-364"><a href="#cb38-364" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.ind =</span> <span class="st">"cos2"</span>, </span>
+<span id="cb38-365"><a href="#cb38-365" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),</span>
+<span id="cb38-366"><a href="#cb38-366" aria-hidden="true" tabindex="-1"></a>             <span class="at">rapel=</span><span class="cn">TRUE</span>,</span>
+<span id="cb38-367"><a href="#cb38-367" aria-hidden="true" tabindex="-1"></a><span class="co">#             select.ind = list(contrib = 400)</span></span>
+<span id="cb38-368"><a href="#cb38-368" aria-hidden="true" tabindex="-1"></a>             )</span>
+<span id="cb38-369"><a href="#cb38-369" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-370"><a href="#cb38-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-371"><a href="#cb38-371" aria-hidden="true" tabindex="-1"></a>Re-analisis de datos Titanic</span>
+<span id="cb38-372"><a href="#cb38-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-375"><a href="#cb38-375" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-376"><a href="#cb38-376" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten a 2-D, paso a dataframe y reseteo índice de filas</span></span>
+<span id="cb38-377"><a href="#cb38-377" aria-hidden="true" tabindex="-1"></a>Titanic_2D <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">structable</span>(Class<span class="sc">+</span>Survived<span class="sc">~</span>Sex<span class="sc">+</span>Age, Titanic))</span>
+<span id="cb38-378"><a href="#cb38-378" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic_2D)</span>
+<span id="cb38-379"><a href="#cb38-379" aria-hidden="true" tabindex="-1"></a>df_t2D<span class="sc">$</span>combinacion <span class="ot">&lt;-</span> <span class="fu">rownames</span>(df_t2D)</span>
+<span id="cb38-380"><a href="#cb38-380" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb38-381"><a href="#cb38-381" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando dataframe</span></span>
+<span id="cb38-382"><a href="#cb38-382" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df_t2D, <span class="at">cols=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>),<span class="at">names_to=</span><span class="st">'sobrevivió'</span>,<span class="at">values_to=</span><span class="st">'valores'</span> )</span>
+<span id="cb38-383"><a href="#cb38-383" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(df_t2D)</span>
+<span id="cb38-384"><a href="#cb38-384" aria-hidden="true" tabindex="-1"></a>df_t2D_exp <span class="ot">&lt;-</span> df_t2D[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(df_t2D), df_t2D[,<span class="dv">3</span>]),<span class="sc">-</span><span class="dv">3</span>]</span>
+<span id="cb38-385"><a href="#cb38-385" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D_exp) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb38-386"><a href="#cb38-386" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-387"><a href="#cb38-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-390"><a href="#cb38-390" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-391"><a href="#cb38-391" aria-hidden="true" tabindex="-1"></a>Tit2.mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(df_t2D_exp, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb38-392"><a href="#cb38-392" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Tit2.mca)</span>
+<span id="cb38-393"><a href="#cb38-393" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-394"><a href="#cb38-394" aria-hidden="true" tabindex="-1"></a>Scree plot</span>
+<span id="cb38-395"><a href="#cb38-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-398"><a href="#cb38-398" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-399"><a href="#cb38-399" aria-hidden="true" tabindex="-1"></a><span class="co">#scree plot</span></span>
+<span id="cb38-400"><a href="#cb38-400" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(Tit2.mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-401"><a href="#cb38-401" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-402"><a href="#cb38-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-405"><a href="#cb38-405" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-406"><a href="#cb38-406" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables</span></span>
+<span id="cb38-407"><a href="#cb38-407" aria-hidden="true" tabindex="-1"></a>colorest1 <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb38-408"><a href="#cb38-408" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca,<span class="at">invisible=</span><span class="st">"quali"</span>, <span class="at">col.var=</span>colorest1)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span>
+<span id="cb38-409"><a href="#cb38-409" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-410"><a href="#cb38-410" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-413"><a href="#cb38-413" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-414"><a href="#cb38-414" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca, </span>
+<span id="cb38-415"><a href="#cb38-415" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.var=</span> <span class="st">"contrib"</span>,</span>
+<span id="cb38-416"><a href="#cb38-416" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb38-417"><a href="#cb38-417" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel=</span><span class="cn">TRUE</span>, </span>
+<span id="cb38-418"><a href="#cb38-418" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>))</span>
+<span id="cb38-419"><a href="#cb38-419" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-420"><a href="#cb38-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-423"><a href="#cb38-423" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-424"><a href="#cb38-424" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de contribución de variables a dimensión 1</span></span>
+<span id="cb38-425"><a href="#cb38-425" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(Tit2.mca,<span class="at">choice=</span><span class="st">"var"</span>,</span>
+<span id="cb38-426"><a href="#cb38-426" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes=</span><span class="dv">1</span>, </span>
+<span id="cb38-427"><a href="#cb38-427" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span><span class="st">"royalblue"</span>,</span>
+<span id="cb38-428"><a href="#cb38-428" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span><span class="st">"black"</span>)<span class="sc">+</span> </span>
+<span id="cb38-429"><a href="#cb38-429" aria-hidden="true" tabindex="-1"></a>             <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Contribución de variables'</span>,  <span class="at">x =</span> <span class="st">'Variables'</span>, <span class="at">y =</span> <span class="st">'Contribución (%)'</span>)</span>
+<span id="cb38-430"><a href="#cb38-430" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+</code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

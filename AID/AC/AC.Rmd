@@ -19,6 +19,7 @@ library(tidyverse)
 library(factoextra)
 library(FactoMineR)
 library(gmodels)
+library(vcdExtra)
 ```
 
 ```{r}
@@ -26,10 +27,6 @@ library(gmodels)
 data(housetasks)
 housetasks
 
-```
-
-```{r}
-summary(housetasks)
 ```
 
 ```{r}
@@ -105,8 +102,6 @@ ggplot(df_plot, aes(x = columna, y = proporcion, group = fila)) +
 
 ```
 
-
-
 ### Perfil Columna
 
 ```{r}
@@ -115,7 +110,6 @@ CrossTable(as.matrix(housetasks),
            prop.r=FALSE, #proporciones filas
            prop.c=TRUE, 
            prop.chisq=FALSE)
-
 
 ```
 
@@ -163,11 +157,11 @@ ggplot(df_plot_col, aes(x = fila, y = proporcion, group = columna)) +
 
 - El **objetivo es reducir la dimensionalidad** (en general 2 ejes principales): se pretende proyectar los puntos fila en un espacio de dimensión menor de manera que las filas que tengan la misma estructura estén próximas y las que tengan una estructura muy diferente, alejadas (ídem columnas)
 
-- En lugar de trabajar con la matriz varianzas/covarianzas o correlaciones como en PCA, se utiliza la matriz de distancias chicuadrado
+- En lugar de trabajar con la matriz varianzas/covarianzas o correlaciones como en PCA, se utiliza la matriz de distancias chi-cuadrado
 
-- Se extraen los ejes principalesde manera de maximizar la asociación entre filas y columnas (máxima inercia)
+- Se extraen los ejes principales de manera de maximizar la asociación entre filas y columnas (máxima inercia)
 
-- Estos ejes son combinaciones linealesde las variables originales y son independientes entre sí
+- Estos ejes son combinaciones lineales de las variables originales y son independientes entre sí
 
 
 ¿Están relacionadas Las tareas del hogar con quien realiza la tarea en la pareja?
@@ -209,7 +203,7 @@ ggplot(df_dists, aes(x = reorder(Categoria, Distancia_Chi2), y = Distancia_Chi2,
 
 ```
 
-** Inercia**
+**Inercia**
 
 - Es una medida de la falta de independencia, resume la información total
 contenida en la tabla de doble entrada.
@@ -227,7 +221,7 @@ inercia, mayor $\chi^{2}$
 fviz_ca_biplot(house.ca) +
  theme(axis.text.x = element_text(angle=0)) + labs(title = 'Biplot de Análisis de Correspondencia Housetasks')+theme(panel.background = element_rect(fill = "grey95"))
 ```
-
+Cuanto mayor la distancia al origen, mayor es la contribución a la falta de independencia
 
 
 ```{r}
@@ -238,10 +232,144 @@ fviz_screeplot(house.ca, addlabels = TRUE, ylim = c(0, 50))+
 ```{r}
 fviz_ca_row(house.ca, 
             repel = TRUE, 
-            col.row = "blue", # color de puntos
+            col.row = "cos2", # color de puntos
             label = "all", 
             title = "Perfiles fila - Análisis de Correspondencias")
 ```
 
 # Análisis de Correspondencia Múltiple
+
+```{r}
+data("Titanic")
+
+# Paso a data frame
+titanic <- as.data.frame(Titanic)
+
+# Expando la tabla de frecuencias
+titanic <- titanic[rep(1:nrow(titanic), titanic[,5]),-5]
+
+# Reseteo nombre de filas
+rownames(titanic) <- NULL
+
+head(titanic)
+```
+
+```{r}
+# Armo matriz de Burt
+library(anacor)
+burt <- burtTable(titanic)
+burt
+```
+```{r}
+#Grafico matriz de Burt
+burt2 <- as.table(as.matrix(burt))
+gplots::balloonplot((burt2), main='Matriz de Burt de datos Titanic', label=F, show.margins = F,dotcolor="pink", text.size=0.7,colsrt=45,colmar=2.5)
+```
+## MCA
+
+```{r}
+titanic_mca <- MCA(titanic, graph=F)
+summary(titanic_mca)
+```
+
+```{r}
+fviz_screeplot(titanic_mca, addlabels = TRUE)
+```
+```{r}
+fviz_mca_biplot(titanic_mca, 
+                label="var",
+                repel = TRUE,
+                col.ind='gray',
+                invisible="quali")
+```
+
+```{r}
+# Análisis de variables según representatividad
+fviz_mca_var(titanic_mca,
+             invisible="quali", 
+             repel = TRUE,
+             alpha.var="cos2")
+```
+
+```{r}
+# Análisis de variables según contribución a dimensión 1 
+fviz_contrib(titanic_mca, 
+             choice = "var", 
+             axes = 1)
+```
+
+```{r}
+# Análisis de variables según contribución a dimensión 2
+fviz_contrib(titanic_mca, 
+             choice = "var", 
+             axes = 2)
+```
+
+```{r}
+# Análisis de variables según contribución a dimensiones 1 y 2 
+fviz_contrib(titanic_mca, 
+             choice = "var",
+             axes = 1:2)
+```
+Análisis de individuos
+
+```{r}
+# Análisis de individuos
+fviz_mca_ind(titanic_mca,
+             invisible="quali", 
+             col.ind = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             rapel=TRUE,
+#             select.ind = list(contrib = 400)
+             )
+```
+
+Re-analisis de datos Titanic
+
+```{r}
+# Flatten a 2-D, paso a dataframe y reseteo índice de filas
+Titanic_2D <- as.matrix(structable(Class+Survived~Sex+Age, Titanic))
+df_t2D <- as.data.frame(Titanic_2D)
+df_t2D$combinacion <- rownames(df_t2D)
+rownames(df_t2D) <- NULL
+# Expando dataframe
+df_t2D <- pivot_longer(df_t2D, cols=c(1:8),names_to='sobrevivió',values_to='valores' )
+df_t2D <- as.data.frame(df_t2D)
+df_t2D_exp <- df_t2D[rep(1:nrow(df_t2D), df_t2D[,3]),-3]
+rownames(df_t2D_exp) <- NULL
+```
+
+```{r}
+Tit2.mca <- MCA(df_t2D_exp, graph = FALSE)
+summary(Tit2.mca)
+```
+Scree plot
+
+```{r}
+#scree plot
+fviz_screeplot(Tit2.mca, addlabels = TRUE)
+```
+
+```{r}
+# Análisis de variables
+colorest1 <- as.character(c(3,3,3,3,2,1,2,1,2,1,2,1))
+fviz_mca_var(Tit2.mca,invisible="quali", col.var=colorest1)+theme(legend.position='none')
+```
+
+```{r}
+fviz_mca_var(Tit2.mca, 
+             col.var= "contrib",
+             invisible="quali", 
+             repel=TRUE, 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"))
+```
+
+```{r}
+# Análisis de contribución de variables a dimensión 1
+fviz_contrib(Tit2.mca,choice="var",
+             axes=1, 
+             fill="royalblue",
+             color ="black")+ 
+             theme(axis.text.x = element_text(angle=45)) + labs(title = 'Contribución de variables',  x = 'Variables', y = 'Contribución (%)')
+```
 
