@@ -1,0 +1,39 @@
+---
+title: "TP Análisis de Correspondencia"
+author: "Docentes AID 2025"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Para este trabajo práctico se trabajará sobre la base de datos de [Predicción de riesgos de Obesidad de Kaggle](https://www.kaggle.com/code/ugurcan95/obesity-risk-prediction/input?select=train.csv). Setear la semilla con los últimos 3 digitos del DNI para obtener una muestra de 500 individuos.
+
+```{r}
+library(tidyverse)
+library(FactoMineR)
+library(factoextra)
+
+set.seed(123)#cambiar por los 3 digitos del DNI.
+
+sample <- read.csv("obesidad.csv")
+
+sample <- sample %>% 
+          sample_n(500)# muestreo aletorio de 2000 individuos
+
+glimpse(sample)
+```
+
+1- Seleccionar dos variables categóricas ¿Hay dependencia entre las variables seleccionadas?
+
+2-Realizar un Análisis de Correspondencias Simple con las variables seleccionadas en el punto 1. Mostrar el biplot e interpretar los resultados. ¿Qué indican las dimensiones principales? ¿Qué asociaciones se observan entre las categorías de las variables?
+
+3- Realizar un Análisis de Correspondencias Múltiple utilizando al menos 4 variables categóricas. Considere la opción de discretizar variables cuantitativas.¿Qué variables contribuyen más a las dimensiones principales? Mostrar el biplot e interpretar los resultados. Concluya.
