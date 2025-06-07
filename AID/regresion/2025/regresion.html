@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.55">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pamela E. Pairo">
+
+<title>Regresión Lineal y Múltiple</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="regresion_files/libs/clipboard/clipboard.min.js"></script>
+<script src="regresion_files/libs/quarto-html/quarto.js"></script>
+<script src="regresion_files/libs/quarto-html/popper.min.js"></script>
+<script src="regresion_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="regresion_files/libs/quarto-html/anchor.min.js"></script>
+<link href="regresion_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="regresion_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="regresion_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="regresion_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="regresion_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="regresion_files/libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="regresion_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="regresion_files/libs/plotly-binding-4.10.4/plotly.js"></script>
+
+<script src="regresion_files/libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="regresion_files/libs/jquery-3.5.1/jquery.min.js"></script>
+
+<link href="regresion_files/libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="regresion_files/libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link href="regresion_files/libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="regresion_files/libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#conociendo-la-base-de-datos" id="toc-conociendo-la-base-de-datos" class="nav-link active" data-scroll-target="#conociendo-la-base-de-datos">Conociendo la base de datos</a>
+  <ul class="collapse">
+  <li><a href="#datos-de-entrenamiento-y-test" id="toc-datos-de-entrenamiento-y-test" class="nav-link" data-scroll-target="#datos-de-entrenamiento-y-test">Datos de entrenamiento y test</a></li>
+  </ul></li>
+  <li><a href="#regresión-lineal-simple" id="toc-regresión-lineal-simple" class="nav-link" data-scroll-target="#regresión-lineal-simple">Regresión Lineal Simple</a>
+  <ul class="collapse">
+  <li><a href="#supuestos" id="toc-supuestos" class="nav-link" data-scroll-target="#supuestos">Supuestos</a></li>
+  <li><a href="#evaluamos-el-modelo-en-df_test" id="toc-evaluamos-el-modelo-en-df_test" class="nav-link" data-scroll-target="#evaluamos-el-modelo-en-df_test">Evaluamos el modelo en df_test</a></li>
+  </ul></li>
+  <li><a href="#regresión-lineal-múltiple" id="toc-regresión-lineal-múltiple" class="nav-link" data-scroll-target="#regresión-lineal-múltiple">Regresión Lineal Múltiple</a>
+  <ul class="collapse">
+  <li><a href="#supuestos-1" id="toc-supuestos-1" class="nav-link" data-scroll-target="#supuestos-1">Supuestos</a></li>
+  <li><a href="#evaluamos-en-df_test_rm" id="toc-evaluamos-en-df_test_rm" class="nav-link" data-scroll-target="#evaluamos-en-df_test_rm">Evaluamos en df_test_rm</a></li>
+  <li><a href="#vif-factor-de-inflación-de-la-varianza-o-variance-inflation-factor" id="toc-vif-factor-de-inflación-de-la-varianza-o-variance-inflation-factor" class="nav-link" data-scroll-target="#vif-factor-de-inflación-de-la-varianza-o-variance-inflation-factor">VIF (factor de inflación de la varianza o <em>variance inflation factor</em>)</a></li>
+  <li><a href="#importancia-de-las-variables-en-el-modelo" id="toc-importancia-de-las-variables-en-el-modelo" class="nav-link" data-scroll-target="#importancia-de-las-variables-en-el-modelo">Importancia de las variables en el modelo</a></li>
+  <li><a href="#bonus-track-residuos-parciales" id="toc-bonus-track-residuos-parciales" class="nav-link" data-scroll-target="#bonus-track-residuos-parciales">Bonus track: Residuos parciales</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Regresión Lineal y Múltiple</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Código</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Mostrar todo el código</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Ocultar todo el código</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Ver el código fuente</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Pamela E. Pairo </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="conociendo-la-base-de-datos" class="level1">
+<h1>Conociendo la base de datos</h1>
+<p>Se quiere analizar los factores que pueden afectar en la performance de estudiantes en un examen.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span><span class="fu">read_csv</span>(<span class="st">"estudiantes.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 60
+Columns: 6
+$ `Hours Studied`                    &lt;dbl&gt; 6, 6, 2, 9, 8, 4, 5, 3, 1, 4, 6, 3,…
+$ `Previous Scores`                  &lt;dbl&gt; 83, 92, 90, 86, 75, 65, 80, 87, 66,…
+$ `Extracurricular Activities`       &lt;chr&gt; "Yes", "Yes", "No", "Yes", "No", "Y…
+$ `Sleep Hours`                      &lt;dbl&gt; 7, 4, 9, 6, 4, 5, 5, 8, 8, 6, 8, 5,…
+$ `Sample Question Papers Practiced` &lt;dbl&gt; 1, 0, 0, 5, 1, 4, 6, 7, 0, 9, 9, 8,…
+$ `Performance Index`                &lt;dbl&gt; 71, 83, 67, 84, 66, 45, 66, 68, 41,…</code></pre>
+</div>
+</div>
+<p>¿Hay valores faltantes?</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(df))<span class="co"># para saber cuantos na hay en la base de datos</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>¿Hay datos duplicados?</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">duplicated</span>(df))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p><strong>Gráficos de dispersión</strong></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(df)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regresion_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="datos-de-entrenamiento-y-test" class="level2">
+<h2 class="anchored" data-anchor-id="datos-de-entrenamiento-y-test">Datos de entrenamiento y test</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">117</span>)<span class="co">#setear la semilla</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df_rs <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="fu">c</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,<span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df_rs,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>df_test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en test y train</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(df_train))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Total del dataset de entrenamiento: 48"</code></pre>
+</div>
+</div>
+<p>Se realiza un grafico de dispersión.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p<span class="ot">&lt;-</span><span class="fu">ggplot</span>(df_train, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">x =</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span> , <span class="at">y =</span> <span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>)) <span class="sc">+</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>(<span class="fu">aes</span>(), <span class="at">colour =</span><span class="st">"deepskyblue"</span>, <span class="at">size=</span><span class="dv">2</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Puntaje previo"</span>) <span class="sc">+</span>  <span class="fu">ylab</span>(<span class="st">"Performance"</span>) </span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regresion_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="regresión-lineal-simple" class="level1">
+<h1>Regresión Lineal Simple</h1>
+<p>Se plantea el modelo de Regresión</p>
+<p><span class="math inline">\(\LARGE Y_{i}= \beta_{0} + \beta_{1} X_1 + \varepsilon_i\)</span></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>modelo1<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>df_train)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = `Performance Index` ~ `Previous Scores`, data = df_train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-16.194  -4.540  -1.241   6.662  13.824 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       -15.07798    4.70850  -3.202  0.00247 ** 
+`Previous Scores`   1.00446    0.06635  15.139  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 7.743 on 46 degrees of freedom
+Multiple R-squared:  0.8328,    Adjusted R-squared:  0.8292 
+F-statistic: 229.2 on 1 and 46 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<section id="supuestos" class="level2">
+<h2 class="anchored" data-anchor-id="supuestos">Supuestos</h2>
+<p><span class="math inline">\(\LARGE \varepsilon_i \sim {\sf NID}(0, \sigma^{2})\)</span></p>
+<p>Se calculan los residuos del modelo para chequear los supuestos.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculamos los residuos y los predichos</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>e<span class="ot">&lt;-</span><span class="fu">resid</span>(modelo1) <span class="co"># residuos</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>re<span class="ot">&lt;-</span><span class="fu">rstandard</span>(modelo1) <span class="co">#residuos estandarizados</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>pre<span class="ot">&lt;-</span><span class="fu">predict</span>(modelo1) <span class="co">#predichos</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>res<span class="ot">&lt;-</span><span class="fu">cbind</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>,df<span class="sc">$</span><span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,pre,e,<span class="fu">round</span>(re,<span class="dv">2</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(res)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"Puntaje anterior"</span>, <span class="st">"Performance"</span>, <span class="st">"Predichos"</span>, <span class="st">"Residuos"</span>, <span class="st">"residuos std"</span>) </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Puntaje anterior Performance Predichos    Residuos residuos std
+[1,]               83          71  75.32301  -8.3230106        -1.10
+[2,]               92          83  41.17152 -13.1715237        -1.73
+[3,]               90          67  34.14034   6.8596648         0.91
+[4,]               86          84  34.14034  -0.1403352        -0.02
+[5,]               75          66  62.26509   8.7349109         1.14
+[6,]               65          45  32.13142  12.8685758         1.71</code></pre>
+</div>
+</div>
+<p>Evaluamos el <strong>supuesto de normalidad</strong> de manera gráfica y mediante una prueba de hipótesis.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Supuestos</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pre, re, <span class="at">xlab=</span><span class="st">"Predichos"</span>, <span class="at">ylab=</span><span class="st">"Residuos estandarizados"</span>,<span class="at">main=</span><span class="st">"Grafico de dispersion de RE vs PRED"</span> )</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqPlot</span>(e)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regresion_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15 20</code></pre>
+</div>
+</div>
+<p><strong>Normalidad</strong></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(e)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  e
+W = 0.97082, p-value = 0.2725</code></pre>
+</div>
+</div>
+<p>Como el p-valor= 0.27 es mayor a <span class="math inline">\(\alpha\)</span> =0.05, se asume normalidad en los residuos.</p>
+<p><strong>Intervalo de Confianza</strong></p>
+<p>Se calcula el intervalo de confianza del 95% para la ordenada al origen y la pendiente del modelo de regresión.</p>
+<p>Para cambiar el nivel de confianza cambiar el parámetro <code>level</code></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(modelo1)<span class="co">#por default es del 95%</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        2.5 %    97.5 %
+(Intercept)       -24.5556970 -5.600271
+`Previous Scores`   0.8709023  1.138009</code></pre>
+</div>
+</div>
+<p>Se agrega la recta al gráfico y la banda de confianza.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">se =</span> <span class="cn">TRUE</span>)<span class="co">#para mostrar la banda de confianza</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regresion_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Entonces, se analiza el modelo propuesto y como el p-valor es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = `Performance Index` ~ `Previous Scores`, data = df_train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-16.194  -4.540  -1.241   6.662  13.824 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       -15.07798    4.70850  -3.202  0.00247 ** 
+`Previous Scores`   1.00446    0.06635  15.139  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 7.743 on 46 degrees of freedom
+Multiple R-squared:  0.8328,    Adjusted R-squared:  0.8292 
+F-statistic: 229.2 on 1 and 46 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Por el valor obtenido de <span class="math inline">\(\ R^2= 0.83\)</span> se deduce que el modelo propuesto explica el 86,63% de la variabilidad de los datos.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#coeficiente de determinación (en summary)</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)<span class="sc">$</span>r.squared</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8328426</code></pre>
+</div>
+</div>
+</section>
+<section id="evaluamos-el-modelo-en-df_test" class="level2">
+<h2 class="anchored" data-anchor-id="evaluamos-el-modelo-en-df_test">Evaluamos el modelo en df_test</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>pred_m1 <span class="ot">&lt;-</span> modelo1 <span class="sc">|&gt;</span>  </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">predict</span>(df_test) <span class="sc">|&gt;</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">bind_cols</span>(df_test)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>pred_m1</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 3
+    ...1 `Performance Index` `Previous Scores`
+   &lt;dbl&gt;               &lt;dbl&gt;             &lt;dbl&gt;
+ 1  50.2                  45                65
+ 2  73.3                  69                88
+ 3  59.3                  71                74
+ 4  82.4                  94                97
+ 5  62.3                  66                77
+ 6  39.2                  30                54
+ 7  33.1                  42                48
+ 8  80.3                  80                95
+ 9  38.2                  24                53
+10  70.3                  61                85
+11  39.2                  31                54
+12  60.3                  70                75</code></pre>
+</div>
+</div>
+<p>Cálculo del RMSE ( <em>Root Mean Squared Error</em> o Error Cuadrático Medio)</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluamos en df_test</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>rmse_result <span class="ot">&lt;-</span> pred_m1 <span class="sc">%&gt;%</span> </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metrics</span>(<span class="at">truth =</span> <span class="st">"Performance Index"</span>, <span class="at">estimate =</span> <span class="st">"...1"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">"rmse"</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostrar el resultado del RMSE</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rmse_result)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard        8.87</code></pre>
+</div>
+</div>
+<p>Otras métricas para evaluar modelos de regresión</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(modelo1)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 12
+  r.squared adj.r.squared sigma statistic  p.value    df logLik   AIC   BIC
+      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     0.833         0.829  7.74      229. 1.73e-19     1  -165.  337.  342.
+# ℹ 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="regresión-lineal-múltiple" class="level1">
+<h1>Regresión Lineal Múltiple</h1>
+<p>Se incluye la variable <code>Hours Studied</code> al modelo.</p>
+<p><span class="math inline">\(\LARGE Performance_{i}= \beta_{0} + \beta_{1} PuntajePrevio + \beta_{2} HorasEstudiadas +  \beta_{3} HorasDormidas + \varepsilon_i\)</span></p>
+<p><span class="math inline">\(\beta_{i}\)</span> son los coeficientes de regresión parcial, ya que indican la influencia (parcial) de cada variable explicatoria sobre Y, cuando se mantiene constante la influencia de las otras variables explicatorias.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)<span class="co">#setear la semilla</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>df_rm <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="fu">c</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,<span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, <span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>, <span class="st">`</span><span class="at">Sleep Hours</span><span class="st">`</span>))</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>df_split_rm <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df_rm,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>df_train_rm <span class="ot">&lt;-</span> df_split_rm <span class="sc">%&gt;%</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>df_test_rm <span class="ot">&lt;-</span> df_split_rm <span class="sc">%&gt;%</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en test y train</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(df_train_rm))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Total del dataset de entrenamiento: 48"</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de testeo: "</span>, <span class="fu">nrow</span>(df_test_rm))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Total del dataset de testeo: 12"</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>modelo2<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span><span class="sc">+</span> <span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">Sleep Hours</span><span class="st">`</span> , </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>df_train_rm)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="supuestos-1" class="level2">
+<h2 class="anchored" data-anchor-id="supuestos-1">Supuestos</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculamos los residuos y los predichos</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>e_m2<span class="ot">&lt;-</span><span class="fu">resid</span>(modelo2) <span class="co"># residuos</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>re_m2<span class="ot">&lt;-</span><span class="fu">rstandard</span>(modelo2) <span class="co">#residuos estandarizados</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>pre_m2<span class="ot">&lt;-</span><span class="fu">predict</span>(modelo2) <span class="co">#predichos</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>res_m2<span class="ot">&lt;-</span><span class="fu">cbind</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>,df<span class="sc">$</span><span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,pre_m2,e_m2,<span class="fu">round</span>(re_m2,<span class="dv">2</span>))</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(res_m2)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"Previous Scores"</span>, <span class="st">"performance"</span>, <span class="st">"Predichos"</span>, <span class="st">"Residuos"</span>, <span class="st">"residuos std"</span>) </span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res_m2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Previous Scores performance Predichos    Residuos residuos std
+[1,]              83          71  28.42923 -1.42923018        -0.69
+[2,]              92          83  22.68512 -1.68511892        -0.83
+[3,]              90          67  24.37417  0.62583205         0.30
+[4,]              86          84  65.91035  0.08964997         0.04
+[5,]              75          66  93.44073  0.55927461         0.28
+[6,]              65          45  27.46543 -3.46542806        -1.68</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pre_m2, re_m2, <span class="at">xlab=</span><span class="st">"Predichos"</span>, <span class="at">ylab=</span><span class="st">"Residuos estandarizados"</span>,<span class="at">main=</span><span class="st">"Grafico de dispersion de RE vs PRED"</span> )</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqPlot</span>(e_m2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regresion_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 26 22</code></pre>
+</div>
+</div>
+<p>Se chequea normalidad</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">resid</span>(modelo2))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  resid(modelo2)
+W = 0.96776, p-value = 0.2069</code></pre>
+</div>
+</div>
+<p>Vemos los resultados del modelo</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = `Performance Index` ~ `Previous Scores` + `Hours Studied` + 
+    `Sleep Hours`, data = df_train_rm)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.8489 -1.4357 -0.2332  1.2090  3.9388 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       -38.25225    2.07516 -18.433  &lt; 2e-16 ***
+`Previous Scores`   1.05693    0.01885  56.057  &lt; 2e-16 ***
+`Hours Studied`     2.99814    0.12167  24.641  &lt; 2e-16 ***
+`Sleep Hours`       0.74086    0.18974   3.905 0.000321 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.157 on 44 degrees of freedom
+Multiple R-squared:  0.9885,    Adjusted R-squared:  0.9877 
+F-statistic:  1257 on 3 and 44 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+<section id="evaluamos-en-df_test_rm" class="level2">
+<h2 class="anchored" data-anchor-id="evaluamos-en-df_test_rm">Evaluamos en df_test_rm</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>pred_rm <span class="ot">&lt;-</span> modelo2 <span class="sc">|&gt;</span>  </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">predict</span>(df_test_rm) <span class="sc">|&gt;</span> </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">bind_cols</span>(df_test_rm)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>pred_rm</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 5
+    ...1 `Performance Index` `Previous Scores` `Hours Studied` `Sleep Hours`
+   &lt;dbl&gt;               &lt;dbl&gt;             &lt;dbl&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+ 1  72.6                  71                83               6             7
+ 2  25.5                  34                49               3             4
+ 3  68.4                  71                74               8             6
+ 4  59.3                  57                76               4             7
+ 5  47.4                  49                69               3             5
+ 6  65.6                  66                77               6             6
+ 7  90.0                  90                98               7             5
+ 8  23.9                  19                44               4             5
+ 9  69.9                  71                79               7             5
+10  55.9                  56                82               1             6
+11  57.7                  58                76               3             9
+12  36.1                  39                47               7             5</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>rmse_result_rm <span class="ot">&lt;-</span> pred_rm <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metrics</span>(<span class="at">truth =</span> <span class="st">"Performance Index"</span>, <span class="at">estimate =</span> <span class="st">"...1"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">"rmse"</span>)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rmse_result_rm)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard        3.21</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(modelo2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 12
+  r.squared adj.r.squared sigma statistic  p.value    df logLik   AIC   BIC
+      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     0.988         0.988  2.16     1257. 1.23e-42     3  -103.  216.  225.
+# ℹ 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="vif-factor-de-inflación-de-la-varianza-o-variance-inflation-factor" class="level2">
+<h2 class="anchored" data-anchor-id="vif-factor-de-inflación-de-la-varianza-o-variance-inflation-factor">VIF (factor de inflación de la varianza o <em>variance inflation factor</em>)</h2>
+<p><span class="math inline">\(\LARGE VIF= \frac{1}{1-R_{j}^{2}}\)</span></p>
+<p>Mide para cada X el aumento de la varianza del coeficiente de regresión debido a la correlación entre VE. Valores superiores a 5 son considerados indicativos de <strong>colinealidad</strong>. Toma valores entre 1 e infinito. Valores superiores a 5 son considerados indicativos de colinealidad</p>
+<p>¿Porqué importa la colinealidad?</p>
+<p>Los coeficientes de regresión tendrán varianzas muy altas, es decir que estarán estimados con poca precisión.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(modelo2)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>`Previous Scores`   `Hours Studied`     `Sleep Hours` 
+         1.067954          1.001308          1.067232 </code></pre>
+</div>
+</div>
+<p>De acuerdo a los resultados obtenidos, el modelo propuesto es significativo y válido (p-valor &lt; <span class="math inline">\(\alpha=0.05\)</span>), resultando significativo ambos coeficientes(p&lt;0.05). El 98% de la variabilidad de los datos es explicado por el modelo de regresión múltiple.</p>
+</section>
+<section id="importancia-de-las-variables-en-el-modelo" class="level2">
+<h2 class="anchored" data-anchor-id="importancia-de-las-variables-en-el-modelo">Importancia de las variables en el modelo</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>importancia <span class="ot">&lt;-</span> <span class="fu">vip</span>(modelo2)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(importancia)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regresion_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="bonus-track-residuos-parciales" class="level2">
+<h2 class="anchored" data-anchor-id="bonus-track-residuos-parciales">Bonus track: Residuos parciales</h2>
+<p>Los gráficos de dispersión de Y vs cada X muestran el efecto sobre la variable respuesta (VR) de una variable explicatoria (VE) sin considerar el efecto de las otras VE. Los gráficos de residuos parciales muestran el efecto parcial sobre la VR de una VE cuando las otras VE son incluidas en el modelo y mantenidas constantes.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(faraway)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prplot</span>(modelo2,<span class="dv">1</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regresion_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Suponiendo un modelo contituido solo por 2 VE.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>modelo3<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span><span class="sc">+</span> <span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span> , </span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>df_train_rm)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>grid_x1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>), <span class="fu">max</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>))</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>grid_x2 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>), <span class="fu">max</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>))</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span> <span class="ot">=</span> grid_x1, <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span> <span class="ot">=</span> grid_x2)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">$</span>y_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo3, <span class="at">newdata =</span> grid)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_ly</span>(df, <span class="at">x =</span> <span class="sc">~</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>, <span class="at">y =</span> <span class="sc">~</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, <span class="at">z =</span> <span class="sc">~</span><span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>, <span class="at">type =</span> <span class="st">"scatter3d"</span>, <span class="at">mode =</span> <span class="st">"markers"</span>, <span class="at">name =</span> <span class="st">"Datos"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_trace</span>(<span class="at">x =</span> grid<span class="sc">$</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>, <span class="at">y =</span> grid<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, <span class="at">z =</span> grid<span class="sc">$</span>y_pred, <span class="at">type =</span> <span class="st">"mesh3d"</span>, <span class="at">opacity =</span> <span class="fl">0.5</span>, <span class="at">name =</span> <span class="st">"Superficie de Regresión"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="at">scene =</span> <span class="fu">list</span>(<span class="at">xaxis =</span> <span class="fu">list</span>(<span class="at">title =</span> <span class="st">'Horas de estudio'</span>),</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">yaxis =</span> <span class="fu">list</span>(<span class="at">title =</span> <span class="st">'Puntaje previo'</span>),</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>                      <span class="at">zaxis =</span> <span class="fu">list</span>(<span class="at">title =</span> <span class="st">'Performance'</span>)),</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">title =</span> <span class="st">"Regresión Múltiple"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-7d9a906f55cbad9c31a6" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-7d9a906f55cbad9c31a6">{"x":{"visdat":{"1a3440a973b8":["function () ","plotlyVisDat"]},"cur_data":"1a3440a973b8","attrs":{"1a3440a973b8":{"x":{},"y":{},"z":{},"mode":"markers","name":"Datos","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"1a3440a973b8.1":{"x":[1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],"y":[40,40,40,40,40,40,40,40,40,41,41,41,41,41,41,41,41,41,42,42,42,42,42,42,42,42,42,43,43,43,43,43,43,43,43,43,44,44,44,44,44,44,44,44,44,45,45,45,45,45,45,45,45,45,46,46,46,46,46,46,46,46,46,47,47,47,47,47,47,47,47,47,48,48,48,48,48,48,48,48,48,49,49,49,49,49,49,49,49,49,50,50,50,50,50,50,50,50,50,51,51,51,51,51,51,51,51,51,52,52,52,52,52,52,52,52,52,53,53,53,53,53,53,53,53,53,54,54,54,54,54,54,54,54,54,55,55,55,55,55,55,55,55,55,56,56,56,56,56,56,56,56,56,57,57,57,57,57,57,57,57,57,58,58,58,58,58,58,58,58,58,59,59,59,59,59,59,59,59,59,60,60,60,60,60,60,60,60,60,61,61,61,61,61,61,61,61,61,62,62,62,62,62,62,62,62,62,63,63,63,63,63,63,63,63,63,64,64,64,64,64,64,64,64,64,65,65,65,65,65,65,65,65,65,66,66,66,66,66,66,66,66,66,67,67,67,67,67,67,67,67,67,68,68,68,68,68,68,68,68,68,69,69,69,69,69,69,69,69,69,70,70,70,70,70,70,70,70,70,71,71,71,71,71,71,71,71,71,72,72,72,72,72,72,72,72,72,73,73,73,73,73,73,73,73,73,74,74,74,74,74,74,74,74,74,75,75,75,75,75,75,75,75,75,76,76,76,76,76,76,76,76,76,77,77,77,77,77,77,77,77,77,78,78,78,78,78,78,78,78,78,79,79,79,79,79,79,79,79,79,80,80,80,80,80,80,80,80,80,81,81,81,81,81,81,81,81,81,82,82,82,82,82,82,82,82,82,83,83,83,83,83,83,83,83,83,84,84,84,84,84,84,84,84,84,85,85,85,85,85,85,85,85,85,86,86,86,86,86,86,86,86,86,87,87,87,87,87,87,87,87,87,88,88,88,88,88,88,88,88,88,89,89,89,89,89,89,89,89,89,90,90,90,90,90,90,90,90,90,91,91,91,91,91,91,91,91,91,92,92,92,92,92,92,92,92,92,93,93,93,93,93,93,93,93,93,94,94,94,94,94,94,94,94,94,95,95,95,95,95,95,95,95,95,96,96,96,96,96,96,96,96,96,97,97,97,97,97,97,97,97,97,98,98,98,98,98,98,98,98,98,99,99,99,99,99,99,99,99,99],"z":[12.088399470496361,15.092854492479791,18.09730951446322,21.101764536446652,24.106219558430084,27.110674580413512,30.115129602396941,33.119584624380373,36.124039646363805,13.126910060683008,16.131365082666438,19.135820104649866,22.140275126633298,25.144730148616731,28.149185170600159,31.153640192583588,34.15809521456702,37.162550236550452,14.165420650869654,17.169875672853085,20.174330694836513,23.178785716819945,26.183240738803377,29.187695760786806,32.192150782770234,35.196605804753666,38.201060826737098,15.203931241056301,18.208386263039731,21.21284128502316,24.217296307006592,27.221751328990024,30.226206350973452,33.230661372956881,36.235116394940313,39.239571416923745,16.242441831242949,19.246896853226378,22.251351875209807,25.255806897193239,28.260261919176671,31.264716941160099,34.269171963143528,37.27362698512696,40.278082007110392,17.280952421429596,20.285407443413025,23.289862465396453,26.294317487379885,29.298772509363317,32.303227531346749,35.307682553330174,38.312137575313606,41.316592597297038,18.319463011616243,21.323918033599671,24.3283730555831,27.332828077566532,30.337283099549964,33.341738121533396,36.346193143516821,39.350648165500253,42.355103187483685,19.35797360180289,22.362428623786318,25.366883645769747,28.371338667753179,31.375793689736611,34.380248711720043,37.384703733703468,40.3891587556869,43.393613777670332,20.396484191989536,23.400939213972965,26.405394235956393,29.409849257939825,32.414304279923257,35.41875930190669,38.423214323890114,41.427669345873547,44.432124367856979,21.43499478217619,24.439449804159619,27.443904826143047,30.448359848126479,33.452814870109911,36.457269892093336,39.461724914076768,42.4661799360602,45.470634958043632,22.473505372362837,25.477960394346265,28.482415416329694,31.486870438313126,34.491325460296558,37.495780482279983,40.500235504263415,43.504690526246847,46.509145548230279,23.512015962549484,26.516470984532912,29.520926006516341,32.525381028499773,35.529836050483205,38.53429107246663,41.538746094450062,44.543201116433494,47.547656138416926,24.55052655273613,27.554981574719559,30.559436596702987,33.563891618686419,36.568346640669851,39.572801662653276,42.577256684636708,45.58171170662014,48.586166728603573,25.589037142922777,28.593492164906205,31.597947186889634,34.602402208873066,37.606857230856498,40.611312252839923,43.615767274823355,46.620222296806787,49.624677318790219,26.627547733109424,29.632002755092852,32.636457777076281,35.640912799059713,38.645367821043145,41.64982284302657,44.654277865010002,47.658732886993434,50.663187908976866,27.66605832329607,30.670513345279499,33.674968367262927,36.679423389246359,39.683878411229792,42.688333433213216,45.692788455196649,48.697243477180081,51.701698499163513,28.704568913482717,31.709023935466146,34.713478957449574,37.717933979433006,40.722389001416438,43.726844023399863,46.731299045383295,49.735754067366727,52.740209089350159,29.743079503669364,32.747534525652796,35.751989547636221,38.756444569619653,41.760899591603085,44.76535461358651,47.769809635569942,50.774264657553374,53.778719679536806,30.781590093856011,33.786045115839443,36.790500137822868,39.7949551598063,42.799410181789732,45.803865203773157,48.808320225756589,51.812775247740021,54.817230269723453,31.820100684042664,34.824555706026089,37.829010728009521,40.833465749992953,43.837920771976385,46.842375793959818,49.846830815943242,52.851285837926675,55.855740859910107,32.858611274229311,35.863066296212736,38.867521318196168,41.8719763401796,44.876431362163032,47.880886384146464,50.885341406129889,53.889796428113321,56.894251450096753,33.897121864415958,36.901576886399383,39.906031908382815,42.910486930366247,45.914941952349679,48.919396974333111,51.923851996316536,54.928307018299968,57.9327620402834,34.935632454602604,37.940087476586029,40.944542498569461,43.948997520552894,46.953452542536326,49.957907564519758,52.962362586503183,55.966817608486615,58.971272630470047,35.974143044789251,38.978598066772676,41.983053088756108,44.98750811073954,47.991963132722972,50.996418154706404,54.000873176689829,57.005328198673261,60.009783220656693,37.012653634975898,40.017108656959323,43.021563678942755,46.026018700926187,49.030473722909619,52.034928744893051,55.039383766876476,58.043838788859908,61.04829381084334,38.051164225162545,41.05561924714597,44.060074269129402,47.064529291112834,50.068984313096266,53.073439335079698,56.077894357063123,59.082349379046555,62.086804401029987,39.089674815349191,42.094129837332616,45.098584859316048,48.10303988129948,51.107494903282912,54.111949925266345,57.116404947249769,60.120859969233202,63.125314991216634,40.128185405535838,43.132640427519263,46.137095449502695,49.141550471486127,52.146005493469559,55.150460515452991,58.154915537436416,61.159370559419848,64.163825581403273,41.166695995722485,44.17115101770591,47.175606039689342,50.180061061672774,53.184516083656206,56.188971105639638,59.193426127623063,62.197881149606495,65.202336171589934,42.205206585909131,45.209661607892556,48.214116629875988,51.218571651859421,54.223026673842853,57.227481695826285,60.23193671780971,63.236391739793142,66.240846761776567,43.243717176095778,46.248172198079203,49.252627220062635,52.257082242046067,55.261537264029499,58.265992286012931,61.270447307996356,64.274902329979795,67.279357351963228,44.282227766282425,47.28668278826585,50.291137810249282,53.295592832232714,56.300047854216146,59.304502876199578,62.308957898183003,65.313412920166428,68.31786794214986,45.320738356469072,48.325193378452497,51.329648400435929,54.334103422419361,57.338558444402793,60.343013466386225,63.34746848836965,66.351923510353089,69.356378532336521,46.359248946655718,49.363703968639143,52.368158990622575,55.372614012606007,58.377069034589439,61.381524056572871,64.385979078556289,67.390434100539721,70.394889122523153,47.397759536842365,50.40221455882579,53.406669580809222,56.411124602792654,59.415579624776086,62.420034646759518,65.42448966874295,68.428944690726382,71.433399712709814,48.436270127029026,51.440725149012451,54.445180170995883,57.449635192979315,60.454090214962747,63.458545236946179,66.463000258929611,69.467455280913043,72.471910302896475,49.474780717215673,52.479235739199098,55.48369076118253,58.488145783165962,61.492600805149394,64.497055827132826,67.501510849116244,70.505965871099676,73.510420893083108,50.513291307402319,53.517746329385744,56.522201351369176,59.526656373352608,62.53111139533604,65.535566417319473,68.540021439302905,71.544476461286337,74.548931483269769,51.551801897588966,54.556256919572391,57.560711941555823,60.565166963539255,63.569621985522687,66.574077007506119,69.578532029489537,72.582987051472969,75.587442073456401,52.590312487775613,55.594767509759038,58.59922253174247,61.603677553725902,64.608132575709334,67.612587597692766,70.617042619676198,73.62149764165963,76.625952663643062,53.628823077962259,56.633278099945684,59.637733121929116,62.642188143912549,65.646643165895981,68.651098187879413,71.65555320986283,74.660008231846263,77.664463253829695,54.667333668148906,57.671788690132331,60.676243712115763,63.680698734099195,66.685153756082627,69.689608778066059,72.694063800049491,75.698518822032923,78.702973844016356,55.705844258335553,58.710299280318978,61.71475430230241,64.719209324285842,67.723664346269274,70.728119368252706,73.732574390236124,76.737029412219556,79.741484434202988,56.7443548485222,59.748809870505625,62.753264892489057,65.757719914472489,68.762174936455921,71.766629958439353,74.771084980422785,77.775540002406217,80.779995024389649,57.782865438708846,60.787320460692271,63.791775482675703,66.796230504659135,69.800685526642567,72.805140548625999,75.809595570609417,78.814050592592849,81.818505614576281,58.821376028895493,61.825831050878918,64.83028607286235,67.834741094845782,70.839196116829214,73.843651138812646,76.848106160796078,79.85256118277951,82.857016204762942,59.85988661908214,62.864341641065565,65.868796663048997,68.873251685032429,71.877706707015861,74.882161728999293,77.886616750982711,80.891071772966143,83.895526794949575,60.898397209268786,63.902852231252211,66.907307253235643,69.911762275219075,72.916217297202508,75.92067231918594,78.925127341169372,81.929582363152804,84.934037385136236,61.936907799455433,64.941362821438858,67.94581784342229,70.950272865405722,73.954727887389154,76.959182909372586,79.963637931356004,82.968092953339436,85.972547975322868,62.97541838964208,65.979873411625505,68.984328433608937,71.988783455592369,74.993238477575801,77.997693499559233,81.002148521542665,84.006603543526097,87.011058565509529,64.013928979828719,67.018384001812151,70.022839023795584,73.027294045779016,76.031749067762448,79.03620408974588,82.040659111729298,85.04511413371273,88.049569155696162,65.052439570015366,68.056894591998798,71.06134961398223,74.065804635965662,77.070259657949094,80.074714679932526,83.079169701915959,86.083624723899391,89.088079745882823,66.090950160202013,69.095405182185445,72.099860204168877,75.104315226152309,78.108770248135741,81.113225270119173,84.117680292102591,87.122135314086023,90.126590336069455,67.12946075038866,70.133915772372092,73.138370794355524,76.142825816338956,79.147280838322374,82.151735860305806,85.156190882289238,88.16064590427267,91.165100926256102,68.16797134057532,71.172426362558753,74.176881384542185,77.181336406525617,80.185791428509035,83.190246450492467,86.194701472475899,89.199156494459331,92.203611516442763,69.206481930761953,72.210936952745385,75.215391974728817,78.219846996712249,81.224302018695667,84.228757040679099,87.233212062662531,90.237667084645963,93.242122106629395,70.244992520948614,73.249447542932046,76.253902564915478,79.25835758689891,82.262812608882328,85.26726763086576,88.271722652849192,91.276177674832624,94.280632696816056,71.283503111135275,74.287958133118707,77.292413155102139,80.296868177085571,83.301323199068989,86.305778221052421,89.310233243035853,92.314688265019285,95.319143287002717,72.322013701321907,75.326468723305339,78.330923745288771,81.335378767272204,84.339833789255621,87.344288811239053,90.348743833222485,93.353198855205918,96.35765387718935,73.360524291508568,76.364979313492,79.369434335475432,82.373889357458864,85.378344379442282,88.382799401425714,91.387254423409146,94.391709445392578,97.396164467376011],"mode":"markers","name":"Superficie de Regresión","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"mesh3d","opacity":0.5,"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"Horas de estudio"},"yaxis":{"title":"Puntaje previo"},"zaxis":{"title":"Performance"}},"title":"Regresión Múltiple","hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[6,6,2,9,8,4,5,3,1,4,6,3,2,3,8,8,7,1,4,8,3,2,5,1,4,8,3,5,3,2,9,6,6,4,2,2,8,7,7,6,4,8,9,6,6,9,7,1,2,7,3,5,2,8,1,4,7,5,8,3],"y":[83,92,90,86,75,65,80,87,66,62,49,88,63,49,74,97,88,81,76,69,84,77,70,61,83,88,69,71,84,56,56,76,77,40,87,54,40,98,45,99,44,48,47,95,42,57,79,82,53,71,76,66,85,77,54,43,47,44,75,54],"z":[71,83,67,84,66,45,66,68,41,43,41,69,42,34,71,94,82,58,57,65,67,53,57,30,66,82,49,54,62,28,52,67,66,21,62,30,31,90,31,84,19,42,45,80,29,56,71,56,24,66,58,49,61,71,31,25,39,27,70,35],"mode":"markers","name":"Datos","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"colorbar":{"title":"`Performance Index`","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333334","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":[1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9],"y":[40,40,40,40,40,40,40,40,40,41,41,41,41,41,41,41,41,41,42,42,42,42,42,42,42,42,42,43,43,43,43,43,43,43,43,43,44,44,44,44,44,44,44,44,44,45,45,45,45,45,45,45,45,45,46,46,46,46,46,46,46,46,46,47,47,47,47,47,47,47,47,47,48,48,48,48,48,48,48,48,48,49,49,49,49,49,49,49,49,49,50,50,50,50,50,50,50,50,50,51,51,51,51,51,51,51,51,51,52,52,52,52,52,52,52,52,52,53,53,53,53,53,53,53,53,53,54,54,54,54,54,54,54,54,54,55,55,55,55,55,55,55,55,55,56,56,56,56,56,56,56,56,56,57,57,57,57,57,57,57,57,57,58,58,58,58,58,58,58,58,58,59,59,59,59,59,59,59,59,59,60,60,60,60,60,60,60,60,60,61,61,61,61,61,61,61,61,61,62,62,62,62,62,62,62,62,62,63,63,63,63,63,63,63,63,63,64,64,64,64,64,64,64,64,64,65,65,65,65,65,65,65,65,65,66,66,66,66,66,66,66,66,66,67,67,67,67,67,67,67,67,67,68,68,68,68,68,68,68,68,68,69,69,69,69,69,69,69,69,69,70,70,70,70,70,70,70,70,70,71,71,71,71,71,71,71,71,71,72,72,72,72,72,72,72,72,72,73,73,73,73,73,73,73,73,73,74,74,74,74,74,74,74,74,74,75,75,75,75,75,75,75,75,75,76,76,76,76,76,76,76,76,76,77,77,77,77,77,77,77,77,77,78,78,78,78,78,78,78,78,78,79,79,79,79,79,79,79,79,79,80,80,80,80,80,80,80,80,80,81,81,81,81,81,81,81,81,81,82,82,82,82,82,82,82,82,82,83,83,83,83,83,83,83,83,83,84,84,84,84,84,84,84,84,84,85,85,85,85,85,85,85,85,85,86,86,86,86,86,86,86,86,86,87,87,87,87,87,87,87,87,87,88,88,88,88,88,88,88,88,88,89,89,89,89,89,89,89,89,89,90,90,90,90,90,90,90,90,90,91,91,91,91,91,91,91,91,91,92,92,92,92,92,92,92,92,92,93,93,93,93,93,93,93,93,93,94,94,94,94,94,94,94,94,94,95,95,95,95,95,95,95,95,95,96,96,96,96,96,96,96,96,96,97,97,97,97,97,97,97,97,97,98,98,98,98,98,98,98,98,98,99,99,99,99,99,99,99,99,99],"z":[12.088399470496361,15.092854492479791,18.09730951446322,21.101764536446652,24.106219558430084,27.110674580413512,30.115129602396941,33.119584624380373,36.124039646363805,13.126910060683008,16.131365082666438,19.135820104649866,22.140275126633298,25.144730148616731,28.149185170600159,31.153640192583588,34.15809521456702,37.162550236550452,14.165420650869654,17.169875672853085,20.174330694836513,23.178785716819945,26.183240738803377,29.187695760786806,32.192150782770234,35.196605804753666,38.201060826737098,15.203931241056301,18.208386263039731,21.21284128502316,24.217296307006592,27.221751328990024,30.226206350973452,33.230661372956881,36.235116394940313,39.239571416923745,16.242441831242949,19.246896853226378,22.251351875209807,25.255806897193239,28.260261919176671,31.264716941160099,34.269171963143528,37.27362698512696,40.278082007110392,17.280952421429596,20.285407443413025,23.289862465396453,26.294317487379885,29.298772509363317,32.303227531346749,35.307682553330174,38.312137575313606,41.316592597297038,18.319463011616243,21.323918033599671,24.3283730555831,27.332828077566532,30.337283099549964,33.341738121533396,36.346193143516821,39.350648165500253,42.355103187483685,19.35797360180289,22.362428623786318,25.366883645769747,28.371338667753179,31.375793689736611,34.380248711720043,37.384703733703468,40.3891587556869,43.393613777670332,20.396484191989536,23.400939213972965,26.405394235956393,29.409849257939825,32.414304279923257,35.41875930190669,38.423214323890114,41.427669345873547,44.432124367856979,21.43499478217619,24.439449804159619,27.443904826143047,30.448359848126479,33.452814870109911,36.457269892093336,39.461724914076768,42.4661799360602,45.470634958043632,22.473505372362837,25.477960394346265,28.482415416329694,31.486870438313126,34.491325460296558,37.495780482279983,40.500235504263415,43.504690526246847,46.509145548230279,23.512015962549484,26.516470984532912,29.520926006516341,32.525381028499773,35.529836050483205,38.53429107246663,41.538746094450062,44.543201116433494,47.547656138416926,24.55052655273613,27.554981574719559,30.559436596702987,33.563891618686419,36.568346640669851,39.572801662653276,42.577256684636708,45.58171170662014,48.586166728603573,25.589037142922777,28.593492164906205,31.597947186889634,34.602402208873066,37.606857230856498,40.611312252839923,43.615767274823355,46.620222296806787,49.624677318790219,26.627547733109424,29.632002755092852,32.636457777076281,35.640912799059713,38.645367821043145,41.64982284302657,44.654277865010002,47.658732886993434,50.663187908976866,27.66605832329607,30.670513345279499,33.674968367262927,36.679423389246359,39.683878411229792,42.688333433213216,45.692788455196649,48.697243477180081,51.701698499163513,28.704568913482717,31.709023935466146,34.713478957449574,37.717933979433006,40.722389001416438,43.726844023399863,46.731299045383295,49.735754067366727,52.740209089350159,29.743079503669364,32.747534525652796,35.751989547636221,38.756444569619653,41.760899591603085,44.76535461358651,47.769809635569942,50.774264657553374,53.778719679536806,30.781590093856011,33.786045115839443,36.790500137822868,39.7949551598063,42.799410181789732,45.803865203773157,48.808320225756589,51.812775247740021,54.817230269723453,31.820100684042664,34.824555706026089,37.829010728009521,40.833465749992953,43.837920771976385,46.842375793959818,49.846830815943242,52.851285837926675,55.855740859910107,32.858611274229311,35.863066296212736,38.867521318196168,41.8719763401796,44.876431362163032,47.880886384146464,50.885341406129889,53.889796428113321,56.894251450096753,33.897121864415958,36.901576886399383,39.906031908382815,42.910486930366247,45.914941952349679,48.919396974333111,51.923851996316536,54.928307018299968,57.9327620402834,34.935632454602604,37.940087476586029,40.944542498569461,43.948997520552894,46.953452542536326,49.957907564519758,52.962362586503183,55.966817608486615,58.971272630470047,35.974143044789251,38.978598066772676,41.983053088756108,44.98750811073954,47.991963132722972,50.996418154706404,54.000873176689829,57.005328198673261,60.009783220656693,37.012653634975898,40.017108656959323,43.021563678942755,46.026018700926187,49.030473722909619,52.034928744893051,55.039383766876476,58.043838788859908,61.04829381084334,38.051164225162545,41.05561924714597,44.060074269129402,47.064529291112834,50.068984313096266,53.073439335079698,56.077894357063123,59.082349379046555,62.086804401029987,39.089674815349191,42.094129837332616,45.098584859316048,48.10303988129948,51.107494903282912,54.111949925266345,57.116404947249769,60.120859969233202,63.125314991216634,40.128185405535838,43.132640427519263,46.137095449502695,49.141550471486127,52.146005493469559,55.150460515452991,58.154915537436416,61.159370559419848,64.163825581403273,41.166695995722485,44.17115101770591,47.175606039689342,50.180061061672774,53.184516083656206,56.188971105639638,59.193426127623063,62.197881149606495,65.202336171589934,42.205206585909131,45.209661607892556,48.214116629875988,51.218571651859421,54.223026673842853,57.227481695826285,60.23193671780971,63.236391739793142,66.240846761776567,43.243717176095778,46.248172198079203,49.252627220062635,52.257082242046067,55.261537264029499,58.265992286012931,61.270447307996356,64.274902329979795,67.279357351963228,44.282227766282425,47.28668278826585,50.291137810249282,53.295592832232714,56.300047854216146,59.304502876199578,62.308957898183003,65.313412920166428,68.31786794214986,45.320738356469072,48.325193378452497,51.329648400435929,54.334103422419361,57.338558444402793,60.343013466386225,63.34746848836965,66.351923510353089,69.356378532336521,46.359248946655718,49.363703968639143,52.368158990622575,55.372614012606007,58.377069034589439,61.381524056572871,64.385979078556289,67.390434100539721,70.394889122523153,47.397759536842365,50.40221455882579,53.406669580809222,56.411124602792654,59.415579624776086,62.420034646759518,65.42448966874295,68.428944690726382,71.433399712709814,48.436270127029026,51.440725149012451,54.445180170995883,57.449635192979315,60.454090214962747,63.458545236946179,66.463000258929611,69.467455280913043,72.471910302896475,49.474780717215673,52.479235739199098,55.48369076118253,58.488145783165962,61.492600805149394,64.497055827132826,67.501510849116244,70.505965871099676,73.510420893083108,50.513291307402319,53.517746329385744,56.522201351369176,59.526656373352608,62.53111139533604,65.535566417319473,68.540021439302905,71.544476461286337,74.548931483269769,51.551801897588966,54.556256919572391,57.560711941555823,60.565166963539255,63.569621985522687,66.574077007506119,69.578532029489537,72.582987051472969,75.587442073456401,52.590312487775613,55.594767509759038,58.59922253174247,61.603677553725902,64.608132575709334,67.612587597692766,70.617042619676198,73.62149764165963,76.625952663643062,53.628823077962259,56.633278099945684,59.637733121929116,62.642188143912549,65.646643165895981,68.651098187879413,71.65555320986283,74.660008231846263,77.664463253829695,54.667333668148906,57.671788690132331,60.676243712115763,63.680698734099195,66.685153756082627,69.689608778066059,72.694063800049491,75.698518822032923,78.702973844016356,55.705844258335553,58.710299280318978,61.71475430230241,64.719209324285842,67.723664346269274,70.728119368252706,73.732574390236124,76.737029412219556,79.741484434202988,56.7443548485222,59.748809870505625,62.753264892489057,65.757719914472489,68.762174936455921,71.766629958439353,74.771084980422785,77.775540002406217,80.779995024389649,57.782865438708846,60.787320460692271,63.791775482675703,66.796230504659135,69.800685526642567,72.805140548625999,75.809595570609417,78.814050592592849,81.818505614576281,58.821376028895493,61.825831050878918,64.83028607286235,67.834741094845782,70.839196116829214,73.843651138812646,76.848106160796078,79.85256118277951,82.857016204762942,59.85988661908214,62.864341641065565,65.868796663048997,68.873251685032429,71.877706707015861,74.882161728999293,77.886616750982711,80.891071772966143,83.895526794949575,60.898397209268786,63.902852231252211,66.907307253235643,69.911762275219075,72.916217297202508,75.92067231918594,78.925127341169372,81.929582363152804,84.934037385136236,61.936907799455433,64.941362821438858,67.94581784342229,70.950272865405722,73.954727887389154,76.959182909372586,79.963637931356004,82.968092953339436,85.972547975322868,62.97541838964208,65.979873411625505,68.984328433608937,71.988783455592369,74.993238477575801,77.997693499559233,81.002148521542665,84.006603543526097,87.011058565509529,64.013928979828719,67.018384001812151,70.022839023795584,73.027294045779016,76.031749067762448,79.03620408974588,82.040659111729298,85.04511413371273,88.049569155696162,65.052439570015366,68.056894591998798,71.06134961398223,74.065804635965662,77.070259657949094,80.074714679932526,83.079169701915959,86.083624723899391,89.088079745882823,66.090950160202013,69.095405182185445,72.099860204168877,75.104315226152309,78.108770248135741,81.113225270119173,84.117680292102591,87.122135314086023,90.126590336069455,67.12946075038866,70.133915772372092,73.138370794355524,76.142825816338956,79.147280838322374,82.151735860305806,85.156190882289238,88.16064590427267,91.165100926256102,68.16797134057532,71.172426362558753,74.176881384542185,77.181336406525617,80.185791428509035,83.190246450492467,86.194701472475899,89.199156494459331,92.203611516442763,69.206481930761953,72.210936952745385,75.215391974728817,78.219846996712249,81.224302018695667,84.228757040679099,87.233212062662531,90.237667084645963,93.242122106629395,70.244992520948614,73.249447542932046,76.253902564915478,79.25835758689891,82.262812608882328,85.26726763086576,88.271722652849192,91.276177674832624,94.280632696816056,71.283503111135275,74.287958133118707,77.292413155102139,80.296868177085571,83.301323199068989,86.305778221052421,89.310233243035853,92.314688265019285,95.319143287002717,72.322013701321907,75.326468723305339,78.330923745288771,81.335378767272204,84.339833789255621,87.344288811239053,90.348743833222485,93.353198855205918,96.35765387718935,73.360524291508568,76.364979313492,79.369434335475432,82.373889357458864,85.378344379442282,88.382799401425714,91.387254423409146,94.391709445392578,97.396164467376011],"mode":"markers","name":"Superficie de Regresión","type":"mesh3d","opacity":0.5,"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 10 x64 (build 19045)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Buenos_Aires
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] faraway_1.0.9      vip_0.4.1          GGally_2.2.1       yardstick_1.3.2   
+ [5] workflowsets_1.1.1 workflows_1.2.0    tune_1.3.0         rsample_1.3.0     
+ [9] recipes_1.3.1      parsnip_1.3.2      modeldata_1.4.0    infer_1.0.8       
+[13] dials_1.4.0        scales_1.3.0       broom_1.0.7        tidymodels_1.3.0  
+[17] lubridate_1.9.3    forcats_1.0.0      stringr_1.5.1      dplyr_1.1.4       
+[21] purrr_1.0.4        readr_2.1.5        tidyr_1.3.1        tibble_3.2.1      
+[25] tidyverse_2.0.0    car_3.1-3          carData_3.0-5      MASS_7.3-60.2     
+[29] plotly_4.10.4      ggplot2_3.5.2     
+
+loaded via a namespace (and not attached):
+ [1] rlang_1.1.6         magrittr_2.0.3      furrr_0.3.1        
+ [4] compiler_4.4.1      mgcv_1.9-1          vctrs_0.6.5        
+ [7] lhs_1.2.0           crayon_1.5.3        pkgconfig_2.0.3    
+[10] fastmap_1.2.0       backports_1.5.0     labeling_0.4.3     
+[13] utf8_1.2.4          rmarkdown_2.28      prodlim_2025.04.28 
+[16] tzdb_0.4.0          nloptr_2.1.1        bit_4.5.0          
+[19] xfun_0.48           jsonlite_1.8.9      parallel_4.4.1     
+[22] R6_2.5.1            stringi_1.8.4       RColorBrewer_1.1-3 
+[25] boot_1.3-30         parallelly_1.44.0   rpart_4.1.23       
+[28] Rcpp_1.0.13         iterators_1.0.14    knitr_1.48         
+[31] future.apply_1.11.3 Matrix_1.7-0        splines_4.4.1      
+[34] nnet_7.3-19         timechange_0.3.0    tidyselect_1.2.1   
+[37] rstudioapi_0.17.1   abind_1.4-8         yaml_2.3.10        
+[40] timeDate_4041.110   codetools_0.2-20    listenv_0.9.1      
+[43] lattice_0.22-6      plyr_1.8.9          withr_3.0.1        
+[46] evaluate_1.0.1      future_1.49.0       survival_3.6-4     
+[49] ggstats_0.8.0       pillar_1.9.0        foreach_1.5.2      
+[52] generics_0.1.3      vroom_1.6.5         hms_1.1.3          
+[55] munsell_0.5.1       minqa_1.2.8         globals_0.18.0     
+[58] class_7.3-22        glue_1.8.0          lazyeval_0.2.2     
+[61] tools_4.4.1         data.table_1.16.2   lme4_1.1-35.5      
+[64] gower_1.0.2         grid_4.4.1          crosstalk_1.2.1    
+[67] ipred_0.9-15        colorspace_2.1-1    nlme_3.1-164       
+[70] Formula_1.2-5       cli_3.6.5           DiceDesign_1.10    
+[73] fansi_1.0.6         viridisLite_0.4.2   lava_1.8.1         
+[76] gtable_0.3.5        GPfit_1.0-9         digest_0.6.37      
+[79] farver_2.1.2        htmlwidgets_1.6.4   htmltools_0.5.8.1  
+[82] lifecycle_1.0.4     hardhat_1.4.1       httr_1.4.7         
+[85] bit64_4.5.2        </code></pre>
+</div>
+</div>
+<!-- -->
+
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb59" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Regresión Lineal y Múltiple"</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela E. Pairo"</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme:  flatly</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(echo = TRUE)</span></span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(message = FALSE)</span></span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = FALSE)</span></span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(plotly)</span></span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a><span class="in">library(MASS)</span></span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a><span class="in">library(car)</span></span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidymodels)</span></span>
+<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a><span class="in">library(GGally)</span></span>
+<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a><span class="fu"># Conociendo la base de datos</span></span>
+<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-28"><a href="#cb59-28" aria-hidden="true" tabindex="-1"></a>Se quiere analizar los factores que pueden afectar en la performance de estudiantes en un examen.</span>
+<span id="cb59-29"><a href="#cb59-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-32"><a href="#cb59-32" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-33"><a href="#cb59-33" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span><span class="fu">read_csv</span>(<span class="st">"estudiantes.csv"</span>)</span>
+<span id="cb59-34"><a href="#cb59-34" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span>
+<span id="cb59-35"><a href="#cb59-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-36"><a href="#cb59-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-37"><a href="#cb59-37" aria-hidden="true" tabindex="-1"></a>¿Hay valores faltantes?</span>
+<span id="cb59-38"><a href="#cb59-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-41"><a href="#cb59-41" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-42"><a href="#cb59-42" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(df))<span class="co"># para saber cuantos na hay en la base de datos</span></span>
+<span id="cb59-43"><a href="#cb59-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-44"><a href="#cb59-44" aria-hidden="true" tabindex="-1"></a>¿Hay datos duplicados?</span>
+<span id="cb59-45"><a href="#cb59-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-48"><a href="#cb59-48" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-49"><a href="#cb59-49" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">duplicated</span>(df))</span>
+<span id="cb59-50"><a href="#cb59-50" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-51"><a href="#cb59-51" aria-hidden="true" tabindex="-1"></a>**Gráficos de dispersión**</span>
+<span id="cb59-52"><a href="#cb59-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-55"><a href="#cb59-55" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-56"><a href="#cb59-56" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(df)</span>
+<span id="cb59-57"><a href="#cb59-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-58"><a href="#cb59-58" aria-hidden="true" tabindex="-1"></a><span class="fu">## Datos de entrenamiento y test</span></span>
+<span id="cb59-59"><a href="#cb59-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-62"><a href="#cb59-62" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-63"><a href="#cb59-63" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">117</span>)<span class="co">#setear la semilla</span></span>
+<span id="cb59-64"><a href="#cb59-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-65"><a href="#cb59-65" aria-hidden="true" tabindex="-1"></a>df_rs <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
+<span id="cb59-66"><a href="#cb59-66" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="fu">c</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,<span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>))</span>
+<span id="cb59-67"><a href="#cb59-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-68"><a href="#cb59-68" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df_rs,</span>
+<span id="cb59-69"><a href="#cb59-69" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb59-70"><a href="#cb59-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-71"><a href="#cb59-71" aria-hidden="true" tabindex="-1"></a>df_train <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb59-72"><a href="#cb59-72" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb59-73"><a href="#cb59-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-74"><a href="#cb59-74" aria-hidden="true" tabindex="-1"></a>df_test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb59-75"><a href="#cb59-75" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb59-76"><a href="#cb59-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-77"><a href="#cb59-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en test y train</span></span>
+<span id="cb59-78"><a href="#cb59-78" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(df_train))</span>
+<span id="cb59-79"><a href="#cb59-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-80"><a href="#cb59-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-81"><a href="#cb59-81" aria-hidden="true" tabindex="-1"></a>Se realiza un grafico de dispersión.</span>
+<span id="cb59-82"><a href="#cb59-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-85"><a href="#cb59-85" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-86"><a href="#cb59-86" aria-hidden="true" tabindex="-1"></a>p<span class="ot">&lt;-</span><span class="fu">ggplot</span>(df_train, </span>
+<span id="cb59-87"><a href="#cb59-87" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">x =</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span> , <span class="at">y =</span> <span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>)) <span class="sc">+</span> </span>
+<span id="cb59-88"><a href="#cb59-88" aria-hidden="true" tabindex="-1"></a>          <span class="fu">geom_point</span>(<span class="fu">aes</span>(), <span class="at">colour =</span><span class="st">"deepskyblue"</span>, <span class="at">size=</span><span class="dv">2</span>)</span>
+<span id="cb59-89"><a href="#cb59-89" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Puntaje previo"</span>) <span class="sc">+</span>  <span class="fu">ylab</span>(<span class="st">"Performance"</span>) </span>
+<span id="cb59-90"><a href="#cb59-90" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-91"><a href="#cb59-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-92"><a href="#cb59-92" aria-hidden="true" tabindex="-1"></a><span class="fu"># Regresión Lineal Simple</span></span>
+<span id="cb59-93"><a href="#cb59-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-94"><a href="#cb59-94" aria-hidden="true" tabindex="-1"></a>Se plantea el modelo de Regresión</span>
+<span id="cb59-95"><a href="#cb59-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-96"><a href="#cb59-96" aria-hidden="true" tabindex="-1"></a>$\LARGE Y_{i}= \beta_{0} + \beta_{1} X_1 + \varepsilon_i$</span>
+<span id="cb59-97"><a href="#cb59-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-98"><a href="#cb59-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-101"><a href="#cb59-101" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-102"><a href="#cb59-102" aria-hidden="true" tabindex="-1"></a>modelo1<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, </span>
+<span id="cb59-103"><a href="#cb59-103" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>df_train)</span>
+<span id="cb59-104"><a href="#cb59-104" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)</span>
+<span id="cb59-105"><a href="#cb59-105" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-106"><a href="#cb59-106" aria-hidden="true" tabindex="-1"></a><span class="fu">## Supuestos</span></span>
+<span id="cb59-107"><a href="#cb59-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-108"><a href="#cb59-108" aria-hidden="true" tabindex="-1"></a>$\LARGE \varepsilon_i \sim {\sf NID}(0, \sigma^{2})$</span>
+<span id="cb59-109"><a href="#cb59-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-110"><a href="#cb59-110" aria-hidden="true" tabindex="-1"></a>Se calculan los residuos del modelo para chequear los supuestos.</span>
+<span id="cb59-111"><a href="#cb59-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-114"><a href="#cb59-114" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-115"><a href="#cb59-115" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculamos los residuos y los predichos</span></span>
+<span id="cb59-116"><a href="#cb59-116" aria-hidden="true" tabindex="-1"></a>e<span class="ot">&lt;-</span><span class="fu">resid</span>(modelo1) <span class="co"># residuos</span></span>
+<span id="cb59-117"><a href="#cb59-117" aria-hidden="true" tabindex="-1"></a>re<span class="ot">&lt;-</span><span class="fu">rstandard</span>(modelo1) <span class="co">#residuos estandarizados</span></span>
+<span id="cb59-118"><a href="#cb59-118" aria-hidden="true" tabindex="-1"></a>pre<span class="ot">&lt;-</span><span class="fu">predict</span>(modelo1) <span class="co">#predichos</span></span>
+<span id="cb59-119"><a href="#cb59-119" aria-hidden="true" tabindex="-1"></a>res<span class="ot">&lt;-</span><span class="fu">cbind</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>,df<span class="sc">$</span><span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,pre,e,<span class="fu">round</span>(re,<span class="dv">2</span>))</span>
+<span id="cb59-120"><a href="#cb59-120" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(res)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"Puntaje anterior"</span>, <span class="st">"Performance"</span>, <span class="st">"Predichos"</span>, <span class="st">"Residuos"</span>, <span class="st">"residuos std"</span>) </span>
+<span id="cb59-121"><a href="#cb59-121" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res)</span>
+<span id="cb59-122"><a href="#cb59-122" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-123"><a href="#cb59-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-124"><a href="#cb59-124" aria-hidden="true" tabindex="-1"></a>Evaluamos el **supuesto de normalidad** de manera gráfica y mediante una prueba de hipótesis.</span>
+<span id="cb59-125"><a href="#cb59-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-128"><a href="#cb59-128" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-129"><a href="#cb59-129" aria-hidden="true" tabindex="-1"></a><span class="co">#Supuestos</span></span>
+<span id="cb59-130"><a href="#cb59-130" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb59-131"><a href="#cb59-131" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pre, re, <span class="at">xlab=</span><span class="st">"Predichos"</span>, <span class="at">ylab=</span><span class="st">"Residuos estandarizados"</span>,<span class="at">main=</span><span class="st">"Grafico de dispersion de RE vs PRED"</span> )</span>
+<span id="cb59-132"><a href="#cb59-132" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb59-133"><a href="#cb59-133" aria-hidden="true" tabindex="-1"></a><span class="fu">qqPlot</span>(e)</span>
+<span id="cb59-134"><a href="#cb59-134" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-135"><a href="#cb59-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-136"><a href="#cb59-136" aria-hidden="true" tabindex="-1"></a>**Normalidad**</span>
+<span id="cb59-137"><a href="#cb59-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-140"><a href="#cb59-140" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-141"><a href="#cb59-141" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(e)</span>
+<span id="cb59-142"><a href="#cb59-142" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-143"><a href="#cb59-143" aria-hidden="true" tabindex="-1"></a>Como el p-valor= 0.27 es mayor a $\alpha$ =0.05, se asume normalidad en los residuos.</span>
+<span id="cb59-144"><a href="#cb59-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-145"><a href="#cb59-145" aria-hidden="true" tabindex="-1"></a>**Intervalo de Confianza**</span>
+<span id="cb59-146"><a href="#cb59-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-147"><a href="#cb59-147" aria-hidden="true" tabindex="-1"></a>Se calcula el intervalo de confianza del 95% para la ordenada al origen y la pendiente del modelo de regresión. </span>
+<span id="cb59-148"><a href="#cb59-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-149"><a href="#cb59-149" aria-hidden="true" tabindex="-1"></a>Para cambiar el nivel de confianza cambiar el parámetro <span class="in">`level`</span></span>
+<span id="cb59-150"><a href="#cb59-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-153"><a href="#cb59-153" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-154"><a href="#cb59-154" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(modelo1)<span class="co">#por default es del 95%</span></span>
+<span id="cb59-155"><a href="#cb59-155" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-156"><a href="#cb59-156" aria-hidden="true" tabindex="-1"></a>Se agrega la recta al gráfico y la banda de confianza.</span>
+<span id="cb59-157"><a href="#cb59-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-160"><a href="#cb59-160" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-161"><a href="#cb59-161" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, </span>
+<span id="cb59-162"><a href="#cb59-162" aria-hidden="true" tabindex="-1"></a>                <span class="at">se =</span> <span class="cn">TRUE</span>)<span class="co">#para mostrar la banda de confianza</span></span>
+<span id="cb59-163"><a href="#cb59-163" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-164"><a href="#cb59-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-165"><a href="#cb59-165" aria-hidden="true" tabindex="-1"></a>Entonces, se analiza el modelo propuesto y como el p-valor es menor al valor de significancia, entonces la pendiente es significativamente distinta a cero y por ende el modelo lineal propuesto es válido.</span>
+<span id="cb59-166"><a href="#cb59-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-169"><a href="#cb59-169" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-170"><a href="#cb59-170" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)</span>
+<span id="cb59-171"><a href="#cb59-171" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-172"><a href="#cb59-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-173"><a href="#cb59-173" aria-hidden="true" tabindex="-1"></a>Por el valor obtenido de $\ R^2= 0.83$ se deduce que el modelo propuesto explica el 86,63% de la variabilidad de los datos.</span>
+<span id="cb59-174"><a href="#cb59-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-177"><a href="#cb59-177" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-178"><a href="#cb59-178" aria-hidden="true" tabindex="-1"></a><span class="co">#coeficiente de determinación (en summary)</span></span>
+<span id="cb59-179"><a href="#cb59-179" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1)<span class="sc">$</span>r.squared</span>
+<span id="cb59-180"><a href="#cb59-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-181"><a href="#cb59-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## Evaluamos el modelo en df_test</span></span>
+<span id="cb59-182"><a href="#cb59-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-185"><a href="#cb59-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-186"><a href="#cb59-186" aria-hidden="true" tabindex="-1"></a>pred_m1 <span class="ot">&lt;-</span> modelo1 <span class="sc">|&gt;</span>  </span>
+<span id="cb59-187"><a href="#cb59-187" aria-hidden="true" tabindex="-1"></a>           <span class="fu">predict</span>(df_test) <span class="sc">|&gt;</span> </span>
+<span id="cb59-188"><a href="#cb59-188" aria-hidden="true" tabindex="-1"></a>           <span class="fu">bind_cols</span>(df_test)</span>
+<span id="cb59-189"><a href="#cb59-189" aria-hidden="true" tabindex="-1"></a>pred_m1</span>
+<span id="cb59-190"><a href="#cb59-190" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-191"><a href="#cb59-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-192"><a href="#cb59-192" aria-hidden="true" tabindex="-1"></a>Cálculo del RMSE ( _Root Mean Squared Error_ o Error Cuadrático Medio)</span>
+<span id="cb59-193"><a href="#cb59-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-196"><a href="#cb59-196" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-197"><a href="#cb59-197" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluamos en df_test</span></span>
+<span id="cb59-198"><a href="#cb59-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-199"><a href="#cb59-199" aria-hidden="true" tabindex="-1"></a>rmse_result <span class="ot">&lt;-</span> pred_m1 <span class="sc">%&gt;%</span> </span>
+<span id="cb59-200"><a href="#cb59-200" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metrics</span>(<span class="at">truth =</span> <span class="st">"Performance Index"</span>, <span class="at">estimate =</span> <span class="st">"...1"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb59-201"><a href="#cb59-201" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">"rmse"</span>)</span>
+<span id="cb59-202"><a href="#cb59-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-203"><a href="#cb59-203" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostrar el resultado del RMSE</span></span>
+<span id="cb59-204"><a href="#cb59-204" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rmse_result)</span>
+<span id="cb59-205"><a href="#cb59-205" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-206"><a href="#cb59-206" aria-hidden="true" tabindex="-1"></a>Otras métricas para evaluar modelos de regresión</span>
+<span id="cb59-207"><a href="#cb59-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-210"><a href="#cb59-210" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-211"><a href="#cb59-211" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(modelo1)</span>
+<span id="cb59-212"><a href="#cb59-212" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-213"><a href="#cb59-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-214"><a href="#cb59-214" aria-hidden="true" tabindex="-1"></a><span class="fu"># Regresión Lineal Múltiple</span></span>
+<span id="cb59-215"><a href="#cb59-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-216"><a href="#cb59-216" aria-hidden="true" tabindex="-1"></a>Se incluye la variable <span class="in">`Hours Studied`</span> al modelo.</span>
+<span id="cb59-217"><a href="#cb59-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-218"><a href="#cb59-218" aria-hidden="true" tabindex="-1"></a>$\LARGE Performance_{i}= \beta_{0} + \beta_{1} PuntajePrevio + \beta_{2} HorasEstudiadas +  \beta_{3} HorasDormidas + \varepsilon_i$</span>
+<span id="cb59-219"><a href="#cb59-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-220"><a href="#cb59-220" aria-hidden="true" tabindex="-1"></a> $\beta_{i}$ son los coeficientes de regresión parcial, ya que indican la influencia (parcial) de cada variable explicatoria sobre Y, cuando se mantiene constante la influencia de las otras variables explicatorias.</span>
+<span id="cb59-221"><a href="#cb59-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-222"><a href="#cb59-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-225"><a href="#cb59-225" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-226"><a href="#cb59-226" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)<span class="co">#setear la semilla</span></span>
+<span id="cb59-227"><a href="#cb59-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-228"><a href="#cb59-228" aria-hidden="true" tabindex="-1"></a>df_rm <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
+<span id="cb59-229"><a href="#cb59-229" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="fu">c</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,<span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, <span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>, <span class="st">`</span><span class="at">Sleep Hours</span><span class="st">`</span>))</span>
+<span id="cb59-230"><a href="#cb59-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-231"><a href="#cb59-231" aria-hidden="true" tabindex="-1"></a>df_split_rm <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df_rm,</span>
+<span id="cb59-232"><a href="#cb59-232" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb59-233"><a href="#cb59-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-234"><a href="#cb59-234" aria-hidden="true" tabindex="-1"></a>df_train_rm <span class="ot">&lt;-</span> df_split_rm <span class="sc">%&gt;%</span></span>
+<span id="cb59-235"><a href="#cb59-235" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb59-236"><a href="#cb59-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-237"><a href="#cb59-237" aria-hidden="true" tabindex="-1"></a>df_test_rm <span class="ot">&lt;-</span> df_split_rm <span class="sc">%&gt;%</span></span>
+<span id="cb59-238"><a href="#cb59-238" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb59-239"><a href="#cb59-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-240"><a href="#cb59-240" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en test y train</span></span>
+<span id="cb59-241"><a href="#cb59-241" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(df_train_rm))</span>
+<span id="cb59-242"><a href="#cb59-242" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de testeo: "</span>, <span class="fu">nrow</span>(df_test_rm))</span>
+<span id="cb59-243"><a href="#cb59-243" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-244"><a href="#cb59-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-247"><a href="#cb59-247" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-248"><a href="#cb59-248" aria-hidden="true" tabindex="-1"></a>modelo2<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span><span class="sc">+</span> <span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">Sleep Hours</span><span class="st">`</span> , </span>
+<span id="cb59-249"><a href="#cb59-249" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>df_train_rm)</span>
+<span id="cb59-250"><a href="#cb59-250" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-251"><a href="#cb59-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-252"><a href="#cb59-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-253"><a href="#cb59-253" aria-hidden="true" tabindex="-1"></a><span class="fu">## Supuestos</span></span>
+<span id="cb59-254"><a href="#cb59-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-257"><a href="#cb59-257" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-258"><a href="#cb59-258" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculamos los residuos y los predichos</span></span>
+<span id="cb59-259"><a href="#cb59-259" aria-hidden="true" tabindex="-1"></a>e_m2<span class="ot">&lt;-</span><span class="fu">resid</span>(modelo2) <span class="co"># residuos</span></span>
+<span id="cb59-260"><a href="#cb59-260" aria-hidden="true" tabindex="-1"></a>re_m2<span class="ot">&lt;-</span><span class="fu">rstandard</span>(modelo2) <span class="co">#residuos estandarizados</span></span>
+<span id="cb59-261"><a href="#cb59-261" aria-hidden="true" tabindex="-1"></a>pre_m2<span class="ot">&lt;-</span><span class="fu">predict</span>(modelo2) <span class="co">#predichos</span></span>
+<span id="cb59-262"><a href="#cb59-262" aria-hidden="true" tabindex="-1"></a>res_m2<span class="ot">&lt;-</span><span class="fu">cbind</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>,df<span class="sc">$</span><span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>,pre_m2,e_m2,<span class="fu">round</span>(re_m2,<span class="dv">2</span>))</span>
+<span id="cb59-263"><a href="#cb59-263" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(res_m2)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"Previous Scores"</span>, <span class="st">"performance"</span>, <span class="st">"Predichos"</span>, <span class="st">"Residuos"</span>, <span class="st">"residuos std"</span>) </span>
+<span id="cb59-264"><a href="#cb59-264" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res_m2)</span>
+<span id="cb59-265"><a href="#cb59-265" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-266"><a href="#cb59-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-269"><a href="#cb59-269" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-270"><a href="#cb59-270" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb59-271"><a href="#cb59-271" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pre_m2, re_m2, <span class="at">xlab=</span><span class="st">"Predichos"</span>, <span class="at">ylab=</span><span class="st">"Residuos estandarizados"</span>,<span class="at">main=</span><span class="st">"Grafico de dispersion de RE vs PRED"</span> )</span>
+<span id="cb59-272"><a href="#cb59-272" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb59-273"><a href="#cb59-273" aria-hidden="true" tabindex="-1"></a><span class="fu">qqPlot</span>(e_m2)</span>
+<span id="cb59-274"><a href="#cb59-274" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-275"><a href="#cb59-275" aria-hidden="true" tabindex="-1"></a>Se chequea normalidad</span>
+<span id="cb59-276"><a href="#cb59-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-279"><a href="#cb59-279" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-280"><a href="#cb59-280" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">resid</span>(modelo2))</span>
+<span id="cb59-281"><a href="#cb59-281" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-282"><a href="#cb59-282" aria-hidden="true" tabindex="-1"></a>Vemos los resultados del modelo</span>
+<span id="cb59-283"><a href="#cb59-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-286"><a href="#cb59-286" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-287"><a href="#cb59-287" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo2)</span>
+<span id="cb59-288"><a href="#cb59-288" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-289"><a href="#cb59-289" aria-hidden="true" tabindex="-1"></a><span class="fu">## Evaluamos en df_test_rm</span></span>
+<span id="cb59-290"><a href="#cb59-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-293"><a href="#cb59-293" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-294"><a href="#cb59-294" aria-hidden="true" tabindex="-1"></a>pred_rm <span class="ot">&lt;-</span> modelo2 <span class="sc">|&gt;</span>  </span>
+<span id="cb59-295"><a href="#cb59-295" aria-hidden="true" tabindex="-1"></a>           <span class="fu">predict</span>(df_test_rm) <span class="sc">|&gt;</span> </span>
+<span id="cb59-296"><a href="#cb59-296" aria-hidden="true" tabindex="-1"></a>           <span class="fu">bind_cols</span>(df_test_rm)</span>
+<span id="cb59-297"><a href="#cb59-297" aria-hidden="true" tabindex="-1"></a>pred_rm</span>
+<span id="cb59-298"><a href="#cb59-298" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-299"><a href="#cb59-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-302"><a href="#cb59-302" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-303"><a href="#cb59-303" aria-hidden="true" tabindex="-1"></a>rmse_result_rm <span class="ot">&lt;-</span> pred_rm <span class="sc">%&gt;%</span></span>
+<span id="cb59-304"><a href="#cb59-304" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metrics</span>(<span class="at">truth =</span> <span class="st">"Performance Index"</span>, <span class="at">estimate =</span> <span class="st">"...1"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb59-305"><a href="#cb59-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">"rmse"</span>)</span>
+<span id="cb59-306"><a href="#cb59-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-307"><a href="#cb59-307" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rmse_result_rm)</span>
+<span id="cb59-308"><a href="#cb59-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-311"><a href="#cb59-311" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-312"><a href="#cb59-312" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(modelo2)</span>
+<span id="cb59-313"><a href="#cb59-313" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-314"><a href="#cb59-314" aria-hidden="true" tabindex="-1"></a><span class="fu">## VIF (factor de inflación de la varianza o _variance inflation factor_)</span></span>
+<span id="cb59-315"><a href="#cb59-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-316"><a href="#cb59-316" aria-hidden="true" tabindex="-1"></a>$\LARGE VIF= \frac{1}{1-R_{j}^{2}}$</span>
+<span id="cb59-317"><a href="#cb59-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-318"><a href="#cb59-318" aria-hidden="true" tabindex="-1"></a>Mide para cada X el aumento de la varianza del coeficiente de regresión debido a la correlación entre VE. Valores superiores a 5 son considerados indicativos de **colinealidad**. Toma valores entre 1 e infinito. Valores superiores a 5 son considerados </span>
+<span id="cb59-319"><a href="#cb59-319" aria-hidden="true" tabindex="-1"></a>indicativos de colinealidad</span>
+<span id="cb59-320"><a href="#cb59-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-321"><a href="#cb59-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-322"><a href="#cb59-322" aria-hidden="true" tabindex="-1"></a>¿Porqué importa la colinealidad?</span>
+<span id="cb59-323"><a href="#cb59-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-324"><a href="#cb59-324" aria-hidden="true" tabindex="-1"></a>Los coeficientes de regresión tendrán varianzas muy altas, es decir que estarán estimados con poca precisión.</span>
+<span id="cb59-325"><a href="#cb59-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-328"><a href="#cb59-328" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-329"><a href="#cb59-329" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(modelo2)</span>
+<span id="cb59-330"><a href="#cb59-330" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-331"><a href="#cb59-331" aria-hidden="true" tabindex="-1"></a>De acuerdo a los resultados obtenidos, el modelo propuesto es significativo y válido (p-valor &lt; $\alpha=0.05$), resultando significativo ambos coeficientes(p&lt;0.05). El 98% de la variabilidad de los datos es explicado por el modelo de regresión múltiple.</span>
+<span id="cb59-332"><a href="#cb59-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-333"><a href="#cb59-333" aria-hidden="true" tabindex="-1"></a><span class="fu">## Importancia de las variables en el modelo</span></span>
+<span id="cb59-334"><a href="#cb59-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-337"><a href="#cb59-337" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-338"><a href="#cb59-338" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
+<span id="cb59-339"><a href="#cb59-339" aria-hidden="true" tabindex="-1"></a>importancia <span class="ot">&lt;-</span> <span class="fu">vip</span>(modelo2)</span>
+<span id="cb59-340"><a href="#cb59-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-341"><a href="#cb59-341" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(importancia)</span>
+<span id="cb59-342"><a href="#cb59-342" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-343"><a href="#cb59-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-344"><a href="#cb59-344" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bonus track: Residuos parciales</span></span>
+<span id="cb59-345"><a href="#cb59-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-346"><a href="#cb59-346" aria-hidden="true" tabindex="-1"></a>Los gráficos de dispersión de Y vs cada X muestran el efecto sobre la variable respuesta (VR) de una variable explicatoria (VE) sin considerar el efecto de las otras VE. Los gráficos de residuos parciales muestran el efecto parcial sobre la VR de una VE cuando las otras VE son incluidas en el modelo y mantenidas constantes.</span>
+<span id="cb59-347"><a href="#cb59-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-350"><a href="#cb59-350" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-351"><a href="#cb59-351" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(faraway)</span>
+<span id="cb59-352"><a href="#cb59-352" aria-hidden="true" tabindex="-1"></a><span class="fu">prplot</span>(modelo2,<span class="dv">1</span>)</span>
+<span id="cb59-353"><a href="#cb59-353" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-354"><a href="#cb59-354" aria-hidden="true" tabindex="-1"></a>Suponiendo un modelo contituido solo por 2 VE.</span>
+<span id="cb59-355"><a href="#cb59-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-358"><a href="#cb59-358" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-359"><a href="#cb59-359" aria-hidden="true" tabindex="-1"></a>modelo3<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span><span class="sc">+</span> <span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span> , </span>
+<span id="cb59-360"><a href="#cb59-360" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>df_train_rm)</span>
+<span id="cb59-361"><a href="#cb59-361" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-362"><a href="#cb59-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-365"><a href="#cb59-365" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-366"><a href="#cb59-366" aria-hidden="true" tabindex="-1"></a>grid_x1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>), <span class="fu">max</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>))</span>
+<span id="cb59-367"><a href="#cb59-367" aria-hidden="true" tabindex="-1"></a>grid_x2 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>), <span class="fu">max</span>(df<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>))</span>
+<span id="cb59-368"><a href="#cb59-368" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span> <span class="ot">=</span> grid_x1, <span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span> <span class="ot">=</span> grid_x2)</span>
+<span id="cb59-369"><a href="#cb59-369" aria-hidden="true" tabindex="-1"></a>grid<span class="sc">$</span>y_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo3, <span class="at">newdata =</span> grid)</span>
+<span id="cb59-370"><a href="#cb59-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-371"><a href="#cb59-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-372"><a href="#cb59-372" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_ly</span>(df, <span class="at">x =</span> <span class="sc">~</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>, <span class="at">y =</span> <span class="sc">~</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, <span class="at">z =</span> <span class="sc">~</span><span class="st">`</span><span class="at">Performance Index</span><span class="st">`</span>, <span class="at">type =</span> <span class="st">"scatter3d"</span>, <span class="at">mode =</span> <span class="st">"markers"</span>, <span class="at">name =</span> <span class="st">"Datos"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb59-373"><a href="#cb59-373" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_trace</span>(<span class="at">x =</span> grid<span class="sc">$</span><span class="st">`</span><span class="at">Hours Studied</span><span class="st">`</span>, <span class="at">y =</span> grid<span class="sc">$</span><span class="st">`</span><span class="at">Previous Scores</span><span class="st">`</span>, <span class="at">z =</span> grid<span class="sc">$</span>y_pred, <span class="at">type =</span> <span class="st">"mesh3d"</span>, <span class="at">opacity =</span> <span class="fl">0.5</span>, <span class="at">name =</span> <span class="st">"Superficie de Regresión"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb59-374"><a href="#cb59-374" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="at">scene =</span> <span class="fu">list</span>(<span class="at">xaxis =</span> <span class="fu">list</span>(<span class="at">title =</span> <span class="st">'Horas de estudio'</span>),</span>
+<span id="cb59-375"><a href="#cb59-375" aria-hidden="true" tabindex="-1"></a>                      <span class="at">yaxis =</span> <span class="fu">list</span>(<span class="at">title =</span> <span class="st">'Puntaje previo'</span>),</span>
+<span id="cb59-376"><a href="#cb59-376" aria-hidden="true" tabindex="-1"></a>                      <span class="at">zaxis =</span> <span class="fu">list</span>(<span class="at">title =</span> <span class="st">'Performance'</span>)),</span>
+<span id="cb59-377"><a href="#cb59-377" aria-hidden="true" tabindex="-1"></a>         <span class="at">title =</span> <span class="st">"Regresión Múltiple"</span>)</span>
+<span id="cb59-378"><a href="#cb59-378" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-379"><a href="#cb59-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-380"><a href="#cb59-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-383"><a href="#cb59-383" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-384"><a href="#cb59-384" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb59-385"><a href="#cb59-385" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-386"><a href="#cb59-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-387"><a href="#cb59-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-388"><a href="#cb59-388" aria-hidden="true" tabindex="-1"></a></span>
+</code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

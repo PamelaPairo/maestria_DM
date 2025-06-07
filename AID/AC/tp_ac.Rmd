@@ -27,13 +27,13 @@ set.seed(123)#cambiar por los 3 digitos del DNI.
 sample <- read.csv("obesidad.csv")
 
 sample <- sample %>% 
-          sample_n(500)# muestreo aletorio de 2000 individuos
+          sample_n(500)# muestreo aletorio de 500 individuos
 
 glimpse(sample)
 ```
 
-1- Seleccionar dos variables categóricas ¿Hay dependencia entre las variables seleccionadas?
+1- Seleccione dos variables categóricas ¿Hay dependencia entre las variables seleccionadas?
 
-2-Realizar un Análisis de Correspondencias Simple con las variables seleccionadas en el punto 1. Mostrar el biplot e interpretar los resultados. ¿Qué indican las dimensiones principales? ¿Qué asociaciones se observan entre las categorías de las variables?
+2-Realice un Análisis de Correspondencias Simple con las variables seleccionadas en el punto 1. Muestre el biplot e interpretar los resultados. ¿Qué indican las dimensiones principales? ¿Qué asociaciones se observan entre las categorías de las variables?
 
-3- Realizar un Análisis de Correspondencias Múltiple utilizando al menos 4 variables categóricas. Considere la opción de discretizar variables cuantitativas.¿Qué variables contribuyen más a las dimensiones principales? Mostrar el biplot e interpretar los resultados. Concluya.
+3- Realice un Análisis de Correspondencias Múltiple utilizando al menos 4 variables categóricas. Considere la opción de discretizar variables cuantitativas.¿Qué variables contribuyen más a las dimensiones principales? Mostrar el biplot e interpretar los resultados. Concluya.
