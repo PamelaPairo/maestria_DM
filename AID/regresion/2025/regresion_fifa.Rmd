@@ -1,0 +1,197 @@
+---
+title: "Regresión Multiple con los datos de FIFA"
+author: "Pamela E. Pairo"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(plotly)
+library(MASS)
+library(car)
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+```
+
+
+El objetivo es crear un modelo lineal de regresión múltiple para predecir el precio de los jugadores del dataset de FIFA 2024.
+
+```{r}
+df <-read_csv("player_stats.csv")
+glimpse(df)
+```
+
+```{r}
+df <- df %>%
+  mutate(price = value %>%
+           str_remove_all("\\$") %>%
+           str_remove_all("\\.") %>%
+           as.numeric())
+glimpse(df)
+```
+
+```{r}
+df_numericas <- df %>% select(where(is.numeric))
+```
+
+```{r}
+#Matriz de correlación
+library(corrplot)
+
+m_cor <- cor(df_numericas) 
+
+# representa la matriz de correlaciones mediante círculos
+corrplot(m_cor,
+         method="circle",
+         type = "upper",
+         diag= FALSE) 
+```
+
+```{r}
+boxplot(df_numericas$price)
+```
+
+
+Modelos de regresión múltiple
+
+$$Y_i = β_0 + β_1X_{i1} + β_2X_{i2} + · · · + β_{p-1}X_{ip-1} + ε_i$$
+
+```{r}
+df_rlm <-df_numericas %>% 
+         select(c(age, stamina, dribbling, price ))
+
+glimpse(df_rlm)
+```
+$\LARGE price_{i}= \beta_{0} + \beta_{1} age + \beta_{2} stamina +  \beta_{3} dribbling  + \varepsilon_i$
+
+```{r}
+set.seed(300)#setear la semilla
+
+df_split_rm <- initial_split(df_rlm,
+                          prop = 0.75)
+
+train<- df_split_rm %>%
+              training()
+
+test <- df_split_rm %>%
+              testing()
+
+# Número de datos en test y train
+paste0("Total del dataset de entrenamiento: ", nrow(df_train_rm))
+```
+Ajuste a un modelo lineal múltiple
+
+```{r}
+m1 <- lm(price ~ age + stamina + dribbling, data = train)
+# Resumen del modelo
+tidy_m1<- tidy(m1, conf.int = TRUE)
+tidy_m1
+```
+
+## Supuestos
+
+$\LARGE ε_i ∼ NID(0,σ^2)$
+
+```{r}
+#Calculamos los residuos y los predichos
+e_m1<-resid(m1) # residuos
+re_m1<-rstandard(m1) #residuos estandarizados
+pre_m1<-predict(m1) #predichos
+res_m1<-cbind(pre_m1,e_m1,round(re_m1,2))
+colnames(res_m1)<-c("Predichos", "Residuos", "residuos std") 
+
+#Supuestos
+par(mfrow = c(1, 2))
+plot(pre_m1, re_m1, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
+abline(0,0)
+qqPlot(e_m1)
+
+```
+```{r}
+
+```
+```{r}
+shapiro.test(e_m1)
+```
+
+Homocedasticidad
+
+```{r}
+# test de Breusch-Pagan
+
+lmtest::bptest(m1)
+```
+Multicolinealidad
+
+```{r}
+vif(m1)
+```
+
+## Limitaciones de la regresion lineal multiple
+
+- Cumplimiento de supuestos
+- Nos impone una relación lineal entre la variable dependiente y sus regresoras.
+
+## Evaluación en test
+
+```{r}
+pred_m1_test<- m1 |>  
+           predict(test) |> 
+           bind_cols(test)
+
+pred_m1_train <- m1 |>  
+           predict(train) |> 
+           bind_cols(train)
+
+rmse_result_test <- pred_m1_test %>% 
+  metrics(truth = "price", estimate = "...1") %>%
+  filter(.metric == "rmse")
+
+rmse_result_train<- pred_m1_train %>% 
+  metrics(truth = "price", estimate = "...1") %>%
+  filter(.metric == "rmse")
+
+```
+
+```{r}
+# Mostrar el resultado del RMSE
+print(rmse_result_test)
+print(rmse_result_train)
+```
+
+```{r}
+
+m2 <- lm(log (price) ~ age + stamina + dribbling, data = train)
+# Resumen del modelo
+tidy_m2<- tidy(m2, conf.int = TRUE)
+tidy_m2
+
+```
+
+```{r}
+
+#Calculamos los residuos y los predichos
+e_m2<-resid(m2) # residuos
+re_m2<-rstandard(m2) #residuos estandarizados
+pre_m2<-predict(m2) #predichos
+res_m2<-cbind(pre_m2,e_m2,round(re_m2,2))
+colnames(res_m1)<-c("Predichos", "Residuos", "residuos std") 
+
+#Supuestos
+par(mfrow = c(1, 2))
+plot(pre_m2, re_m2, xlab="Predichos", ylab="Residuos estandarizados",main="Grafico de dispersion de RE vs PRED" )
+abline(0,0)
+qqPlot(e_m2)
+
+```
+
