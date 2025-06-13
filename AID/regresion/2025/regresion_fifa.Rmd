@@ -28,10 +28,8 @@ El objetivo es crear un modelo lineal de regresión múltiple para predecir el p
 
 ```{r}
 df <-read_csv("player_stats.csv")
-glimpse(df)
-```
 
-```{r}
+# Cambio el formao de la variable value y la renombro
 df <- df %>%
   mutate(price = value %>%
            str_remove_all("\\$") %>%
@@ -39,26 +37,74 @@ df <- df %>%
            as.numeric())
 glimpse(df)
 ```
+Elimino a los posibles arqueros
 
 ```{r}
-df_numericas <- df %>% select(where(is.numeric))
+df_ <- df %>% select(where(is.numeric), -c(value, price,marking)) 
+
+```
+
+
+```{r}
+pca <- prcomp(df_,
+              scale = TRUE)# con datos estandarizados
+names(pca)
 ```
 
 ```{r}
-#Matriz de correlación
-library(corrplot)
+library(ggfortify)
 
-m_cor <- cor(df_numericas) 
-
-# representa la matriz de correlaciones mediante círculos
-corrplot(m_cor,
-         method="circle",
-         type = "upper",
-         diag= FALSE) 
+autoplot(pca, 
+         data = df_, 
+         loadings = TRUE, 
+         loadings.colour = 'black',
+         loadings.label = TRUE, 
+         loadings.label.size = 5)
 ```
 
 ```{r}
-boxplot(df_numericas$price)
+# Agregar scores al df original
+df_pca <- df_ %>%
+  bind_cols(as.data.frame(pca$x[,1])) %>% 
+  bind_cols(as.data.frame(df$price))%>%
+  rename(price = `df$price`)
+
+# Filtrar por un valor de PC1
+df_filtrado <- df_pca %>%
+  filter(`pca$x[, 1]`> -0.02)
+
+```
+
+
+
+```{r}
+df_final <-df_filtrado %>% 
+         select(c(age, finishing, shot_power, price))
+
+```
+
+```{r}
+hist(df_final$price)
+```
+```{r}
+summary(df_final)
+```
+
+```{r}
+# Supongamos que tu variable target se llama "y"
+df_numericas <- df_final %>%
+  filter(
+    price > quantile(price, 0.25) - 1.5 * IQR(price),
+    price < quantile(price, 0.75) + 1.5 * IQR(price)
+  )
+
+```
+
+```{r}
+ggpairs(df_numericas %>% filter(price < 1000000))
+```
+```{r}
+df_numericas %>% filter(price < 1000000)
 ```
 
 
@@ -66,18 +112,13 @@ Modelos de regresión múltiple
 
 $$Y_i = β_0 + β_1X_{i1} + β_2X_{i2} + · · · + β_{p-1}X_{ip-1} + ε_i$$
 
-```{r}
-df_rlm <-df_numericas %>% 
-         select(c(age, stamina, dribbling, price ))
 
-glimpse(df_rlm)
-```
 $\LARGE price_{i}= \beta_{0} + \beta_{1} age + \beta_{2} stamina +  \beta_{3} dribbling  + \varepsilon_i$
 
 ```{r}
 set.seed(300)#setear la semilla
 
-df_split_rm <- initial_split(df_rlm,
+df_split_rm <- initial_split(df_numericas%>% filter(price < 1000000),
                           prop = 0.75)
 
 train<- df_split_rm %>%
@@ -87,12 +128,12 @@ test <- df_split_rm %>%
               testing()
 
 # Número de datos en test y train
-paste0("Total del dataset de entrenamiento: ", nrow(df_train_rm))
+paste0("Total del dataset de entrenamiento: ", nrow(train))
 ```
 Ajuste a un modelo lineal múltiple
 
 ```{r}
-m1 <- lm(price ~ age + stamina + dribbling, data = train)
+m1 <- lm(price ~ age+ finishing + shot_power, data = train)
 # Resumen del modelo
 tidy_m1<- tidy(m1, conf.int = TRUE)
 tidy_m1
@@ -117,9 +158,7 @@ abline(0,0)
 qqPlot(e_m1)
 
 ```
-```{r}
 
-```
 ```{r}
 shapiro.test(e_m1)
 ```
@@ -171,7 +210,7 @@ print(rmse_result_train)
 
 ```{r}
 
-m2 <- lm(log (price) ~ age + stamina + dribbling, data = train)
+m2 <- lm(log (price) ~ age + finishing + shot_power, data = train)
 # Resumen del modelo
 tidy_m2<- tidy(m2, conf.int = TRUE)
 tidy_m2
