@@ -24,12 +24,13 @@ library(GGally)
 ```
 
 
-El objetivo es crear un modelo lineal de regresión múltiple para predecir el precio de los jugadores del dataset de FIFA 2024.
+El objetivo es crear un modelo lineal de regresión múltiple para **predecir el precio de los jugadores del dataset de FIFA 2024**.
 
 ```{r}
+#base de datos fifa 2024
 df <-read_csv("player_stats.csv")
 
-# Cambio el formao de la variable value y la renombro
+# Cambio el formato de la variable value y la renombro
 df <- df %>%
   mutate(price = value %>%
            str_remove_all("\\$") %>%
@@ -37,18 +38,44 @@ df <- df %>%
            as.numeric())
 glimpse(df)
 ```
-Elimino a los posibles arqueros
+Nos vamos a focalizar unicamente en la predicción del precio para los jugadores que no son arqueros. Elimino a los posibles arqueros a partir de un PCA.
+
+¿Se podria haber segmentado a los jugadores mediante clustering y luego generar modelos de regresion diferentes para cada grupo?
+
+## Anális exploratorio
 
 ```{r}
-df_ <- df %>% select(where(is.numeric), -c(value, price,marking)) 
+club_valores <- df %>%
+  group_by(club) %>%
+  summarise(valor_total = sum(price, na.rm = TRUE)) %>%
+  arrange(desc(valor_total)) %>%
+  slice_head(n = 20)  # Top 15 clubes con mayor valor
+
+ggplot(club_valores, aes(x = reorder(club, valor_total), y = valor_total)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Clubes con los jugadores más caros (top 20)",
+    x = "Club",
+    y = "Valor total (€)",
+    caption = "Fuente: FIFA 2024 Men"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+df_ <- df %>% select(where(is.numeric), -c(value, price, marking)) 
 
 ```
 
 
 ```{r}
+#Realizo el PCA
+
 pca <- prcomp(df_,
               scale = TRUE)# con datos estandarizados
-names(pca)
+
 ```
 
 ```{r}
@@ -65,7 +92,7 @@ autoplot(pca,
 ```{r}
 # Agregar scores al df original
 df_pca <- df_ %>%
-  bind_cols(as.data.frame(pca$x[,1])) %>% 
+  bind_cols(as.data.frame(pca$x[,1])) %>% #scores para PC1
   bind_cols(as.data.frame(df$price))%>%
   rename(price = `df$price`)
 
@@ -76,50 +103,60 @@ df_filtrado <- df_pca %>%
 ```
 
 
+Se predice el precio de los jugadores a partir de `age`, `reactions`, `finishing`, `shot_power`.
 
 ```{r}
 df_final <-df_filtrado %>% 
-         select(c(age, finishing, shot_power, price))
-
+           select(c(age, reactions, finishing, shot_power, price))
 ```
 
 ```{r}
-hist(df_final$price)
+hist(df_final$price, breaks = 15)
+```
+
+```{r}
+boxplot(df_final$price)
+```
+
+```{r}
+ggpairs(df_final)
 ```
 ```{r}
 summary(df_final)
 ```
 
 ```{r}
-# Supongamos que tu variable target se llama "y"
-df_numericas <- df_final %>%
-  filter(
-    price > quantile(price, 0.25) - 1.5 * IQR(price),
-    price < quantile(price, 0.75) + 1.5 * IQR(price)
-  )
+q3 <- quantile(df_final$price, 0.75, na.rm = TRUE)
+
+# Filtrar los datos que están por debajo o igual al 75%
+df_wout <- df_final %>% filter(price <= q3)
 
 ```
 
 ```{r}
-ggpairs(df_numericas %>% filter(price < 1000000))
+ggpairs(df_wout)
 ```
+
 ```{r}
-df_numericas %>% filter(price < 1000000)
+df_wout <-df_wout%>% filter(price > 10000)
+ggpairs (df_wout)
 ```
 
 
-Modelos de regresión múltiple
+## Modelos de regresión múltiple
 
 $$Y_i = β_0 + β_1X_{i1} + β_2X_{i2} + · · · + β_{p-1}X_{ip-1} + ε_i$$
 
 
-$\LARGE price_{i}= \beta_{0} + \beta_{1} age + \beta_{2} stamina +  \beta_{3} dribbling  + \varepsilon_i$
+$\LARGE price_{i}= \beta_{0} + \beta_{1} age + \beta_{2} reactions +  \beta_{3} finishing  + \beta_{4} shorPower +\varepsilon_i$
+
+
 
 ```{r}
 set.seed(300)#setear la semilla
 
-df_split_rm <- initial_split(df_numericas%>% filter(price < 1000000),
-                          prop = 0.75)
+df_split_rm <- initial_split(df_final,
+                          prop = 0.8)
 
 train<- df_split_rm %>%
               training()
@@ -127,16 +164,19 @@ train<- df_split_rm %>%
 test <- df_split_rm %>%
               testing()
 
-# Número de datos en test y train
+# Número de datos en train
 paste0("Total del dataset de entrenamiento: ", nrow(train))
 ```
 Ajuste a un modelo lineal múltiple
 
 ```{r}
-m1 <- lm(price ~ age+ finishing + shot_power, data = train)
+m1 <- lm(price ~ ., data = train)
 # Resumen del modelo
 tidy_m1<- tidy(m1, conf.int = TRUE)
 tidy_m1
+```
+```{r}
+summary(m1)
 ```
 
 ## Supuestos
@@ -176,12 +216,11 @@ Multicolinealidad
 vif(m1)
 ```
 
-## Limitaciones de la regresion lineal multiple
+## Evaluación en train y test
 
-- Cumplimiento de supuestos
-- Nos impone una relación lineal entre la variable dependiente y sus regresoras.
+$RMSE = \sqrt{\frac{\sum(\hat{y_i}-y_i)^2}{n}}$
 
-## Evaluación en test
+Se pudo haber optado tambien por R2aj. Otras métricas utilizadas en regresión se puede consultar [aqui](https://farshadabdulazeez.medium.com/essential-regression-evaluation-metrics-mse-rmse-mae-r%C2%B2-and-adjusted-r%C2%B2-0600daa1c03a)
 
 ```{r}
 pred_m1_test<- m1 |>  
@@ -202,15 +241,19 @@ rmse_result_train<- pred_m1_train %>%
 
 ```
 
+
+
 ```{r}
-# Mostrar el resultado del RMSE
+# RMSE
 print(rmse_result_test)
 print(rmse_result_train)
 ```
 
+El RMSE es menor en train que en test.
+
 ```{r}
 
-m2 <- lm(log (price) ~ age + finishing + shot_power, data = train)
+m2 <- lm(price ~ age+ finishing , data = train)
 # Resumen del modelo
 tidy_m2<- tidy(m2, conf.int = TRUE)
 tidy_m2
@@ -234,3 +277,42 @@ qqPlot(e_m2)
 
 ```
 
+```{r}
+summary (m2)
+```
+
+```{r}
+pred_m2_test<- m2 |>  
+           predict(test) |> 
+           bind_cols(test)
+
+pred_m2_train <- m2 |>  
+           predict(train) |> 
+           bind_cols(train)
+
+rmse_result_test_m2 <- pred_m2_test %>% 
+  metrics(truth = "price", estimate = "...1") %>%
+  filter(.metric == "rmse")
+
+rmse_result_train_m2<- pred_m2_train %>% 
+  metrics(truth = "price", estimate = "...1") %>%
+  filter(.metric == "rmse")
+
+```
+
+```{r}
+# Mostrar el resultado del RMSE
+print(rmse_result_test_m2)
+print(rmse_result_train_m2)
+```
+
+## Limitaciones de la regresion lineal multiple
+
+- Cumplimiento de supuestos
+- Nos impone una relación lineal entre la variable dependiente y sus regresoras.
+
+## Alternativas a los modelos de regresion lineal múltiple
+
+- Se puede probar con regresiones robustas
+- Regresiones ridge y regresiones lasso
+- Regresiones polinómicas
