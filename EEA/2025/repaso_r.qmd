@@ -432,7 +432,11 @@ Para agregar el _pipe_ (` |> `) `Ctrl+ Shift+ M`
 
 ## Loops
 
-Un __loop__ es una estructura de código que nos permite aplicar iterativamente un mismo conjunto de comandos, variando el valor de una variable. Por ejemplo:
+Un __loop__ es una estructura de código que nos permite aplicar iterativamente un mismo conjunto de comandos, variando el valor de una variable. 
+
+Un loop puede iterar sobre cualquier tipo de vector, independientemente de lo que contenga.
+
+> Los loops son una estructura básica que existe en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.
 
 ```{r,warning=FALSE}
 for(i in 1:10){
@@ -451,14 +455,34 @@ for(Valores in 1:10){
 }
 ```
 
-Un loop puede iterar sobre cualquier tipo de vector, independientemente de lo que contenga.
 
-> Los loops son una estructura básica que existe en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.
+Al usar `print()` sólo mostrará los resultados de las operaciones en la consola, no los asignará a un objeto.
+
+Se puede usar estos valores para asignar cada valor resultante de nuestras operaciones a una posición específica en un vector, incluso si este está vacio.
+
+Creamos un vector vacío, asignándole como `NULL` como valor.
 
 
 ## Estructuras Condicionales
 
 Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.
+
+```{r}
+mi_vector <- NULL # creamos vector vacio
+
+for(i in 1:10) {
+  mi_vector[i] <- i ^ 2
+}
+
+```
+
+
+Aunque no fueron mostrados en la consola, los resultados han sido asignados al objeto `mi_vector`.
+
+```{r}
+mi_vector
+```
+
 
 ## if
 
