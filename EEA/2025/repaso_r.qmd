@@ -462,11 +462,6 @@ Se puede usar estos valores para asignar cada valor resultante de nuestras opera
 
 Creamos un vector vacío, asignándole como `NULL` como valor.
 
-
-## Estructuras Condicionales
-
-Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.
-
 ```{r}
 mi_vector <- NULL # creamos vector vacio
 
@@ -483,10 +478,15 @@ Aunque no fueron mostrados en la consola, los resultados han sido asignados al o
 mi_vector
 ```
 
+## Estructuras Condicionales
 
-## if
+Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.
 
-Su funcionamiento es el siguiente:     
+
+## if y else
+
+Su funcionamiento es el siguiente:    
+
 ```if(condición){código a ejecutar si se cumple la condición}```
 
 ```{r,warning=FALSE}
@@ -501,6 +501,19 @@ if( 2+2 == 148.24){
   print("R, tenemos un problema")
 }
 
+```
+
+`else` complementa un `if`, pues indica qué ocurrirá cuando la condición no se cumple, es falsa (FALSE), en lugar de no hacer nada.
+
+**SI** esta condición es cierta, **ENTONCES** realiza estas operaciones, **DE OTRO MODO** realiza estas otras operaciones.
+
+```{r}
+# No se cumple la condición y se muestra "Falso"
+if(4 > 5) {
+  "Verdadero"
+} else {
+  "Falso"
+}
 ```
 
 
