@@ -994,9 +994,9 @@ $DF
 </div>
 <section id="ifelse" class="level3">
 <h3 class="anchored" data-anchor-id="ifelse">ifelse</h3>
-<p>La función <code>if_else()</code> sirve para crear o modificar dicotómicamente un objeto/variable/vector a partir del cumplimiento de una o más condiciones lógicas.</p>
-<p>Su funcionamiento es el siguiente:<br>
-<code>if_else(condición, función a aplicar si se cumple la condición, función a aplicar si no se cumple la condición)</code></p>
+<p>La función <code>ifelse( )</code> nos permite vectorizar <code>if</code>, <code>else</code>. En lugar de escribir una línea de código para cada comparación, podemos usar una sola llamada a esta función, que se aplicará a todos los elementos de un vector.</p>
+<p>Su funcionamiento es el siguiente:</p>
+<p><code>if_else(condición, función a aplicar si se cumple la condición, función a aplicar si no se cumple la condición)</code></p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -1026,6 +1026,22 @@ Attaching package: 'dplyr'</code></pre>
 <pre><code>[1] "Joya"</code></pre>
 </div>
 </div>
+<p>Muy util para recodificar datos</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>num <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(num <span class="sc">==</span> <span class="dv">0</span>, </span>
+<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Hombre"</span>,</span>
+<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Mujer"</span>)</span>
+<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-7"><a href="#cb113-7" aria-hidden="true" tabindex="-1"></a>num</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Hombre" "Mujer"  "Hombre" "Hombre" "Hombre" "Mujer"  "Mujer" </code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="funciones-1" class="level2">
@@ -1035,11 +1051,11 @@ Attaching package: 'dplyr'</code></pre>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>suma <span class="ot">&lt;-</span> <span class="cf">function</span>(valor1, valor2) {</span>
-<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>  valor1<span class="sc">+</span>valor2</span>
-<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a><span class="fu">suma</span>(<span class="dv">5</span>,<span class="dv">6</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>suma <span class="ot">&lt;-</span> <span class="cf">function</span>(valor1, valor2) {</span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>  valor1<span class="sc">+</span>valor2</span>
+<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb115-4"><a href="#cb115-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-5"><a href="#cb115-5" aria-hidden="true" tabindex="-1"></a><span class="fu">suma</span>(<span class="dv">5</span>,<span class="dv">6</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 11</code></pre>
@@ -1049,11 +1065,11 @@ Attaching package: 'dplyr'</code></pre>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1,parametro2) {</span>
-<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
-<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb115-4"><a href="#cb115-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb115-5"><a href="#cb115-5" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"A ver"</span>, <span class="at">parametro2 =</span> <span class="st">"Qué pasa"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1,parametro2) {</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"A ver"</span>, <span class="at">parametro2 =</span> <span class="st">"Qué pasa"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "A ver &lt;--&gt; Qué pasa"</code></pre>
@@ -1063,24 +1079,25 @@ Attaching package: 'dplyr'</code></pre>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>Otra_funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1, <span class="at">parametro2 =</span> <span class="st">"String default"</span>) {</span>
-<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
-<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>Otra_funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1, <span class="at">parametro2 =</span> <span class="st">"String default"</span>) {</span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
+<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb119-5"><a href="#cb119-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Valor 1 &lt;--&gt; String default"</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>, <span class="at">parametro2 =</span> <span class="st">"Valor 2"</span> )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>, <span class="at">parametro2 =</span> <span class="st">"Valor 2"</span> )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Valor 1 &lt;--&gt; Valor 2"</code></pre>
 </div>
 </div>
-<p>Las funciones que creamos nosotros permanecen en el ambiente de R temporariamente. Cuando removemos los objetos del ambiente, la función deja de existir. Por ende, debemos incorporarla en cada uno de los scripts en la cual la necesitemos. Una buena práctica, es incorporar nuestras funciones útiles al comienzo de cada script junto a la carga de las librerías.</p>
+<p>Las funciones que creamos nosotros permanecen en el ambiente de R temporariamente. Cuando removemos los objetos del ambiente, la función deja de existir. Por ende, debemos incorporarla en cada uno de los scripts en la cual la necesitemos.</p>
+<p>Una buena práctica, es incorporar nuestras funciones útiles al comienzo de cada script junto a la carga de las librerías.</p>
 <blockquote class="blockquote">
 <p>Vale mencionar que <strong>lo que ocurre en una función, queda en la función</strong> excepto que explícitamente pidamos que devuelva el resultado, con el comando <code>print()</code>.</p>
 </blockquote>
@@ -1090,7 +1107,7 @@ Attaching package: 'dplyr'</code></pre>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>(<span class="cf">function</span>(x) x<span class="sc">*</span><span class="dv">2</span>)(<span class="dv">10</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a>(<span class="cf">function</span>(x) x<span class="sc">*</span><span class="dv">2</span>)(<span class="dv">10</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 20</code></pre>
@@ -1581,589 +1598,604 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb123" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb123-2"><a href="#cb123-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Clase Práctica nº1"</span></span>
-<span id="cb123-3"><a href="#cb123-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Adaptación del material hecho por Juan Barriola y Sofía Perini"</span></span>
-<span id="cb123-4"><a href="#cb123-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
-<span id="cb123-5"><a href="#cb123-5" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> |</span></span>
-<span id="cb123-6"><a href="#cb123-6" aria-hidden="true" tabindex="-1"></a><span class="co">  Repaso R y Inferencia Estadística</span></span>
-<span id="cb123-7"><a href="#cb123-7" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb123-8"><a href="#cb123-8" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb123-9"><a href="#cb123-9" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: flatly</span></span>
-<span id="cb123-10"><a href="#cb123-10" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
-<span id="cb123-11"><a href="#cb123-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb123-12"><a href="#cb123-12" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb123-13"><a href="#cb123-13" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
-<span id="cb123-14"><a href="#cb123-14" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb123-15"><a href="#cb123-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-16"><a href="#cb123-16" aria-hidden="true" tabindex="-1"></a>&lt;style type="text/css"&gt;</span>
-<span id="cb123-17"><a href="#cb123-17" aria-hidden="true" tabindex="-1"></a>div<span class="fu">.main-container</span> {</span>
-<span id="cb123-18"><a href="#cb123-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">max-width</span><span class="ch">:</span> <span class="dv">1600</span><span class="dt">px</span><span class="op">;</span></span>
-<span id="cb123-19"><a href="#cb123-19" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin-left</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span></span>
-<span id="cb123-20"><a href="#cb123-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin-right</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span></span>
-<span id="cb123-21"><a href="#cb123-21" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb123-22"><a href="#cb123-22" aria-hidden="true" tabindex="-1"></a>&lt;/style&gt;</span>
-<span id="cb123-23"><a href="#cb123-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-24"><a href="#cb123-24" aria-hidden="true" tabindex="-1"></a><span class="al">![https://cran.r-project.org/](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/Rlogo.png)</span>{width=100}</span>
-<span id="cb123-25"><a href="#cb123-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-26"><a href="#cb123-26" aria-hidden="true" tabindex="-1"></a><span class="fu"># Repaso R</span></span>
-<span id="cb123-27"><a href="#cb123-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-28"><a href="#cb123-28" aria-hidden="true" tabindex="-1"></a><span class="fu">### ¿Qué es R?</span></span>
-<span id="cb123-29"><a href="#cb123-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-30"><a href="#cb123-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Lenguaje para el procesamiento y análisis estadístico de datos</span>
-<span id="cb123-31"><a href="#cb123-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Software Libre</span>
-<span id="cb123-32"><a href="#cb123-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sintaxis Básica: R base </span>
-<span id="cb123-33"><a href="#cb123-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sintaxis incremental<span class="ot">[^1]</span>: El lenguaje se va ampliando por aportes de Universidades, investigadores/as, usuarios/as y empresas privadas, organizados en librerías (o paquetes)</span>
-<span id="cb123-34"><a href="#cb123-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comunidad web muy grande para realizar preguntas y despejar dudas. Por ejemplo, en el caso de Buenos Aires contamos con <span class="co">[</span><span class="ot">RenBaires</span><span class="co">](https://www.meetup.com/es-ES/renbaires/)</span> y <span class="co">[</span><span class="ot">R-Ladies Buenos Aires</span><span class="co">](https://www.meetup.com/es-ES/rladies-buenos-aires/)</span></span>
-<span id="cb123-35"><a href="#cb123-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-36"><a href="#cb123-36" aria-hidden="true" tabindex="-1"></a><span class="ot">[^1]: </span>Más allá de los comandos elementales, comandos más sofisticados tienen muchas versiones, y algunas quedan en desuso en el tiempo.</span>
-<span id="cb123-37"><a href="#cb123-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-38"><a href="#cb123-38" aria-hidden="true" tabindex="-1"></a><span class="al">![Fuente: https://gist.github.com/daroczig/3cf06d6db4be2bbe3368](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/number-of-submitted-packages-to-CRAN.png)</span>{width=1000}</span>
-<span id="cb123-39"><a href="#cb123-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-40"><a href="#cb123-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-41"><a href="#cb123-41" aria-hidden="true" tabindex="-1"></a><span class="al">![https://www.rstudio.com/](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/RStudiologo.png)</span>{width=200}</span>
-<span id="cb123-42"><a href="#cb123-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-43"><a href="#cb123-43" aria-hidden="true" tabindex="-1"></a>Uno de los _entornos_ más cómodos para utilizar el _lenguaje_ __R__ es el _programa_ __R studio__.</span>
-<span id="cb123-44"><a href="#cb123-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-45"><a href="#cb123-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Rstudio es una empresa que produce productos asociados al lenguaje R, como el programa sobre el que corremos los comandos, y extensiones del lenguaje (librerías).</span>
-<span id="cb123-46"><a href="#cb123-46" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb123-47"><a href="#cb123-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El programa es _gratuito_ y se puede bajar de la </span>
-<span id="cb123-48"><a href="#cb123-48" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">página oficial</span><span class="co">](https://www.rstudio.com/)</span> </span>
-<span id="cb123-49"><a href="#cb123-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-50"><a href="#cb123-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-51"><a href="#cb123-51" aria-hidden="true" tabindex="-1"></a><span class="al">![Pantalla Rstudio](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/Pantalla%20Rstudio.png)</span>{width=1000}</span>
-<span id="cb123-52"><a href="#cb123-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-53"><a href="#cb123-53" aria-hidden="true" tabindex="-1"></a><span class="fu">### Lógica sintáctica</span></span>
-<span id="cb123-54"><a href="#cb123-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-55"><a href="#cb123-55" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Definición de objetos</span></span>
-<span id="cb123-56"><a href="#cb123-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-57"><a href="#cb123-57" aria-hidden="true" tabindex="-1"></a>Los __Objetos/Elementos__ constituyen la categoría esencial del R. De hecho, todo en R es un objeto, y se almacena con un nombre específico que **no debe poseer espacios**. Un número, un vector, una función, la progresión de letras del abecedario, una base de datos, un gráfico, constituyen para R objetos de distinto tipo. Los objetos que vamos creando a medida que trabajamos pueden visualizarse en el panel derecho superior de la pantalla (el _Environment_). </span>
-<span id="cb123-58"><a href="#cb123-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-59"><a href="#cb123-59" aria-hidden="true" tabindex="-1"></a>El operador __```&lt;-```__ (__Alt + Guión__) sirve para definir un objeto.  __A la izquierda__ del __```&lt;-```__ debe ubicarse el nombre que tomará el elemento a crear. __Del lado derecho__ debe ir la definición del mismo.</span>
-<span id="cb123-60"><a href="#cb123-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-61"><a href="#cb123-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-64"><a href="#cb123-64" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-65"><a href="#cb123-65" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb123-66"><a href="#cb123-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-67"><a href="#cb123-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-68"><a href="#cb123-68" aria-hidden="true" tabindex="-1"></a>Por ejemplo, podemos crear el elemento __A__, cuyo valor será 1. Para esto, debemos _correr_ el código presionando __Ctrl + Enter__, con el cursor ubicado en cualquier parte de la línea. Al definir un elemento, el mismo queda guardado en el ambiente del programa, y podrá ser utilizado posteriormente para observar su contenido o para realizar una operación con el mismo.</span>
-<span id="cb123-69"><a href="#cb123-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-72"><a href="#cb123-72" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-73"><a href="#cb123-73" aria-hidden="true" tabindex="-1"></a>A </span>
-<span id="cb123-74"><a href="#cb123-74" aria-hidden="true" tabindex="-1"></a>A<span class="sc">+</span><span class="dv">6</span></span>
-<span id="cb123-75"><a href="#cb123-75" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-76"><a href="#cb123-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-77"><a href="#cb123-77" aria-hidden="true" tabindex="-1"></a>Al correr una linea con el nombre del objeto, la consola del programa nos muestra su contenido. Entre corchetes observamos el número de orden del elemento en cuestión. Si corremos una operación, la consola nos muestra el resultado de la misma.</span>
-<span id="cb123-78"><a href="#cb123-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-79"><a href="#cb123-79" aria-hidden="true" tabindex="-1"></a>El operador __```=```__ es __equivalente__ a __```&lt;-```__.   </span>
-<span id="cb123-80"><a href="#cb123-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-83"><a href="#cb123-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-84"><a href="#cb123-84" aria-hidden="true" tabindex="-1"></a>B <span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb123-85"><a href="#cb123-85" aria-hidden="true" tabindex="-1"></a>B</span>
-<span id="cb123-86"><a href="#cb123-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-87"><a href="#cb123-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-88"><a href="#cb123-88" aria-hidden="true" tabindex="-1"></a>__```&lt;-```__ es un operador __unidireccional__, es decir que:     </span>
-<span id="cb123-89"><a href="#cb123-89" aria-hidden="true" tabindex="-1"></a>```A &lt;- B``` implica que __A__ va tomar como valor el contenido del objeto __B__, y no al revés.</span>
-<span id="cb123-90"><a href="#cb123-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-93"><a href="#cb123-93" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-94"><a href="#cb123-94" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> B</span>
-<span id="cb123-95"><a href="#cb123-95" aria-hidden="true" tabindex="-1"></a>A      <span class="co"># Ahora A toma el valor de B, y B continúa conservando el mismo valor</span></span>
-<span id="cb123-96"><a href="#cb123-96" aria-hidden="true" tabindex="-1"></a>B</span>
-<span id="cb123-97"><a href="#cb123-97" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-98"><a href="#cb123-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-99"><a href="#cb123-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-100"><a href="#cb123-100" aria-hidden="true" tabindex="-1"></a><span class="fu">### R base</span></span>
-<span id="cb123-101"><a href="#cb123-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-102"><a href="#cb123-102" aria-hidden="true" tabindex="-1"></a>Con _R base_ nos referimos a los comandos básicos que vienen incorporados en el R, sin necesidad de cargar librerías. </span>
-<span id="cb123-103"><a href="#cb123-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-104"><a href="#cb123-104" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Operadores lógicos: </span></span>
-<span id="cb123-105"><a href="#cb123-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-106"><a href="#cb123-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&gt;$ (mayor a-)</span>
-<span id="cb123-107"><a href="#cb123-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&gt;=$ (mayor o igual a-)</span>
-<span id="cb123-108"><a href="#cb123-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&lt;$ (menor a-)</span>
-<span id="cb123-109"><a href="#cb123-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&lt;=$ (menor o igual a-)</span>
-<span id="cb123-110"><a href="#cb123-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$==$ (igual a-)</span>
-<span id="cb123-111"><a href="#cb123-111" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$!=$ (distinto a-)</span>
-<span id="cb123-112"><a href="#cb123-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-115"><a href="#cb123-115" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-116"><a href="#cb123-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Redefinimos los valores A y B</span></span>
-<span id="cb123-117"><a href="#cb123-117" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb123-118"><a href="#cb123-118" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb123-119"><a href="#cb123-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-120"><a href="#cb123-120" aria-hidden="true" tabindex="-1"></a><span class="co"># Realizamos comparaciones lógicas</span></span>
-<span id="cb123-121"><a href="#cb123-121" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&gt;</span>  B</span>
-<span id="cb123-122"><a href="#cb123-122" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&gt;=</span> B</span>
-<span id="cb123-123"><a href="#cb123-123" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&lt;</span>  B</span>
-<span id="cb123-124"><a href="#cb123-124" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&lt;=</span> B</span>
-<span id="cb123-125"><a href="#cb123-125" aria-hidden="true" tabindex="-1"></a>A <span class="sc">==</span> B</span>
-<span id="cb123-126"><a href="#cb123-126" aria-hidden="true" tabindex="-1"></a>A <span class="sc">!=</span> B</span>
-<span id="cb123-127"><a href="#cb123-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-128"><a href="#cb123-128" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> A <span class="sc">!=</span> B</span>
-<span id="cb123-129"><a href="#cb123-129" aria-hidden="true" tabindex="-1"></a>C</span>
-<span id="cb123-130"><a href="#cb123-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-131"><a href="#cb123-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-132"><a href="#cb123-132" aria-hidden="true" tabindex="-1"></a>Como muestra el último ejemplo, el resultado de una operación lógica puede almacenarse como el valor de un objeto.</span>
-<span id="cb123-133"><a href="#cb123-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-134"><a href="#cb123-134" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Operadores aritméticos:</span></span>
-<span id="cb123-135"><a href="#cb123-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-138"><a href="#cb123-138" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-139"><a href="#cb123-139" aria-hidden="true" tabindex="-1"></a><span class="co">#suma</span></span>
-<span id="cb123-140"><a href="#cb123-140" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">+</span><span class="dv">6</span></span>
-<span id="cb123-141"><a href="#cb123-141" aria-hidden="true" tabindex="-1"></a>A</span>
-<span id="cb123-142"><a href="#cb123-142" aria-hidden="true" tabindex="-1"></a><span class="co">#Resta</span></span>
-<span id="cb123-143"><a href="#cb123-143" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">6-8</span></span>
-<span id="cb123-144"><a href="#cb123-144" aria-hidden="true" tabindex="-1"></a>B</span>
-<span id="cb123-145"><a href="#cb123-145" aria-hidden="true" tabindex="-1"></a><span class="co">#cociente</span></span>
-<span id="cb123-146"><a href="#cb123-146" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="dv">6</span><span class="sc">/</span><span class="fl">2.5</span></span>
-<span id="cb123-147"><a href="#cb123-147" aria-hidden="true" tabindex="-1"></a>C</span>
-<span id="cb123-148"><a href="#cb123-148" aria-hidden="true" tabindex="-1"></a><span class="co">#multiplicacion</span></span>
-<span id="cb123-149"><a href="#cb123-149" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="dv">6</span><span class="sc">*</span><span class="fl">2.5</span></span>
-<span id="cb123-150"><a href="#cb123-150" aria-hidden="true" tabindex="-1"></a>D</span>
-<span id="cb123-151"><a href="#cb123-151" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-152"><a href="#cb123-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-153"><a href="#cb123-153" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Funciones:</span></span>
-<span id="cb123-154"><a href="#cb123-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-155"><a href="#cb123-155" aria-hidden="true" tabindex="-1"></a>Las funciones son series de procedimientos estandarizados, que toman como input determinados argumentos a fijar por el usuario, y devuelven un resultado acorde a la aplicación de dichos procedimientos. Su lógica de funcionamiento es:   </span>
-<span id="cb123-156"><a href="#cb123-156" aria-hidden="true" tabindex="-1"></a>```funcion(argumento1 = arg1, argumento2 = arg2)```      </span>
-<span id="cb123-157"><a href="#cb123-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-158"><a href="#cb123-158" aria-hidden="true" tabindex="-1"></a>A lo largo del curso iremos viendo numerosas funciones, según lo requieran los distintos ejercicios. Sin embargo, veamos ahora algunos ejemplos para comprender su funcionamiento:    </span>
-<span id="cb123-159"><a href="#cb123-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-160"><a href="#cb123-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>paste() : concatena una serie de caracteres, pudiendo indicarse cómo separar a cada uno de ellos        </span>
-<span id="cb123-161"><a href="#cb123-161" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>paste0(): concatena una serie de caracteres sin separar</span>
-<span id="cb123-162"><a href="#cb123-162" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>sum(): suma de todos los elementos de un vector   </span>
-<span id="cb123-163"><a href="#cb123-163" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>mean() promedio aritmético de todos los elementos de un vector   </span>
-<span id="cb123-164"><a href="#cb123-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-167"><a href="#cb123-167" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-168"><a href="#cb123-168" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"Pega"</span>, <span class="st">"estas"</span>, <span class="dv">4</span>, <span class="st">"palabras"</span>, <span class="at">sep =</span> <span class="st">" "</span>)</span>
-<span id="cb123-169"><a href="#cb123-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-170"><a href="#cb123-170" aria-hidden="true" tabindex="-1"></a><span class="co"># Puedo concatenar caracteres almacenados en objetos</span></span>
-<span id="cb123-171"><a href="#cb123-171" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(A, B, C, <span class="at">sep =</span> <span class="st">"**"</span>)</span>
-<span id="cb123-172"><a href="#cb123-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-173"><a href="#cb123-173" aria-hidden="true" tabindex="-1"></a><span class="co"># Paste0 pega los caracteres sin separador</span></span>
-<span id="cb123-174"><a href="#cb123-174" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(A, B, C)</span>
-<span id="cb123-175"><a href="#cb123-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-176"><a href="#cb123-176" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
-<span id="cb123-177"><a href="#cb123-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-178"><a href="#cb123-178" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
-<span id="cb123-179"><a href="#cb123-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-180"><a href="#cb123-180" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb123-181"><a href="#cb123-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-182"><a href="#cb123-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-183"><a href="#cb123-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-184"><a href="#cb123-184" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Caracteres especiales:</span></span>
-<span id="cb123-185"><a href="#cb123-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-186"><a href="#cb123-186" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>R es sensible a mayúsculas y minúsculas, tanto para los nombres de las variables, como para las funciones y parámetros.</span>
-<span id="cb123-187"><a href="#cb123-187" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los __espacios en blanco__ y los __carriage return__ (_enter_) no son considerados por el lenguaje. Los podemos aprovechar para emprolijar el código y que la lectura sea más simple<span class="ot">[^2]</span>.</span>
-<span id="cb123-188"><a href="#cb123-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-189"><a href="#cb123-189" aria-hidden="true" tabindex="-1"></a><span class="ot">[^2]: </span>veremos que existen ciertas excepciones con algunos paquetes más adelante. </span>
-<span id="cb123-190"><a href="#cb123-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-191"><a href="#cb123-191" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El __numeral__ <span class="in">```#```</span> se utiliza para hacer comentarios. Todo lo que se escribe después del # no es interpretado por R. Se debe utilizar un # por cada línea de código que se desea anular</span>
-<span id="cb123-192"><a href="#cb123-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-193"><a href="#cb123-193" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los __corchetes__ <span class="in">```[]```</span> se utilizan para acceder a un objeto:</span>
-<span id="cb123-194"><a href="#cb123-194" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>en un vector<span class="co">[</span><span class="ot">n° orden</span><span class="co">]</span></span>
-<span id="cb123-195"><a href="#cb123-195" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>en una tabla<span class="co">[</span><span class="ot">fila, columna</span><span class="co">]</span></span>
-<span id="cb123-196"><a href="#cb123-196" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>en una lista<span class="co">[</span><span class="ot">n° elemento</span><span class="co">]</span>   </span>
-<span id="cb123-197"><a href="#cb123-197" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb123-198"><a href="#cb123-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>el signo __$__ también es un método de acceso. Particularmente, en los dataframes, nos permitira acceder a una determinada columna de una tabla</span>
-<span id="cb123-199"><a href="#cb123-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-200"><a href="#cb123-200" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los __paréntesis__<span class="in">```()```</span> se utilizan en las funciones para definir los parámetros.</span>
-<span id="cb123-201"><a href="#cb123-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-202"><a href="#cb123-202" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las __comas__ <span class="in">```, ```</span>  se utilizan para separar los parametros al interior de una función. </span>
-<span id="cb123-203"><a href="#cb123-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-204"><a href="#cb123-204" aria-hidden="true" tabindex="-1"></a><span class="fu">### Objetos    </span></span>
-<span id="cb123-205"><a href="#cb123-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-206"><a href="#cb123-206" aria-hidden="true" tabindex="-1"></a>Existe una gran cantidad de objetos distintos en R, en lo que respecta al curso trabajaremos principalmente con 3 de ellos:</span>
-<span id="cb123-207"><a href="#cb123-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-208"><a href="#cb123-208" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Valores</span>
-<span id="cb123-209"><a href="#cb123-209" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Vectores</span>
-<span id="cb123-210"><a href="#cb123-210" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Data Frames</span>
-<span id="cb123-211"><a href="#cb123-211" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Listas</span>
-<span id="cb123-212"><a href="#cb123-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-213"><a href="#cb123-213" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 1. Valores:</span></span>
-<span id="cb123-214"><a href="#cb123-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-215"><a href="#cb123-215" aria-hidden="true" tabindex="-1"></a>Los valores y vectores pueden ser a su vez de distintas _clases_:   </span>
-<span id="cb123-216"><a href="#cb123-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-217"><a href="#cb123-217" aria-hidden="true" tabindex="-1"></a>*Numeric*</span>
-<span id="cb123-218"><a href="#cb123-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-221"><a href="#cb123-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-222"><a href="#cb123-222" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span>  <span class="dv">1</span></span>
-<span id="cb123-223"><a href="#cb123-223" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(A)</span>
-<span id="cb123-224"><a href="#cb123-224" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-225"><a href="#cb123-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-226"><a href="#cb123-226" aria-hidden="true" tabindex="-1"></a>_Character_</span>
-<span id="cb123-227"><a href="#cb123-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-230"><a href="#cb123-230" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-231"><a href="#cb123-231" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span>  <span class="fu">paste</span>(<span class="st">'Soy'</span>, <span class="st">'una'</span>, <span class="st">'concatenación'</span>, <span class="st">'de'</span>, <span class="st">'caracteres'</span>, <span class="at">sep =</span> <span class="st">" "</span>)</span>
-<span id="cb123-232"><a href="#cb123-232" aria-hidden="true" tabindex="-1"></a>A</span>
-<span id="cb123-233"><a href="#cb123-233" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(A)</span>
-<span id="cb123-234"><a href="#cb123-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-235"><a href="#cb123-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-236"><a href="#cb123-236" aria-hidden="true" tabindex="-1"></a>_Factor_</span>
-<span id="cb123-237"><a href="#cb123-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-240"><a href="#cb123-240" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-241"><a href="#cb123-241" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="st">"Soy un factor, con niveles fijos"</span>)</span>
-<span id="cb123-242"><a href="#cb123-242" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(A)</span>
-<span id="cb123-243"><a href="#cb123-243" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-244"><a href="#cb123-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-245"><a href="#cb123-245" aria-hidden="true" tabindex="-1"></a>La diferencia entre un _character_ y un _factor_ es que el último tiene solo algunos valores permitidos (levels), con un orden interno predefinido (el cual, por ejemplo, se respetará a la hora de realizar un gráfico).  </span>
-<span id="cb123-246"><a href="#cb123-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-247"><a href="#cb123-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-248"><a href="#cb123-248" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2. Vectores:</span></span>
-<span id="cb123-249"><a href="#cb123-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-250"><a href="#cb123-250" aria-hidden="true" tabindex="-1"></a>Para crear un __vector__ utilizamos el comando ```c()```, de combinar.</span>
-<span id="cb123-251"><a href="#cb123-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-254"><a href="#cb123-254" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-255"><a href="#cb123-255" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>)</span>
-<span id="cb123-256"><a href="#cb123-256" aria-hidden="true" tabindex="-1"></a>C</span>
-<span id="cb123-257"><a href="#cb123-257" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-258"><a href="#cb123-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-259"><a href="#cb123-259" aria-hidden="true" tabindex="-1"></a>Podemos sumarle 2 a cada elemento del __vector__ anterior</span>
-<span id="cb123-260"><a href="#cb123-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-263"><a href="#cb123-263" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-264"><a href="#cb123-264" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> C <span class="sc">+</span> <span class="dv">2</span></span>
-<span id="cb123-265"><a href="#cb123-265" aria-hidden="true" tabindex="-1"></a>C</span>
-<span id="cb123-266"><a href="#cb123-266" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-267"><a href="#cb123-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-268"><a href="#cb123-268" aria-hidden="true" tabindex="-1"></a>O sumarle 1 al primer elemento, 2 al segundo, y 3 al tercer elemento del __vector__ anterior</span>
-<span id="cb123-269"><a href="#cb123-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-272"><a href="#cb123-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-273"><a href="#cb123-273" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> C <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="co"># esto es equivalente a hacer 3+1, 5+2, 6+9 </span></span>
-<span id="cb123-274"><a href="#cb123-274" aria-hidden="true" tabindex="-1"></a>D</span>
-<span id="cb123-275"><a href="#cb123-275" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-276"><a href="#cb123-276" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-277"><a href="#cb123-277" aria-hidden="true" tabindex="-1"></a>```1:3``` significa que queremos todos los números enteros desde 1 hasta 3. </span>
-<span id="cb123-278"><a href="#cb123-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-279"><a href="#cb123-279" aria-hidden="true" tabindex="-1"></a>Podemos crear un __vector__ que contenga las palabras: "Carlos", "Federico", "Pedro"</span>
-<span id="cb123-280"><a href="#cb123-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-283"><a href="#cb123-283" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-284"><a href="#cb123-284" aria-hidden="true" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Carlos"</span>, <span class="st">"Federico"</span>, <span class="st">"Pedro"</span>)</span>
-<span id="cb123-285"><a href="#cb123-285" aria-hidden="true" tabindex="-1"></a>E</span>
-<span id="cb123-286"><a href="#cb123-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-287"><a href="#cb123-287" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-288"><a href="#cb123-288" aria-hidden="true" tabindex="-1"></a>Para acceder a algún elemento del vector, podemos buscarlo por su número de orden, entre ```<span class="co">[ ]</span>```</span>
-<span id="cb123-289"><a href="#cb123-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-292"><a href="#cb123-292" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-293"><a href="#cb123-293" aria-hidden="true" tabindex="-1"></a>E[<span class="dv">2</span>]</span>
-<span id="cb123-294"><a href="#cb123-294" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-295"><a href="#cb123-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-296"><a href="#cb123-296" aria-hidden="true" tabindex="-1"></a>Si nos interesa almacenar dicho valor, al buscarlo lo asignamos a un nuevo objeto, dándole el nombre que deseemos</span>
-<span id="cb123-297"><a href="#cb123-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-300"><a href="#cb123-300" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-301"><a href="#cb123-301" aria-hidden="true" tabindex="-1"></a>elemento2 <span class="ot">&lt;-</span> E[<span class="dv">2</span>]</span>
-<span id="cb123-302"><a href="#cb123-302" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-303"><a href="#cb123-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-306"><a href="#cb123-306" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-307"><a href="#cb123-307" aria-hidden="true" tabindex="-1"></a>elemento2</span>
-<span id="cb123-308"><a href="#cb123-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-309"><a href="#cb123-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-310"><a href="#cb123-310" aria-hidden="true" tabindex="-1"></a>R implicitamente coerciona la longitud de los <span class="co">[</span><span class="ot">vectores</span><span class="co">](https://es.r4ds.hadley.nz/vectores.html)</span>. Esto se denomina __reciclado de vectores__ (*vector recicling*), debido a que el vector de menor longitud se repite, o recicla, hasta igualar la longitud del vector más largo.</span>
-<span id="cb123-311"><a href="#cb123-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-314"><a href="#cb123-314" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-315"><a href="#cb123-315" aria-hidden="true" tabindex="-1"></a><span class="co"># sumamos dos vectores de distinta longitud</span></span>
-<span id="cb123-316"><a href="#cb123-316" aria-hidden="true" tabindex="-1"></a>G <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span> <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span> </span>
-<span id="cb123-317"><a href="#cb123-317" aria-hidden="true" tabindex="-1"></a>G </span>
-<span id="cb123-318"><a href="#cb123-318" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-319"><a href="#cb123-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-320"><a href="#cb123-320" aria-hidden="true" tabindex="-1"></a>Vemos que para efectuar la suma el vector menor (1 y 2) se repite para alcanzar la longitud del vector más largo (1 a 10) y le adiciona 1 y 2 a medida que recorre el vector más largo.  </span>
-<span id="cb123-321"><a href="#cb123-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-322"><a href="#cb123-322" aria-hidden="true" tabindex="-1"></a>Para __borrar__ un objeto del ambiente de trabajo, utilizamos el comando _```rm()```_</span>
-<span id="cb123-323"><a href="#cb123-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-324"><a href="#cb123-324" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
-<span id="cb123-325"><a href="#cb123-325" aria-hidden="true" tabindex="-1"></a><span class="in">rm(elemento2)</span></span>
-<span id="cb123-326"><a href="#cb123-326" aria-hidden="true" tabindex="-1"></a><span class="in">elemento2</span></span>
-<span id="cb123-327"><a href="#cb123-327" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-328"><a href="#cb123-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-329"><a href="#cb123-329" aria-hidden="true" tabindex="-1"></a>También podemos cambiar el texto del segundo elemento de E, por el texto "Pablo"</span>
-<span id="cb123-330"><a href="#cb123-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-333"><a href="#cb123-333" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-334"><a href="#cb123-334" aria-hidden="true" tabindex="-1"></a>E[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"Pablo"</span></span>
-<span id="cb123-335"><a href="#cb123-335" aria-hidden="true" tabindex="-1"></a>E</span>
-<span id="cb123-336"><a href="#cb123-336" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-337"><a href="#cb123-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-338"><a href="#cb123-338" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 3. Data Frames:</span></span>
-<span id="cb123-339"><a href="#cb123-339" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-340"><a href="#cb123-340" aria-hidden="true" tabindex="-1"></a>Un Data Frame es una tabla de datos, donde cada columna representa una variable, y cada fila una observación.</span>
-<span id="cb123-341"><a href="#cb123-341" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-342"><a href="#cb123-342" aria-hidden="true" tabindex="-1"></a>Este objeto suele ser central en el proceso de trabajo, y suele ser la forma en que se cargan datos externos para trabajar en el ambiente de R, y en que se exportan los resultados de nuestros trabajo.  </span>
-<span id="cb123-343"><a href="#cb123-343" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-344"><a href="#cb123-344" aria-hidden="true" tabindex="-1"></a>También se puede crear como la combinación de N vectores de igual tamaño. Por ejemplo, tomamos algunos valores del <span class="co">[</span><span class="ot">Indice de salarios</span><span class="co">](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61)</span> del INDEC.</span>
-<span id="cb123-345"><a href="#cb123-345" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-348"><a href="#cb123-348" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-349"><a href="#cb123-349" aria-hidden="true" tabindex="-1"></a>INDICE  <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="fl">286.4</span>,    <span class="fl">262.1</span>,  <span class="fl">248.5</span>,</span>
-<span id="cb123-350"><a href="#cb123-350" aria-hidden="true" tabindex="-1"></a>              <span class="fl">285.7</span>,    <span class="fl">263.5</span>,  <span class="fl">250.2</span>,</span>
-<span id="cb123-351"><a href="#cb123-351" aria-hidden="true" tabindex="-1"></a>              <span class="fl">285.1</span>,    <span class="fl">264.9</span>,  <span class="fl">249.0</span> )</span>
-<span id="cb123-352"><a href="#cb123-352" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-353"><a href="#cb123-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-354"><a href="#cb123-354" aria-hidden="true" tabindex="-1"></a>FECHA  <span class="ot">&lt;-</span>  <span class="fu">c</span>(<span class="st">"Mar-20"</span>, <span class="st">"Mar-20"</span>, <span class="st">"Mar-20"</span>,</span>
-<span id="cb123-355"><a href="#cb123-355" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Abr-20"</span>, <span class="st">"Abr-20"</span>, <span class="st">"Abr-20"</span>,</span>
-<span id="cb123-356"><a href="#cb123-356" aria-hidden="true" tabindex="-1"></a>             <span class="st">"May-20"</span>, <span class="st">"May-20"</span>, <span class="st">"May-20"</span>)</span>
-<span id="cb123-357"><a href="#cb123-357" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-358"><a href="#cb123-358" aria-hidden="true" tabindex="-1"></a>GRUPO  <span class="ot">&lt;-</span>  <span class="fu">c</span>(<span class="st">"Privado_Registrado"</span>,<span class="st">"Público"</span>,<span class="st">"Privado_No_Registrado"</span>,</span>
-<span id="cb123-359"><a href="#cb123-359" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Privado_Registrado"</span>,<span class="st">"Público"</span>,<span class="st">"Privado_No_Registrado"</span>,</span>
-<span id="cb123-360"><a href="#cb123-360" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Privado_Registrado"</span>,<span class="st">"Público"</span>,<span class="st">"Privado_No_Registrado"</span>)</span>
-<span id="cb123-361"><a href="#cb123-361" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-362"><a href="#cb123-362" aria-hidden="true" tabindex="-1"></a>Datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(INDICE, FECHA, GRUPO)</span>
-<span id="cb123-363"><a href="#cb123-363" aria-hidden="true" tabindex="-1"></a>Datos</span>
-<span id="cb123-364"><a href="#cb123-364" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-365"><a href="#cb123-365" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-366"><a href="#cb123-366" aria-hidden="true" tabindex="-1"></a>Tal como en un __vector__ se ubica a los elementos mediante ```[ ]```, en un __dataframe__ se obtienen sus elementos de la forma __```[fila, columna]```__.</span>
-<span id="cb123-367"><a href="#cb123-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-368"><a href="#cb123-368" aria-hidden="true" tabindex="-1"></a>Otra opción es especificar la columna, mediante el operador __```$```__, y luego seleccionar dentro de esa columna el registro deseado mediante el número de orden.</span>
-<span id="cb123-369"><a href="#cb123-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-372"><a href="#cb123-372" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-373"><a href="#cb123-373" aria-hidden="true" tabindex="-1"></a>Datos<span class="sc">$</span>FECHA</span>
-<span id="cb123-374"><a href="#cb123-374" aria-hidden="true" tabindex="-1"></a>Datos[<span class="dv">3</span>,<span class="dv">2</span>]</span>
-<span id="cb123-375"><a href="#cb123-375" aria-hidden="true" tabindex="-1"></a>Datos<span class="sc">$</span>FECHA[<span class="dv">3</span>]</span>
-<span id="cb123-376"><a href="#cb123-376" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-377"><a href="#cb123-377" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-378"><a href="#cb123-378" aria-hidden="true" tabindex="-1"></a>¿que pasa si hacemos ```Datos$FECHA<span class="co">[</span><span class="ot">3,2</span><span class="co">]</span>``` ?</span>
-<span id="cb123-379"><a href="#cb123-379" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-380"><a href="#cb123-380" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
-<span id="cb123-381"><a href="#cb123-381" aria-hidden="true" tabindex="-1"></a><span class="in">Datos$FECHA[3,2]</span></span>
-<span id="cb123-382"><a href="#cb123-382" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-383"><a href="#cb123-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-384"><a href="#cb123-384" aria-hidden="true" tabindex="-1"></a>Nótese que el último comando tiene un número incorrecto de dimensiones, porque estamos refiriendonos 2 veces a la columna FECHA.    </span>
-<span id="cb123-385"><a href="#cb123-385" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-386"><a href="#cb123-386" aria-hidden="true" tabindex="-1"></a>Acorde a lo visto anteriormente, el acceso a los __dataframes__ mediante  ```[ ]``` puede utilizarse para realizar filtros sobre la base, especificando una condición para las filas. Por ejemplo, puedo utilizar los  ```[ ]``` para conservar del __dataframe__ ```Datos ```  unicamente los registros con fecha de Diciembre 2016:</span>
-<span id="cb123-387"><a href="#cb123-387" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-388"><a href="#cb123-388" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
-<span id="cb123-389"><a href="#cb123-389" aria-hidden="true" tabindex="-1"></a><span class="in">Datos[Datos$FECHA == "May-20",]</span></span>
-<span id="cb123-390"><a href="#cb123-390" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-391"><a href="#cb123-391" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-392"><a href="#cb123-392" aria-hidden="true" tabindex="-1"></a>La lógica del paso anterior sería: Accedo al dataframe ```Datos```, pidiendo únicamente conservar las filas (por eso la condición se ubica a la _izquierda_ de la  ```, ```) que cumplan el requisito de pertenecer a la categoría __"May-20"__ de la variable __FECHA__.    </span>
-<span id="cb123-393"><a href="#cb123-393" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-394"><a href="#cb123-394" aria-hidden="true" tabindex="-1"></a>Aún más, podría aplicar el filtro y al mismo tiempo identificar una variable de interés para luego realizar un cálculo sobre aquella. Por ejemplo, podría calcular la media de los indices en el mes de Diciembre. </span>
-<span id="cb123-395"><a href="#cb123-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-396"><a href="#cb123-396" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
-<span id="cb123-397"><a href="#cb123-397" aria-hidden="true" tabindex="-1"></a><span class="in"># Por separado</span></span>
-<span id="cb123-398"><a href="#cb123-398" aria-hidden="true" tabindex="-1"></a><span class="in">Indices_May &lt;- Datos$INDICE[Datos$FECHA == "May-20"]</span></span>
-<span id="cb123-399"><a href="#cb123-399" aria-hidden="true" tabindex="-1"></a><span class="in">Indices_May</span></span>
-<span id="cb123-400"><a href="#cb123-400" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-401"><a href="#cb123-401" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-402"><a href="#cb123-402" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
-<span id="cb123-403"><a href="#cb123-403" aria-hidden="true" tabindex="-1"></a><span class="in">mean(Indices_May)</span></span>
-<span id="cb123-404"><a href="#cb123-404" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-405"><a href="#cb123-405" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-406"><a href="#cb123-406" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
-<span id="cb123-407"><a href="#cb123-407" aria-hidden="true" tabindex="-1"></a><span class="in"># Todo junto</span></span>
-<span id="cb123-408"><a href="#cb123-408" aria-hidden="true" tabindex="-1"></a><span class="in">mean(Datos$INDICE[Datos$FECHA == "May-20"])</span></span>
-<span id="cb123-409"><a href="#cb123-409" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-410"><a href="#cb123-410" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-411"><a href="#cb123-411" aria-hidden="true" tabindex="-1"></a>La lógica de esta sintaxis sería: "Me quedo con la variable __INDICE__, cuando la variable FECHA sea igual a __"May-20"__, luego calculo la media de dichos valores".</span>
-<span id="cb123-412"><a href="#cb123-412" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-413"><a href="#cb123-413" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 4. Listas</span></span>
-<span id="cb123-414"><a href="#cb123-414" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-415"><a href="#cb123-415" aria-hidden="true" tabindex="-1"></a>Contienen una concatenación de objetos de cualquier tipo. Así como un vector contiene valores, un dataframe contiene vectores, una lista puede contener dataframes, pero también vectores, o valores, y _todo ello a la vez_.</span>
-<span id="cb123-416"><a href="#cb123-416" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-419"><a href="#cb123-419" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-420"><a href="#cb123-420" aria-hidden="true" tabindex="-1"></a>superlista <span class="ot">&lt;-</span> <span class="fu">list</span>(A,B,C,D,E,FECHA, <span class="at">DF =</span> Datos, INDICE, GRUPO)</span>
-<span id="cb123-421"><a href="#cb123-421" aria-hidden="true" tabindex="-1"></a>superlista</span>
-<span id="cb123-422"><a href="#cb123-422" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-423"><a href="#cb123-423" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-424"><a href="#cb123-424" aria-hidden="true" tabindex="-1"></a>Para acceder un elemento de una lista, podemos utilizar el operador __```$```__, que se puede usar a su vez de forma iterativa. </span>
-<span id="cb123-425"><a href="#cb123-425" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-428"><a href="#cb123-428" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-429"><a href="#cb123-429" aria-hidden="true" tabindex="-1"></a>superlista<span class="sc">$</span>DF<span class="sc">$</span>FECHA[<span class="dv">2</span>]</span>
-<span id="cb123-430"><a href="#cb123-430" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-431"><a href="#cb123-431" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-432"><a href="#cb123-432" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ambientes de trabajo</span></span>
-<span id="cb123-433"><a href="#cb123-433" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-434"><a href="#cb123-434" aria-hidden="true" tabindex="-1"></a>Hay algunas cosas que tenemos que tener en cuenta respecto del orden del ambiente en el que trabajamos:</span>
-<span id="cb123-435"><a href="#cb123-435" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-436"><a href="#cb123-436" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Working Directory**: Es el directorio de trabajo. Pueden ver el suyo con <span class="in">`getwd()`</span>, es *hacia donde apunta el código*, por ejemplo, si quieren leer un archivo, la ruta del archivo tiene que estar explicitada como el recorrido desde el Working Directory.</span>
-<span id="cb123-437"><a href="#cb123-437" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Environment**: Esto engloba tanto la información que tenemos cargada en *Data* y *Values*, como las librerías que tenemos cargadas mientras trabajamos. </span>
-<span id="cb123-438"><a href="#cb123-438" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-439"><a href="#cb123-439" aria-hidden="true" tabindex="-1"></a>Es importante que mantengamos bien delimitadas estas cosas entre diferentes trabajos, sino:</span>
-<span id="cb123-440"><a href="#cb123-440" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-441"><a href="#cb123-441" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>El directorio queda referido a un lugar específico en nuestra computadora. </span>
-<span id="cb123-442"><a href="#cb123-442" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si se lo compartimos a otro **se rompe**</span>
-<span id="cb123-443"><a href="#cb123-443" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si cambiamos de computadora **se rompe**</span>
-<span id="cb123-444"><a href="#cb123-444" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si lo cambiamos de lugar **se rompe**</span>
-<span id="cb123-445"><a href="#cb123-445" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si primero abrimos otro script **se rompe**</span>
-<span id="cb123-446"><a href="#cb123-446" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Tenemos mezclados resultados de diferentes trabajos:</span>
-<span id="cb123-447"><a href="#cb123-447" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Nunca sabemos si esa variable/tabla/lista se creo en ese script y no otro</span>
-<span id="cb123-448"><a href="#cb123-448" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Perdemos espacio de la memoria</span>
-<span id="cb123-449"><a href="#cb123-449" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>No estamos seguros de que el script cargue todas las librerías que necesita</span>
-<span id="cb123-450"><a href="#cb123-450" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-451"><a href="#cb123-451" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Proyectos</span></span>
-<span id="cb123-452"><a href="#cb123-452" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-453"><a href="#cb123-453" aria-hidden="true" tabindex="-1"></a>Rstudio tiene una herramienta muy útil de trabajo que son los **proyectos**. Estos permiten mantener un ambiente de trabajo delimitado por cada uno de nuestros trabajos. Es decir:</span>
-<span id="cb123-454"><a href="#cb123-454" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-455"><a href="#cb123-455" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El directorio de trabajo se refiere a donde esta ubicado el archivo .Rproj</span>
-<span id="cb123-456"><a href="#cb123-456" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El Environment es específico de nuestro proyecto.</span>
-<span id="cb123-457"><a href="#cb123-457" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-458"><a href="#cb123-458" aria-hidden="true" tabindex="-1"></a>Un proyecto no es un sólo script, sino toda una carpeta de trabajo. </span>
-<span id="cb123-459"><a href="#cb123-459" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-460"><a href="#cb123-460" aria-hidden="true" tabindex="-1"></a><span class="al">![logo Rpoject](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/Rproject.png)</span>{width=100}</span>
-<span id="cb123-461"><a href="#cb123-461" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-462"><a href="#cb123-462" aria-hidden="true" tabindex="-1"></a>Para crearlo, vamos al logo de nuevo projecto (Arriba a la derecha de la panatalla), y elegimos la carpeta de trabajo. </span>
-<span id="cb123-463"><a href="#cb123-463" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-464"><a href="#cb123-464" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Tipos de archivos de R</span></span>
-<span id="cb123-465"><a href="#cb123-465" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-466"><a href="#cb123-466" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__Script__: Es un archivo de texto plano, donde podemos poner el código que utilizamos para preservarlo</span>
-<span id="cb123-467"><a href="#cb123-467" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__Rnotebook__: También sirve para guardar el código, pero a diferencia de los scripts, se puede compilar, e intercalar código con resultados (este archivo es un rnotebook)</span>
-<span id="cb123-468"><a href="#cb123-468" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__Rproject__: Es un archivo que define la metadata del proyecto</span>
-<span id="cb123-469"><a href="#cb123-469" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__RDS y Rdata__: Dos formatos de archivos propios de R para guardar datos. </span>
-<span id="cb123-470"><a href="#cb123-470" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-471"><a href="#cb123-471" aria-hidden="true" tabindex="-1"></a><span class="fu">## Algunos tips</span></span>
-<span id="cb123-472"><a href="#cb123-472" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-473"><a href="#cb123-473" aria-hidden="true" tabindex="-1"></a>Para agregar un bloque de código <span class="in">`Ctrl+ Alt+ I`</span></span>
-<span id="cb123-474"><a href="#cb123-474" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-475"><a href="#cb123-475" aria-hidden="true" tabindex="-1"></a>Para agregar el _pipe_ (<span class="in">` |&gt; `</span>) <span class="in">`Ctrl+ Shift+ M`</span></span>
-<span id="cb123-476"><a href="#cb123-476" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-477"><a href="#cb123-477" aria-hidden="true" tabindex="-1"></a><span class="fu"># Loops, condicionales y funciones</span></span>
-<span id="cb123-478"><a href="#cb123-478" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-479"><a href="#cb123-479" aria-hidden="true" tabindex="-1"></a><span class="fu">## Loops</span></span>
-<span id="cb123-480"><a href="#cb123-480" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-481"><a href="#cb123-481" aria-hidden="true" tabindex="-1"></a>Un __loop__ es una estructura de código que nos permite aplicar iterativamente un mismo conjunto de comandos, variando el valor de una variable. </span>
-<span id="cb123-482"><a href="#cb123-482" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-483"><a href="#cb123-483" aria-hidden="true" tabindex="-1"></a>Un loop puede iterar sobre cualquier tipo de vector, independientemente de lo que contenga.</span>
-<span id="cb123-484"><a href="#cb123-484" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-485"><a href="#cb123-485" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Los loops son una estructura básica que existe en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.</span></span>
-<span id="cb123-486"><a href="#cb123-486" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-487"><a href="#cb123-487" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,warning=FALSE}</span></span>
-<span id="cb123-488"><a href="#cb123-488" aria-hidden="true" tabindex="-1"></a><span class="in">for(i in 1:10){</span></span>
-<span id="cb123-489"><a href="#cb123-489" aria-hidden="true" tabindex="-1"></a><span class="in">   print(i^2)</span></span>
-<span id="cb123-490"><a href="#cb123-490" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb123-491"><a href="#cb123-491" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-492"><a href="#cb123-492" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-493"><a href="#cb123-493" aria-hidden="true" tabindex="-1"></a>Esto se lee como: "Recorre cada uno de los valores (i) del vector numérico 1 a 10, y para cada uno de ellos imprimí el cuadrado (i^2)". </span>
-<span id="cb123-494"><a href="#cb123-494" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-495"><a href="#cb123-495" aria-hidden="true" tabindex="-1"></a>Se puede especificar la palabra que se desee que tome cada uno de los valores que debe tomar. En el ejemplo anterior fue **i**, pero bien podría ser "**Valores**".</span>
-<span id="cb123-496"><a href="#cb123-496" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-499"><a href="#cb123-499" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-500"><a href="#cb123-500" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(Valores <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>){</span>
-<span id="cb123-501"><a href="#cb123-501" aria-hidden="true" tabindex="-1"></a>   <span class="fu">print</span>(Valores<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb123-502"><a href="#cb123-502" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb123-503"><a href="#cb123-503" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb123-504"><a href="#cb123-504" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-505"><a href="#cb123-505" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-506"><a href="#cb123-506" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-507"><a href="#cb123-507" aria-hidden="true" tabindex="-1"></a>Al usar <span class="in">`print()`</span> sólo mostrará los resultados de las operaciones en la consola, no los asignará a un objeto.</span>
-<span id="cb123-508"><a href="#cb123-508" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-509"><a href="#cb123-509" aria-hidden="true" tabindex="-1"></a>Se puede usar estos valores para asignar cada valor resultante de nuestras operaciones a una posición específica en un vector, incluso si este está vacio.</span>
-<span id="cb123-510"><a href="#cb123-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-511"><a href="#cb123-511" aria-hidden="true" tabindex="-1"></a>Creamos un vector vacío, asignándole como <span class="in">`NULL`</span> como valor.</span>
-<span id="cb123-512"><a href="#cb123-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-515"><a href="#cb123-515" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-516"><a href="#cb123-516" aria-hidden="true" tabindex="-1"></a>mi_vector <span class="ot">&lt;-</span> <span class="cn">NULL</span> <span class="co"># creamos vector vacio</span></span>
-<span id="cb123-517"><a href="#cb123-517" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-518"><a href="#cb123-518" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
-<span id="cb123-519"><a href="#cb123-519" aria-hidden="true" tabindex="-1"></a>  mi_vector[i] <span class="ot">&lt;-</span> i <span class="sc">^</span> <span class="dv">2</span></span>
-<span id="cb123-520"><a href="#cb123-520" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb123-521"><a href="#cb123-521" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-522"><a href="#cb123-522" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-523"><a href="#cb123-523" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-524"><a href="#cb123-524" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-525"><a href="#cb123-525" aria-hidden="true" tabindex="-1"></a>Aunque no fueron mostrados en la consola, los resultados han sido asignados al objeto <span class="in">`mi_vector`</span>.</span>
-<span id="cb123-526"><a href="#cb123-526" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-529"><a href="#cb123-529" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-530"><a href="#cb123-530" aria-hidden="true" tabindex="-1"></a>mi_vector</span>
-<span id="cb123-531"><a href="#cb123-531" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-532"><a href="#cb123-532" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-533"><a href="#cb123-533" aria-hidden="true" tabindex="-1"></a><span class="fu">## Estructuras Condicionales</span></span>
-<span id="cb123-534"><a href="#cb123-534" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-535"><a href="#cb123-535" aria-hidden="true" tabindex="-1"></a>Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.</span>
-<span id="cb123-536"><a href="#cb123-536" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-537"><a href="#cb123-537" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-538"><a href="#cb123-538" aria-hidden="true" tabindex="-1"></a><span class="fu">## if y else</span></span>
-<span id="cb123-539"><a href="#cb123-539" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-540"><a href="#cb123-540" aria-hidden="true" tabindex="-1"></a>Su funcionamiento es el siguiente:    </span>
-<span id="cb123-541"><a href="#cb123-541" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-542"><a href="#cb123-542" aria-hidden="true" tabindex="-1"></a>```if(condición){código a ejecutar si se cumple la condición}```</span>
-<span id="cb123-543"><a href="#cb123-543" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-544"><a href="#cb123-544" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,warning=FALSE}</span></span>
-<span id="cb123-545"><a href="#cb123-545" aria-hidden="true" tabindex="-1"></a><span class="in">if( 2+2 == 4){</span></span>
-<span id="cb123-546"><a href="#cb123-546" aria-hidden="true" tabindex="-1"></a><span class="in">  print("Menos Mal")</span></span>
-<span id="cb123-547"><a href="#cb123-547" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb123-548"><a href="#cb123-548" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-549"><a href="#cb123-549" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-550"><a href="#cb123-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-551"><a href="#cb123-551" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,warning=FALSE}</span></span>
-<span id="cb123-552"><a href="#cb123-552" aria-hidden="true" tabindex="-1"></a><span class="in">if( 2+2 == 148.24){</span></span>
-<span id="cb123-553"><a href="#cb123-553" aria-hidden="true" tabindex="-1"></a><span class="in">  print("R, tenemos un problema")</span></span>
-<span id="cb123-554"><a href="#cb123-554" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
-<span id="cb123-555"><a href="#cb123-555" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-556"><a href="#cb123-556" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-557"><a href="#cb123-557" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-558"><a href="#cb123-558" aria-hidden="true" tabindex="-1"></a><span class="in">`else`</span> complementa un <span class="in">`if`</span>, pues indica qué ocurrirá cuando la condición no se cumple, es falsa (FALSE), en lugar de no hacer nada.</span>
-<span id="cb123-559"><a href="#cb123-559" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-560"><a href="#cb123-560" aria-hidden="true" tabindex="-1"></a>**SI** esta condición es cierta, **ENTONCES** realiza estas operaciones, **DE OTRO MODO** realiza estas otras operaciones.</span>
-<span id="cb123-561"><a href="#cb123-561" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-564"><a href="#cb123-564" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-565"><a href="#cb123-565" aria-hidden="true" tabindex="-1"></a><span class="co"># No se cumple la condición y se muestra "Falso"</span></span>
-<span id="cb123-566"><a href="#cb123-566" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="dv">4</span> <span class="sc">&gt;</span> <span class="dv">5</span>) {</span>
-<span id="cb123-567"><a href="#cb123-567" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Verdadero"</span></span>
-<span id="cb123-568"><a href="#cb123-568" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb123-569"><a href="#cb123-569" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Falso"</span></span>
-<span id="cb123-570"><a href="#cb123-570" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb123-571"><a href="#cb123-571" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-572"><a href="#cb123-572" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-573"><a href="#cb123-573" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-574"><a href="#cb123-574" aria-hidden="true" tabindex="-1"></a><span class="fu">### ifelse</span></span>
-<span id="cb123-575"><a href="#cb123-575" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-576"><a href="#cb123-576" aria-hidden="true" tabindex="-1"></a>La función ```if_else()``` sirve para crear o modificar dicotómicamente un objeto/variable/vector a partir del cumplimiento de una o más condiciones lógicas.  </span>
-<span id="cb123-577"><a href="#cb123-577" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-578"><a href="#cb123-578" aria-hidden="true" tabindex="-1"></a>Su funcionamiento es el siguiente:      </span>
-<span id="cb123-579"><a href="#cb123-579" aria-hidden="true" tabindex="-1"></a>```if_else(condición, función a aplicar si se cumple la condición, función a aplicar si no se cumple la condición)```</span>
-<span id="cb123-580"><a href="#cb123-580" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-583"><a href="#cb123-583" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-584"><a href="#cb123-584" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb123-585"><a href="#cb123-585" aria-hidden="true" tabindex="-1"></a><span class="fu">if_else</span>(<span class="dv">2</span><span class="sc">+</span><span class="dv">2</span> <span class="sc">==</span> <span class="dv">4</span>, <span class="co"># condicion</span></span>
-<span id="cb123-586"><a href="#cb123-586" aria-hidden="true" tabindex="-1"></a>        <span class="at">true =</span> <span class="st">"Joya"</span>, <span class="co"># si se cumple la condición</span></span>
-<span id="cb123-587"><a href="#cb123-587" aria-hidden="true" tabindex="-1"></a>        <span class="at">false =</span> <span class="st">"Error"</span>) <span class="co"># si no se cumple</span></span>
-<span id="cb123-588"><a href="#cb123-588" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-589"><a href="#cb123-589" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-590"><a href="#cb123-590" aria-hidden="true" tabindex="-1"></a><span class="fu">## Funciones</span></span>
-<span id="cb123-591"><a href="#cb123-591" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-592"><a href="#cb123-592" aria-hidden="true" tabindex="-1"></a>La creación de __funciones__ propias nos permite automatizar todas aquellas partes del código que se repiten mucho. Una vez diseñadas, funcionan igual que cualquier comando. </span>
-<span id="cb123-593"><a href="#cb123-593" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-594"><a href="#cb123-594" aria-hidden="true" tabindex="-1"></a>Por ejemplo, podemos definir la suma de dos elementos como</span>
-<span id="cb123-595"><a href="#cb123-595" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-598"><a href="#cb123-598" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-599"><a href="#cb123-599" aria-hidden="true" tabindex="-1"></a>suma <span class="ot">&lt;-</span> <span class="cf">function</span>(valor1, valor2) {</span>
-<span id="cb123-600"><a href="#cb123-600" aria-hidden="true" tabindex="-1"></a>  valor1<span class="sc">+</span>valor2</span>
-<span id="cb123-601"><a href="#cb123-601" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb123-602"><a href="#cb123-602" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-603"><a href="#cb123-603" aria-hidden="true" tabindex="-1"></a><span class="fu">suma</span>(<span class="dv">5</span>,<span class="dv">6</span>)</span>
-<span id="cb123-604"><a href="#cb123-604" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-605"><a href="#cb123-605" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-606"><a href="#cb123-606" aria-hidden="true" tabindex="-1"></a>Obviamente las funciones no son sólo para variables numéricas. Por ejemplo, podemos pegar dos strings con una flecha en el medio</span>
-<span id="cb123-607"><a href="#cb123-607" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-610"><a href="#cb123-610" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-611"><a href="#cb123-611" aria-hidden="true" tabindex="-1"></a>funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1,parametro2) {</span>
-<span id="cb123-612"><a href="#cb123-612" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
-<span id="cb123-613"><a href="#cb123-613" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb123-614"><a href="#cb123-614" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-615"><a href="#cb123-615" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"A ver"</span>, <span class="at">parametro2 =</span> <span class="st">"Qué pasa"</span>)</span>
-<span id="cb123-616"><a href="#cb123-616" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-617"><a href="#cb123-617" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-618"><a href="#cb123-618" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-619"><a href="#cb123-619" aria-hidden="true" tabindex="-1"></a>También podemos asignar un valor por default para los parametros en caso de que el usuario no defina su valor al utilizar la función.</span>
-<span id="cb123-620"><a href="#cb123-620" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-623"><a href="#cb123-623" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-624"><a href="#cb123-624" aria-hidden="true" tabindex="-1"></a>Otra_funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1, <span class="at">parametro2 =</span> <span class="st">"String default"</span>) {</span>
-<span id="cb123-625"><a href="#cb123-625" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
-<span id="cb123-626"><a href="#cb123-626" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb123-627"><a href="#cb123-627" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb123-628"><a href="#cb123-628" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>)</span>
-<span id="cb123-629"><a href="#cb123-629" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>, <span class="at">parametro2 =</span> <span class="st">"Valor 2"</span> )</span>
-<span id="cb123-630"><a href="#cb123-630" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-631"><a href="#cb123-631" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-632"><a href="#cb123-632" aria-hidden="true" tabindex="-1"></a>Las funciones que creamos nosotros permanecen en el ambiente de R temporariamente. Cuando removemos los objetos del ambiente, la función deja de existir. Por ende, debemos incorporarla en cada uno de los scripts en la cual la necesitemos. Una buena práctica, es incorporar nuestras funciones útiles al comienzo de cada script junto a la carga de las librerías.                         </span>
-<span id="cb123-633"><a href="#cb123-633" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-634"><a href="#cb123-634" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Vale mencionar que __lo que ocurre en una función, queda en la función__ excepto que explícitamente pidamos que devuelva el resultado, con el comando </span><span class="in">`print()`</span><span class="at">. </span></span>
-<span id="cb123-635"><a href="#cb123-635" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-636"><a href="#cb123-636" aria-hidden="true" tabindex="-1"></a>Las funciones siempre devuelven el último objeto que se crea en ellas, o si explicitamente se utiliza el comando <span class="in">`return()`</span></span>
-<span id="cb123-637"><a href="#cb123-637" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-638"><a href="#cb123-638" aria-hidden="true" tabindex="-1"></a>**Funciones anónimas**</span>
-<span id="cb123-639"><a href="#cb123-639" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-640"><a href="#cb123-640" aria-hidden="true" tabindex="-1"></a>Son funciones a las cuales no les asignamos un nombre. Esto suele ser útil para hacer funciones pequeñas dentro de otras funciones o estructuras más complejas.</span>
-<span id="cb123-641"><a href="#cb123-641" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-644"><a href="#cb123-644" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb123-645"><a href="#cb123-645" aria-hidden="true" tabindex="-1"></a>(<span class="cf">function</span>(x) x<span class="sc">*</span><span class="dv">2</span>)(<span class="dv">10</span>)</span>
-<span id="cb123-646"><a href="#cb123-646" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb123-647"><a href="#cb123-647" aria-hidden="true" tabindex="-1"></a></span>
+<div class="sourceCode" id="cb125" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb125-2"><a href="#cb125-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Clase Práctica nº1"</span></span>
+<span id="cb125-3"><a href="#cb125-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Adaptación del material hecho por Juan Barriola y Sofía Perini"</span></span>
+<span id="cb125-4"><a href="#cb125-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
+<span id="cb125-5"><a href="#cb125-5" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> |</span></span>
+<span id="cb125-6"><a href="#cb125-6" aria-hidden="true" tabindex="-1"></a><span class="co">  Repaso R y Inferencia Estadística</span></span>
+<span id="cb125-7"><a href="#cb125-7" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb125-8"><a href="#cb125-8" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb125-9"><a href="#cb125-9" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: flatly</span></span>
+<span id="cb125-10"><a href="#cb125-10" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb125-11"><a href="#cb125-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb125-12"><a href="#cb125-12" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb125-13"><a href="#cb125-13" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb125-14"><a href="#cb125-14" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb125-15"><a href="#cb125-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-16"><a href="#cb125-16" aria-hidden="true" tabindex="-1"></a>&lt;style type="text/css"&gt;</span>
+<span id="cb125-17"><a href="#cb125-17" aria-hidden="true" tabindex="-1"></a>div<span class="fu">.main-container</span> {</span>
+<span id="cb125-18"><a href="#cb125-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">max-width</span><span class="ch">:</span> <span class="dv">1600</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb125-19"><a href="#cb125-19" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin-left</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span></span>
+<span id="cb125-20"><a href="#cb125-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin-right</span><span class="ch">:</span> <span class="bu">auto</span><span class="op">;</span></span>
+<span id="cb125-21"><a href="#cb125-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-22"><a href="#cb125-22" aria-hidden="true" tabindex="-1"></a>&lt;/style&gt;</span>
+<span id="cb125-23"><a href="#cb125-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-24"><a href="#cb125-24" aria-hidden="true" tabindex="-1"></a><span class="al">![https://cran.r-project.org/](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/Rlogo.png)</span>{width=100}</span>
+<span id="cb125-25"><a href="#cb125-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-26"><a href="#cb125-26" aria-hidden="true" tabindex="-1"></a><span class="fu"># Repaso R</span></span>
+<span id="cb125-27"><a href="#cb125-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-28"><a href="#cb125-28" aria-hidden="true" tabindex="-1"></a><span class="fu">### ¿Qué es R?</span></span>
+<span id="cb125-29"><a href="#cb125-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-30"><a href="#cb125-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Lenguaje para el procesamiento y análisis estadístico de datos</span>
+<span id="cb125-31"><a href="#cb125-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Software Libre</span>
+<span id="cb125-32"><a href="#cb125-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sintaxis Básica: R base </span>
+<span id="cb125-33"><a href="#cb125-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sintaxis incremental<span class="ot">[^1]</span>: El lenguaje se va ampliando por aportes de Universidades, investigadores/as, usuarios/as y empresas privadas, organizados en librerías (o paquetes)</span>
+<span id="cb125-34"><a href="#cb125-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Comunidad web muy grande para realizar preguntas y despejar dudas. Por ejemplo, en el caso de Buenos Aires contamos con <span class="co">[</span><span class="ot">RenBaires</span><span class="co">](https://www.meetup.com/es-ES/renbaires/)</span> y <span class="co">[</span><span class="ot">R-Ladies Buenos Aires</span><span class="co">](https://www.meetup.com/es-ES/rladies-buenos-aires/)</span></span>
+<span id="cb125-35"><a href="#cb125-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-36"><a href="#cb125-36" aria-hidden="true" tabindex="-1"></a><span class="ot">[^1]: </span>Más allá de los comandos elementales, comandos más sofisticados tienen muchas versiones, y algunas quedan en desuso en el tiempo.</span>
+<span id="cb125-37"><a href="#cb125-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-38"><a href="#cb125-38" aria-hidden="true" tabindex="-1"></a><span class="al">![Fuente: https://gist.github.com/daroczig/3cf06d6db4be2bbe3368](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/number-of-submitted-packages-to-CRAN.png)</span>{width=1000}</span>
+<span id="cb125-39"><a href="#cb125-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-40"><a href="#cb125-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-41"><a href="#cb125-41" aria-hidden="true" tabindex="-1"></a><span class="al">![https://www.rstudio.com/](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/RStudiologo.png)</span>{width=200}</span>
+<span id="cb125-42"><a href="#cb125-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-43"><a href="#cb125-43" aria-hidden="true" tabindex="-1"></a>Uno de los _entornos_ más cómodos para utilizar el _lenguaje_ __R__ es el _programa_ __R studio__.</span>
+<span id="cb125-44"><a href="#cb125-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-45"><a href="#cb125-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Rstudio es una empresa que produce productos asociados al lenguaje R, como el programa sobre el que corremos los comandos, y extensiones del lenguaje (librerías).</span>
+<span id="cb125-46"><a href="#cb125-46" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb125-47"><a href="#cb125-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El programa es _gratuito_ y se puede bajar de la </span>
+<span id="cb125-48"><a href="#cb125-48" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">página oficial</span><span class="co">](https://www.rstudio.com/)</span> </span>
+<span id="cb125-49"><a href="#cb125-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-50"><a href="#cb125-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-51"><a href="#cb125-51" aria-hidden="true" tabindex="-1"></a><span class="al">![Pantalla Rstudio](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/Pantalla%20Rstudio.png)</span>{width=1000}</span>
+<span id="cb125-52"><a href="#cb125-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-53"><a href="#cb125-53" aria-hidden="true" tabindex="-1"></a><span class="fu">### Lógica sintáctica</span></span>
+<span id="cb125-54"><a href="#cb125-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-55"><a href="#cb125-55" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Definición de objetos</span></span>
+<span id="cb125-56"><a href="#cb125-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-57"><a href="#cb125-57" aria-hidden="true" tabindex="-1"></a>Los __Objetos/Elementos__ constituyen la categoría esencial del R. De hecho, todo en R es un objeto, y se almacena con un nombre específico que **no debe poseer espacios**. Un número, un vector, una función, la progresión de letras del abecedario, una base de datos, un gráfico, constituyen para R objetos de distinto tipo. Los objetos que vamos creando a medida que trabajamos pueden visualizarse en el panel derecho superior de la pantalla (el _Environment_). </span>
+<span id="cb125-58"><a href="#cb125-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-59"><a href="#cb125-59" aria-hidden="true" tabindex="-1"></a>El operador __```&lt;-```__ (__Alt + Guión__) sirve para definir un objeto.  __A la izquierda__ del __```&lt;-```__ debe ubicarse el nombre que tomará el elemento a crear. __Del lado derecho__ debe ir la definición del mismo.</span>
+<span id="cb125-60"><a href="#cb125-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-61"><a href="#cb125-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-64"><a href="#cb125-64" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-65"><a href="#cb125-65" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb125-66"><a href="#cb125-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-67"><a href="#cb125-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-68"><a href="#cb125-68" aria-hidden="true" tabindex="-1"></a>Por ejemplo, podemos crear el elemento __A__, cuyo valor será 1. Para esto, debemos _correr_ el código presionando __Ctrl + Enter__, con el cursor ubicado en cualquier parte de la línea. Al definir un elemento, el mismo queda guardado en el ambiente del programa, y podrá ser utilizado posteriormente para observar su contenido o para realizar una operación con el mismo.</span>
+<span id="cb125-69"><a href="#cb125-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-72"><a href="#cb125-72" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-73"><a href="#cb125-73" aria-hidden="true" tabindex="-1"></a>A </span>
+<span id="cb125-74"><a href="#cb125-74" aria-hidden="true" tabindex="-1"></a>A<span class="sc">+</span><span class="dv">6</span></span>
+<span id="cb125-75"><a href="#cb125-75" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-76"><a href="#cb125-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-77"><a href="#cb125-77" aria-hidden="true" tabindex="-1"></a>Al correr una linea con el nombre del objeto, la consola del programa nos muestra su contenido. Entre corchetes observamos el número de orden del elemento en cuestión. Si corremos una operación, la consola nos muestra el resultado de la misma.</span>
+<span id="cb125-78"><a href="#cb125-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-79"><a href="#cb125-79" aria-hidden="true" tabindex="-1"></a>El operador __```=```__ es __equivalente__ a __```&lt;-```__.   </span>
+<span id="cb125-80"><a href="#cb125-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-83"><a href="#cb125-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-84"><a href="#cb125-84" aria-hidden="true" tabindex="-1"></a>B <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb125-85"><a href="#cb125-85" aria-hidden="true" tabindex="-1"></a>B</span>
+<span id="cb125-86"><a href="#cb125-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-87"><a href="#cb125-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-88"><a href="#cb125-88" aria-hidden="true" tabindex="-1"></a>__```&lt;-```__ es un operador __unidireccional__, es decir que:     </span>
+<span id="cb125-89"><a href="#cb125-89" aria-hidden="true" tabindex="-1"></a>```A &lt;- B``` implica que __A__ va tomar como valor el contenido del objeto __B__, y no al revés.</span>
+<span id="cb125-90"><a href="#cb125-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-93"><a href="#cb125-93" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-94"><a href="#cb125-94" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> B</span>
+<span id="cb125-95"><a href="#cb125-95" aria-hidden="true" tabindex="-1"></a>A      <span class="co"># Ahora A toma el valor de B, y B continúa conservando el mismo valor</span></span>
+<span id="cb125-96"><a href="#cb125-96" aria-hidden="true" tabindex="-1"></a>B</span>
+<span id="cb125-97"><a href="#cb125-97" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-98"><a href="#cb125-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-99"><a href="#cb125-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-100"><a href="#cb125-100" aria-hidden="true" tabindex="-1"></a><span class="fu">### R base</span></span>
+<span id="cb125-101"><a href="#cb125-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-102"><a href="#cb125-102" aria-hidden="true" tabindex="-1"></a>Con _R base_ nos referimos a los comandos básicos que vienen incorporados en el R, sin necesidad de cargar librerías. </span>
+<span id="cb125-103"><a href="#cb125-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-104"><a href="#cb125-104" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Operadores lógicos: </span></span>
+<span id="cb125-105"><a href="#cb125-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-106"><a href="#cb125-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&gt;$ (mayor a-)</span>
+<span id="cb125-107"><a href="#cb125-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&gt;=$ (mayor o igual a-)</span>
+<span id="cb125-108"><a href="#cb125-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&lt;$ (menor a-)</span>
+<span id="cb125-109"><a href="#cb125-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$&lt;=$ (menor o igual a-)</span>
+<span id="cb125-110"><a href="#cb125-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$==$ (igual a-)</span>
+<span id="cb125-111"><a href="#cb125-111" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$!=$ (distinto a-)</span>
+<span id="cb125-112"><a href="#cb125-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-115"><a href="#cb125-115" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-116"><a href="#cb125-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Redefinimos los valores A y B</span></span>
+<span id="cb125-117"><a href="#cb125-117" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb125-118"><a href="#cb125-118" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb125-119"><a href="#cb125-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-120"><a href="#cb125-120" aria-hidden="true" tabindex="-1"></a><span class="co"># Realizamos comparaciones lógicas</span></span>
+<span id="cb125-121"><a href="#cb125-121" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&gt;</span>  B</span>
+<span id="cb125-122"><a href="#cb125-122" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&gt;=</span> B</span>
+<span id="cb125-123"><a href="#cb125-123" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&lt;</span>  B</span>
+<span id="cb125-124"><a href="#cb125-124" aria-hidden="true" tabindex="-1"></a>A <span class="sc">&lt;=</span> B</span>
+<span id="cb125-125"><a href="#cb125-125" aria-hidden="true" tabindex="-1"></a>A <span class="sc">==</span> B</span>
+<span id="cb125-126"><a href="#cb125-126" aria-hidden="true" tabindex="-1"></a>A <span class="sc">!=</span> B</span>
+<span id="cb125-127"><a href="#cb125-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-128"><a href="#cb125-128" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> A <span class="sc">!=</span> B</span>
+<span id="cb125-129"><a href="#cb125-129" aria-hidden="true" tabindex="-1"></a>C</span>
+<span id="cb125-130"><a href="#cb125-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-131"><a href="#cb125-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-132"><a href="#cb125-132" aria-hidden="true" tabindex="-1"></a>Como muestra el último ejemplo, el resultado de una operación lógica puede almacenarse como el valor de un objeto.</span>
+<span id="cb125-133"><a href="#cb125-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-134"><a href="#cb125-134" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Operadores aritméticos:</span></span>
+<span id="cb125-135"><a href="#cb125-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-138"><a href="#cb125-138" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-139"><a href="#cb125-139" aria-hidden="true" tabindex="-1"></a><span class="co">#suma</span></span>
+<span id="cb125-140"><a href="#cb125-140" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">+</span><span class="dv">6</span></span>
+<span id="cb125-141"><a href="#cb125-141" aria-hidden="true" tabindex="-1"></a>A</span>
+<span id="cb125-142"><a href="#cb125-142" aria-hidden="true" tabindex="-1"></a><span class="co">#Resta</span></span>
+<span id="cb125-143"><a href="#cb125-143" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">6-8</span></span>
+<span id="cb125-144"><a href="#cb125-144" aria-hidden="true" tabindex="-1"></a>B</span>
+<span id="cb125-145"><a href="#cb125-145" aria-hidden="true" tabindex="-1"></a><span class="co">#cociente</span></span>
+<span id="cb125-146"><a href="#cb125-146" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="dv">6</span><span class="sc">/</span><span class="fl">2.5</span></span>
+<span id="cb125-147"><a href="#cb125-147" aria-hidden="true" tabindex="-1"></a>C</span>
+<span id="cb125-148"><a href="#cb125-148" aria-hidden="true" tabindex="-1"></a><span class="co">#multiplicacion</span></span>
+<span id="cb125-149"><a href="#cb125-149" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="dv">6</span><span class="sc">*</span><span class="fl">2.5</span></span>
+<span id="cb125-150"><a href="#cb125-150" aria-hidden="true" tabindex="-1"></a>D</span>
+<span id="cb125-151"><a href="#cb125-151" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-152"><a href="#cb125-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-153"><a href="#cb125-153" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Funciones:</span></span>
+<span id="cb125-154"><a href="#cb125-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-155"><a href="#cb125-155" aria-hidden="true" tabindex="-1"></a>Las funciones son series de procedimientos estandarizados, que toman como input determinados argumentos a fijar por el usuario, y devuelven un resultado acorde a la aplicación de dichos procedimientos. Su lógica de funcionamiento es:   </span>
+<span id="cb125-156"><a href="#cb125-156" aria-hidden="true" tabindex="-1"></a>```funcion(argumento1 = arg1, argumento2 = arg2)```      </span>
+<span id="cb125-157"><a href="#cb125-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-158"><a href="#cb125-158" aria-hidden="true" tabindex="-1"></a>A lo largo del curso iremos viendo numerosas funciones, según lo requieran los distintos ejercicios. Sin embargo, veamos ahora algunos ejemplos para comprender su funcionamiento:    </span>
+<span id="cb125-159"><a href="#cb125-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-160"><a href="#cb125-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>paste() : concatena una serie de caracteres, pudiendo indicarse cómo separar a cada uno de ellos        </span>
+<span id="cb125-161"><a href="#cb125-161" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>paste0(): concatena una serie de caracteres sin separar</span>
+<span id="cb125-162"><a href="#cb125-162" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>sum(): suma de todos los elementos de un vector   </span>
+<span id="cb125-163"><a href="#cb125-163" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>mean() promedio aritmético de todos los elementos de un vector   </span>
+<span id="cb125-164"><a href="#cb125-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-167"><a href="#cb125-167" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-168"><a href="#cb125-168" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"Pega"</span>, <span class="st">"estas"</span>, <span class="dv">4</span>, <span class="st">"palabras"</span>, <span class="at">sep =</span> <span class="st">" "</span>)</span>
+<span id="cb125-169"><a href="#cb125-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-170"><a href="#cb125-170" aria-hidden="true" tabindex="-1"></a><span class="co"># Puedo concatenar caracteres almacenados en objetos</span></span>
+<span id="cb125-171"><a href="#cb125-171" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(A, B, C, <span class="at">sep =</span> <span class="st">"**"</span>)</span>
+<span id="cb125-172"><a href="#cb125-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-173"><a href="#cb125-173" aria-hidden="true" tabindex="-1"></a><span class="co"># Paste0 pega los caracteres sin separador</span></span>
+<span id="cb125-174"><a href="#cb125-174" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(A, B, C)</span>
+<span id="cb125-175"><a href="#cb125-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-176"><a href="#cb125-176" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb125-177"><a href="#cb125-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-178"><a href="#cb125-178" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb125-179"><a href="#cb125-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-180"><a href="#cb125-180" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb125-181"><a href="#cb125-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-182"><a href="#cb125-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-183"><a href="#cb125-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-184"><a href="#cb125-184" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Caracteres especiales:</span></span>
+<span id="cb125-185"><a href="#cb125-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-186"><a href="#cb125-186" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>R es sensible a mayúsculas y minúsculas, tanto para los nombres de las variables, como para las funciones y parámetros.</span>
+<span id="cb125-187"><a href="#cb125-187" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los __espacios en blanco__ y los __carriage return__ (_enter_) no son considerados por el lenguaje. Los podemos aprovechar para emprolijar el código y que la lectura sea más simple<span class="ot">[^2]</span>.</span>
+<span id="cb125-188"><a href="#cb125-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-189"><a href="#cb125-189" aria-hidden="true" tabindex="-1"></a><span class="ot">[^2]: </span>veremos que existen ciertas excepciones con algunos paquetes más adelante. </span>
+<span id="cb125-190"><a href="#cb125-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-191"><a href="#cb125-191" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El __numeral__ <span class="in">```#```</span> se utiliza para hacer comentarios. Todo lo que se escribe después del # no es interpretado por R. Se debe utilizar un # por cada línea de código que se desea anular</span>
+<span id="cb125-192"><a href="#cb125-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-193"><a href="#cb125-193" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los __corchetes__ <span class="in">```[]```</span> se utilizan para acceder a un objeto:</span>
+<span id="cb125-194"><a href="#cb125-194" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>en un vector<span class="co">[</span><span class="ot">n° orden</span><span class="co">]</span></span>
+<span id="cb125-195"><a href="#cb125-195" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>en una tabla<span class="co">[</span><span class="ot">fila, columna</span><span class="co">]</span></span>
+<span id="cb125-196"><a href="#cb125-196" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>en una lista<span class="co">[</span><span class="ot">n° elemento</span><span class="co">]</span>   </span>
+<span id="cb125-197"><a href="#cb125-197" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb125-198"><a href="#cb125-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>el signo __$__ también es un método de acceso. Particularmente, en los dataframes, nos permitira acceder a una determinada columna de una tabla</span>
+<span id="cb125-199"><a href="#cb125-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-200"><a href="#cb125-200" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Los __paréntesis__<span class="in">```()```</span> se utilizan en las funciones para definir los parámetros.</span>
+<span id="cb125-201"><a href="#cb125-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-202"><a href="#cb125-202" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Las __comas__ <span class="in">```, ```</span>  se utilizan para separar los parametros al interior de una función. </span>
+<span id="cb125-203"><a href="#cb125-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-204"><a href="#cb125-204" aria-hidden="true" tabindex="-1"></a><span class="fu">### Objetos    </span></span>
+<span id="cb125-205"><a href="#cb125-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-206"><a href="#cb125-206" aria-hidden="true" tabindex="-1"></a>Existe una gran cantidad de objetos distintos en R, en lo que respecta al curso trabajaremos principalmente con 3 de ellos:</span>
+<span id="cb125-207"><a href="#cb125-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-208"><a href="#cb125-208" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Valores</span>
+<span id="cb125-209"><a href="#cb125-209" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Vectores</span>
+<span id="cb125-210"><a href="#cb125-210" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Data Frames</span>
+<span id="cb125-211"><a href="#cb125-211" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Listas</span>
+<span id="cb125-212"><a href="#cb125-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-213"><a href="#cb125-213" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 1. Valores:</span></span>
+<span id="cb125-214"><a href="#cb125-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-215"><a href="#cb125-215" aria-hidden="true" tabindex="-1"></a>Los valores y vectores pueden ser a su vez de distintas _clases_:   </span>
+<span id="cb125-216"><a href="#cb125-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-217"><a href="#cb125-217" aria-hidden="true" tabindex="-1"></a>*Numeric*</span>
+<span id="cb125-218"><a href="#cb125-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-221"><a href="#cb125-221" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-222"><a href="#cb125-222" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span>  <span class="dv">1</span></span>
+<span id="cb125-223"><a href="#cb125-223" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(A)</span>
+<span id="cb125-224"><a href="#cb125-224" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-225"><a href="#cb125-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-226"><a href="#cb125-226" aria-hidden="true" tabindex="-1"></a>_Character_</span>
+<span id="cb125-227"><a href="#cb125-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-230"><a href="#cb125-230" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-231"><a href="#cb125-231" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span>  <span class="fu">paste</span>(<span class="st">'Soy'</span>, <span class="st">'una'</span>, <span class="st">'concatenación'</span>, <span class="st">'de'</span>, <span class="st">'caracteres'</span>, <span class="at">sep =</span> <span class="st">" "</span>)</span>
+<span id="cb125-232"><a href="#cb125-232" aria-hidden="true" tabindex="-1"></a>A</span>
+<span id="cb125-233"><a href="#cb125-233" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(A)</span>
+<span id="cb125-234"><a href="#cb125-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-235"><a href="#cb125-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-236"><a href="#cb125-236" aria-hidden="true" tabindex="-1"></a>_Factor_</span>
+<span id="cb125-237"><a href="#cb125-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-240"><a href="#cb125-240" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-241"><a href="#cb125-241" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="st">"Soy un factor, con niveles fijos"</span>)</span>
+<span id="cb125-242"><a href="#cb125-242" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(A)</span>
+<span id="cb125-243"><a href="#cb125-243" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-244"><a href="#cb125-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-245"><a href="#cb125-245" aria-hidden="true" tabindex="-1"></a>La diferencia entre un _character_ y un _factor_ es que el último tiene solo algunos valores permitidos (levels), con un orden interno predefinido (el cual, por ejemplo, se respetará a la hora de realizar un gráfico).  </span>
+<span id="cb125-246"><a href="#cb125-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-247"><a href="#cb125-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-248"><a href="#cb125-248" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2. Vectores:</span></span>
+<span id="cb125-249"><a href="#cb125-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-250"><a href="#cb125-250" aria-hidden="true" tabindex="-1"></a>Para crear un __vector__ utilizamos el comando ```c()```, de combinar.</span>
+<span id="cb125-251"><a href="#cb125-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-254"><a href="#cb125-254" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-255"><a href="#cb125-255" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>)</span>
+<span id="cb125-256"><a href="#cb125-256" aria-hidden="true" tabindex="-1"></a>C</span>
+<span id="cb125-257"><a href="#cb125-257" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-258"><a href="#cb125-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-259"><a href="#cb125-259" aria-hidden="true" tabindex="-1"></a>Podemos sumarle 2 a cada elemento del __vector__ anterior</span>
+<span id="cb125-260"><a href="#cb125-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-263"><a href="#cb125-263" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-264"><a href="#cb125-264" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> C <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb125-265"><a href="#cb125-265" aria-hidden="true" tabindex="-1"></a>C</span>
+<span id="cb125-266"><a href="#cb125-266" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-267"><a href="#cb125-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-268"><a href="#cb125-268" aria-hidden="true" tabindex="-1"></a>O sumarle 1 al primer elemento, 2 al segundo, y 3 al tercer elemento del __vector__ anterior</span>
+<span id="cb125-269"><a href="#cb125-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-272"><a href="#cb125-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-273"><a href="#cb125-273" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> C <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="co"># esto es equivalente a hacer 3+1, 5+2, 6+9 </span></span>
+<span id="cb125-274"><a href="#cb125-274" aria-hidden="true" tabindex="-1"></a>D</span>
+<span id="cb125-275"><a href="#cb125-275" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-276"><a href="#cb125-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-277"><a href="#cb125-277" aria-hidden="true" tabindex="-1"></a>```1:3``` significa que queremos todos los números enteros desde 1 hasta 3. </span>
+<span id="cb125-278"><a href="#cb125-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-279"><a href="#cb125-279" aria-hidden="true" tabindex="-1"></a>Podemos crear un __vector__ que contenga las palabras: "Carlos", "Federico", "Pedro"</span>
+<span id="cb125-280"><a href="#cb125-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-283"><a href="#cb125-283" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-284"><a href="#cb125-284" aria-hidden="true" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Carlos"</span>, <span class="st">"Federico"</span>, <span class="st">"Pedro"</span>)</span>
+<span id="cb125-285"><a href="#cb125-285" aria-hidden="true" tabindex="-1"></a>E</span>
+<span id="cb125-286"><a href="#cb125-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-287"><a href="#cb125-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-288"><a href="#cb125-288" aria-hidden="true" tabindex="-1"></a>Para acceder a algún elemento del vector, podemos buscarlo por su número de orden, entre ```<span class="co">[ ]</span>```</span>
+<span id="cb125-289"><a href="#cb125-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-292"><a href="#cb125-292" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-293"><a href="#cb125-293" aria-hidden="true" tabindex="-1"></a>E[<span class="dv">2</span>]</span>
+<span id="cb125-294"><a href="#cb125-294" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-295"><a href="#cb125-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-296"><a href="#cb125-296" aria-hidden="true" tabindex="-1"></a>Si nos interesa almacenar dicho valor, al buscarlo lo asignamos a un nuevo objeto, dándole el nombre que deseemos</span>
+<span id="cb125-297"><a href="#cb125-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-300"><a href="#cb125-300" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-301"><a href="#cb125-301" aria-hidden="true" tabindex="-1"></a>elemento2 <span class="ot">&lt;-</span> E[<span class="dv">2</span>]</span>
+<span id="cb125-302"><a href="#cb125-302" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-303"><a href="#cb125-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-306"><a href="#cb125-306" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-307"><a href="#cb125-307" aria-hidden="true" tabindex="-1"></a>elemento2</span>
+<span id="cb125-308"><a href="#cb125-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-309"><a href="#cb125-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-310"><a href="#cb125-310" aria-hidden="true" tabindex="-1"></a>R implicitamente coerciona la longitud de los <span class="co">[</span><span class="ot">vectores</span><span class="co">](https://es.r4ds.hadley.nz/vectores.html)</span>. Esto se denomina __reciclado de vectores__ (*vector recicling*), debido a que el vector de menor longitud se repite, o recicla, hasta igualar la longitud del vector más largo.</span>
+<span id="cb125-311"><a href="#cb125-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-314"><a href="#cb125-314" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-315"><a href="#cb125-315" aria-hidden="true" tabindex="-1"></a><span class="co"># sumamos dos vectores de distinta longitud</span></span>
+<span id="cb125-316"><a href="#cb125-316" aria-hidden="true" tabindex="-1"></a>G <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span> <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span> </span>
+<span id="cb125-317"><a href="#cb125-317" aria-hidden="true" tabindex="-1"></a>G </span>
+<span id="cb125-318"><a href="#cb125-318" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-319"><a href="#cb125-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-320"><a href="#cb125-320" aria-hidden="true" tabindex="-1"></a>Vemos que para efectuar la suma el vector menor (1 y 2) se repite para alcanzar la longitud del vector más largo (1 a 10) y le adiciona 1 y 2 a medida que recorre el vector más largo.  </span>
+<span id="cb125-321"><a href="#cb125-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-322"><a href="#cb125-322" aria-hidden="true" tabindex="-1"></a>Para __borrar__ un objeto del ambiente de trabajo, utilizamos el comando _```rm()```_</span>
+<span id="cb125-323"><a href="#cb125-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-324"><a href="#cb125-324" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
+<span id="cb125-325"><a href="#cb125-325" aria-hidden="true" tabindex="-1"></a><span class="in">rm(elemento2)</span></span>
+<span id="cb125-326"><a href="#cb125-326" aria-hidden="true" tabindex="-1"></a><span class="in">elemento2</span></span>
+<span id="cb125-327"><a href="#cb125-327" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-328"><a href="#cb125-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-329"><a href="#cb125-329" aria-hidden="true" tabindex="-1"></a>También podemos cambiar el texto del segundo elemento de E, por el texto "Pablo"</span>
+<span id="cb125-330"><a href="#cb125-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-333"><a href="#cb125-333" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-334"><a href="#cb125-334" aria-hidden="true" tabindex="-1"></a>E[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"Pablo"</span></span>
+<span id="cb125-335"><a href="#cb125-335" aria-hidden="true" tabindex="-1"></a>E</span>
+<span id="cb125-336"><a href="#cb125-336" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-337"><a href="#cb125-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-338"><a href="#cb125-338" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 3. Data Frames:</span></span>
+<span id="cb125-339"><a href="#cb125-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-340"><a href="#cb125-340" aria-hidden="true" tabindex="-1"></a>Un Data Frame es una tabla de datos, donde cada columna representa una variable, y cada fila una observación.</span>
+<span id="cb125-341"><a href="#cb125-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-342"><a href="#cb125-342" aria-hidden="true" tabindex="-1"></a>Este objeto suele ser central en el proceso de trabajo, y suele ser la forma en que se cargan datos externos para trabajar en el ambiente de R, y en que se exportan los resultados de nuestros trabajo.  </span>
+<span id="cb125-343"><a href="#cb125-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-344"><a href="#cb125-344" aria-hidden="true" tabindex="-1"></a>También se puede crear como la combinación de N vectores de igual tamaño. Por ejemplo, tomamos algunos valores del <span class="co">[</span><span class="ot">Indice de salarios</span><span class="co">](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61)</span> del INDEC.</span>
+<span id="cb125-345"><a href="#cb125-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-348"><a href="#cb125-348" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-349"><a href="#cb125-349" aria-hidden="true" tabindex="-1"></a>INDICE  <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="fl">286.4</span>,    <span class="fl">262.1</span>,  <span class="fl">248.5</span>,</span>
+<span id="cb125-350"><a href="#cb125-350" aria-hidden="true" tabindex="-1"></a>              <span class="fl">285.7</span>,    <span class="fl">263.5</span>,  <span class="fl">250.2</span>,</span>
+<span id="cb125-351"><a href="#cb125-351" aria-hidden="true" tabindex="-1"></a>              <span class="fl">285.1</span>,    <span class="fl">264.9</span>,  <span class="fl">249.0</span> )</span>
+<span id="cb125-352"><a href="#cb125-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-353"><a href="#cb125-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-354"><a href="#cb125-354" aria-hidden="true" tabindex="-1"></a>FECHA  <span class="ot">&lt;-</span>  <span class="fu">c</span>(<span class="st">"Mar-20"</span>, <span class="st">"Mar-20"</span>, <span class="st">"Mar-20"</span>,</span>
+<span id="cb125-355"><a href="#cb125-355" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Abr-20"</span>, <span class="st">"Abr-20"</span>, <span class="st">"Abr-20"</span>,</span>
+<span id="cb125-356"><a href="#cb125-356" aria-hidden="true" tabindex="-1"></a>             <span class="st">"May-20"</span>, <span class="st">"May-20"</span>, <span class="st">"May-20"</span>)</span>
+<span id="cb125-357"><a href="#cb125-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-358"><a href="#cb125-358" aria-hidden="true" tabindex="-1"></a>GRUPO  <span class="ot">&lt;-</span>  <span class="fu">c</span>(<span class="st">"Privado_Registrado"</span>,<span class="st">"Público"</span>,<span class="st">"Privado_No_Registrado"</span>,</span>
+<span id="cb125-359"><a href="#cb125-359" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Privado_Registrado"</span>,<span class="st">"Público"</span>,<span class="st">"Privado_No_Registrado"</span>,</span>
+<span id="cb125-360"><a href="#cb125-360" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Privado_Registrado"</span>,<span class="st">"Público"</span>,<span class="st">"Privado_No_Registrado"</span>)</span>
+<span id="cb125-361"><a href="#cb125-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-362"><a href="#cb125-362" aria-hidden="true" tabindex="-1"></a>Datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(INDICE, FECHA, GRUPO)</span>
+<span id="cb125-363"><a href="#cb125-363" aria-hidden="true" tabindex="-1"></a>Datos</span>
+<span id="cb125-364"><a href="#cb125-364" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-365"><a href="#cb125-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-366"><a href="#cb125-366" aria-hidden="true" tabindex="-1"></a>Tal como en un __vector__ se ubica a los elementos mediante ```[ ]```, en un __dataframe__ se obtienen sus elementos de la forma __```[fila, columna]```__.</span>
+<span id="cb125-367"><a href="#cb125-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-368"><a href="#cb125-368" aria-hidden="true" tabindex="-1"></a>Otra opción es especificar la columna, mediante el operador __```$```__, y luego seleccionar dentro de esa columna el registro deseado mediante el número de orden.</span>
+<span id="cb125-369"><a href="#cb125-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-372"><a href="#cb125-372" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-373"><a href="#cb125-373" aria-hidden="true" tabindex="-1"></a>Datos<span class="sc">$</span>FECHA</span>
+<span id="cb125-374"><a href="#cb125-374" aria-hidden="true" tabindex="-1"></a>Datos[<span class="dv">3</span>,<span class="dv">2</span>]</span>
+<span id="cb125-375"><a href="#cb125-375" aria-hidden="true" tabindex="-1"></a>Datos<span class="sc">$</span>FECHA[<span class="dv">3</span>]</span>
+<span id="cb125-376"><a href="#cb125-376" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-377"><a href="#cb125-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-378"><a href="#cb125-378" aria-hidden="true" tabindex="-1"></a>¿que pasa si hacemos ```Datos$FECHA<span class="co">[</span><span class="ot">3,2</span><span class="co">]</span>``` ?</span>
+<span id="cb125-379"><a href="#cb125-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-380"><a href="#cb125-380" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
+<span id="cb125-381"><a href="#cb125-381" aria-hidden="true" tabindex="-1"></a><span class="in">Datos$FECHA[3,2]</span></span>
+<span id="cb125-382"><a href="#cb125-382" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-383"><a href="#cb125-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-384"><a href="#cb125-384" aria-hidden="true" tabindex="-1"></a>Nótese que el último comando tiene un número incorrecto de dimensiones, porque estamos refiriendonos 2 veces a la columna FECHA.    </span>
+<span id="cb125-385"><a href="#cb125-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-386"><a href="#cb125-386" aria-hidden="true" tabindex="-1"></a>Acorde a lo visto anteriormente, el acceso a los __dataframes__ mediante  ```[ ]``` puede utilizarse para realizar filtros sobre la base, especificando una condición para las filas. Por ejemplo, puedo utilizar los  ```[ ]``` para conservar del __dataframe__ ```Datos ```  unicamente los registros con fecha de Diciembre 2016:</span>
+<span id="cb125-387"><a href="#cb125-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-388"><a href="#cb125-388" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
+<span id="cb125-389"><a href="#cb125-389" aria-hidden="true" tabindex="-1"></a><span class="in">Datos[Datos$FECHA == "May-20",]</span></span>
+<span id="cb125-390"><a href="#cb125-390" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-391"><a href="#cb125-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-392"><a href="#cb125-392" aria-hidden="true" tabindex="-1"></a>La lógica del paso anterior sería: Accedo al dataframe ```Datos```, pidiendo únicamente conservar las filas (por eso la condición se ubica a la _izquierda_ de la  ```, ```) que cumplan el requisito de pertenecer a la categoría __"May-20"__ de la variable __FECHA__.    </span>
+<span id="cb125-393"><a href="#cb125-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-394"><a href="#cb125-394" aria-hidden="true" tabindex="-1"></a>Aún más, podría aplicar el filtro y al mismo tiempo identificar una variable de interés para luego realizar un cálculo sobre aquella. Por ejemplo, podría calcular la media de los indices en el mes de Diciembre. </span>
+<span id="cb125-395"><a href="#cb125-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-396"><a href="#cb125-396" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
+<span id="cb125-397"><a href="#cb125-397" aria-hidden="true" tabindex="-1"></a><span class="in"># Por separado</span></span>
+<span id="cb125-398"><a href="#cb125-398" aria-hidden="true" tabindex="-1"></a><span class="in">Indices_May &lt;- Datos$INDICE[Datos$FECHA == "May-20"]</span></span>
+<span id="cb125-399"><a href="#cb125-399" aria-hidden="true" tabindex="-1"></a><span class="in">Indices_May</span></span>
+<span id="cb125-400"><a href="#cb125-400" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-401"><a href="#cb125-401" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-402"><a href="#cb125-402" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
+<span id="cb125-403"><a href="#cb125-403" aria-hidden="true" tabindex="-1"></a><span class="in">mean(Indices_May)</span></span>
+<span id="cb125-404"><a href="#cb125-404" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-405"><a href="#cb125-405" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-406"><a href="#cb125-406" aria-hidden="true" tabindex="-1"></a><span class="in">```{r error=TRUE}</span></span>
+<span id="cb125-407"><a href="#cb125-407" aria-hidden="true" tabindex="-1"></a><span class="in"># Todo junto</span></span>
+<span id="cb125-408"><a href="#cb125-408" aria-hidden="true" tabindex="-1"></a><span class="in">mean(Datos$INDICE[Datos$FECHA == "May-20"])</span></span>
+<span id="cb125-409"><a href="#cb125-409" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-410"><a href="#cb125-410" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-411"><a href="#cb125-411" aria-hidden="true" tabindex="-1"></a>La lógica de esta sintaxis sería: "Me quedo con la variable __INDICE__, cuando la variable FECHA sea igual a __"May-20"__, luego calculo la media de dichos valores".</span>
+<span id="cb125-412"><a href="#cb125-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-413"><a href="#cb125-413" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 4. Listas</span></span>
+<span id="cb125-414"><a href="#cb125-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-415"><a href="#cb125-415" aria-hidden="true" tabindex="-1"></a>Contienen una concatenación de objetos de cualquier tipo. Así como un vector contiene valores, un dataframe contiene vectores, una lista puede contener dataframes, pero también vectores, o valores, y _todo ello a la vez_.</span>
+<span id="cb125-416"><a href="#cb125-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-419"><a href="#cb125-419" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-420"><a href="#cb125-420" aria-hidden="true" tabindex="-1"></a>superlista <span class="ot">&lt;-</span> <span class="fu">list</span>(A,B,C,D,E,FECHA, <span class="at">DF =</span> Datos, INDICE, GRUPO)</span>
+<span id="cb125-421"><a href="#cb125-421" aria-hidden="true" tabindex="-1"></a>superlista</span>
+<span id="cb125-422"><a href="#cb125-422" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-423"><a href="#cb125-423" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-424"><a href="#cb125-424" aria-hidden="true" tabindex="-1"></a>Para acceder un elemento de una lista, podemos utilizar el operador __```$```__, que se puede usar a su vez de forma iterativa. </span>
+<span id="cb125-425"><a href="#cb125-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-428"><a href="#cb125-428" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-429"><a href="#cb125-429" aria-hidden="true" tabindex="-1"></a>superlista<span class="sc">$</span>DF<span class="sc">$</span>FECHA[<span class="dv">2</span>]</span>
+<span id="cb125-430"><a href="#cb125-430" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-431"><a href="#cb125-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-432"><a href="#cb125-432" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ambientes de trabajo</span></span>
+<span id="cb125-433"><a href="#cb125-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-434"><a href="#cb125-434" aria-hidden="true" tabindex="-1"></a>Hay algunas cosas que tenemos que tener en cuenta respecto del orden del ambiente en el que trabajamos:</span>
+<span id="cb125-435"><a href="#cb125-435" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-436"><a href="#cb125-436" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Working Directory**: Es el directorio de trabajo. Pueden ver el suyo con <span class="in">`getwd()`</span>, es *hacia donde apunta el código*, por ejemplo, si quieren leer un archivo, la ruta del archivo tiene que estar explicitada como el recorrido desde el Working Directory.</span>
+<span id="cb125-437"><a href="#cb125-437" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Environment**: Esto engloba tanto la información que tenemos cargada en *Data* y *Values*, como las librerías que tenemos cargadas mientras trabajamos. </span>
+<span id="cb125-438"><a href="#cb125-438" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-439"><a href="#cb125-439" aria-hidden="true" tabindex="-1"></a>Es importante que mantengamos bien delimitadas estas cosas entre diferentes trabajos, sino:</span>
+<span id="cb125-440"><a href="#cb125-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-441"><a href="#cb125-441" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>El directorio queda referido a un lugar específico en nuestra computadora. </span>
+<span id="cb125-442"><a href="#cb125-442" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si se lo compartimos a otro **se rompe**</span>
+<span id="cb125-443"><a href="#cb125-443" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si cambiamos de computadora **se rompe**</span>
+<span id="cb125-444"><a href="#cb125-444" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si lo cambiamos de lugar **se rompe**</span>
+<span id="cb125-445"><a href="#cb125-445" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Si primero abrimos otro script **se rompe**</span>
+<span id="cb125-446"><a href="#cb125-446" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Tenemos mezclados resultados de diferentes trabajos:</span>
+<span id="cb125-447"><a href="#cb125-447" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Nunca sabemos si esa variable/tabla/lista se creo en ese script y no otro</span>
+<span id="cb125-448"><a href="#cb125-448" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Perdemos espacio de la memoria</span>
+<span id="cb125-449"><a href="#cb125-449" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>No estamos seguros de que el script cargue todas las librerías que necesita</span>
+<span id="cb125-450"><a href="#cb125-450" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-451"><a href="#cb125-451" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Proyectos</span></span>
+<span id="cb125-452"><a href="#cb125-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-453"><a href="#cb125-453" aria-hidden="true" tabindex="-1"></a>Rstudio tiene una herramienta muy útil de trabajo que son los **proyectos**. Estos permiten mantener un ambiente de trabajo delimitado por cada uno de nuestros trabajos. Es decir:</span>
+<span id="cb125-454"><a href="#cb125-454" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-455"><a href="#cb125-455" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El directorio de trabajo se refiere a donde esta ubicado el archivo .Rproj</span>
+<span id="cb125-456"><a href="#cb125-456" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>El Environment es específico de nuestro proyecto.</span>
+<span id="cb125-457"><a href="#cb125-457" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-458"><a href="#cb125-458" aria-hidden="true" tabindex="-1"></a>Un proyecto no es un sólo script, sino toda una carpeta de trabajo. </span>
+<span id="cb125-459"><a href="#cb125-459" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-460"><a href="#cb125-460" aria-hidden="true" tabindex="-1"></a><span class="al">![logo Rpoject](https://raw.githubusercontent.com/eea-uba/EEA-2024/refs/heads/main/clase%201/Rproject.png)</span>{width=100}</span>
+<span id="cb125-461"><a href="#cb125-461" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-462"><a href="#cb125-462" aria-hidden="true" tabindex="-1"></a>Para crearlo, vamos al logo de nuevo projecto (Arriba a la derecha de la panatalla), y elegimos la carpeta de trabajo. </span>
+<span id="cb125-463"><a href="#cb125-463" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-464"><a href="#cb125-464" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Tipos de archivos de R</span></span>
+<span id="cb125-465"><a href="#cb125-465" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-466"><a href="#cb125-466" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__Script__: Es un archivo de texto plano, donde podemos poner el código que utilizamos para preservarlo</span>
+<span id="cb125-467"><a href="#cb125-467" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__Rnotebook__: También sirve para guardar el código, pero a diferencia de los scripts, se puede compilar, e intercalar código con resultados (este archivo es un rnotebook)</span>
+<span id="cb125-468"><a href="#cb125-468" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__Rproject__: Es un archivo que define la metadata del proyecto</span>
+<span id="cb125-469"><a href="#cb125-469" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>__RDS y Rdata__: Dos formatos de archivos propios de R para guardar datos. </span>
+<span id="cb125-470"><a href="#cb125-470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-471"><a href="#cb125-471" aria-hidden="true" tabindex="-1"></a><span class="fu">## Algunos tips</span></span>
+<span id="cb125-472"><a href="#cb125-472" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-473"><a href="#cb125-473" aria-hidden="true" tabindex="-1"></a>Para agregar un bloque de código <span class="in">`Ctrl+ Alt+ I`</span></span>
+<span id="cb125-474"><a href="#cb125-474" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-475"><a href="#cb125-475" aria-hidden="true" tabindex="-1"></a>Para agregar el _pipe_ (<span class="in">` |&gt; `</span>) <span class="in">`Ctrl+ Shift+ M`</span></span>
+<span id="cb125-476"><a href="#cb125-476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-477"><a href="#cb125-477" aria-hidden="true" tabindex="-1"></a><span class="fu"># Loops, condicionales y funciones</span></span>
+<span id="cb125-478"><a href="#cb125-478" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-479"><a href="#cb125-479" aria-hidden="true" tabindex="-1"></a><span class="fu">## Loops</span></span>
+<span id="cb125-480"><a href="#cb125-480" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-481"><a href="#cb125-481" aria-hidden="true" tabindex="-1"></a>Un __loop__ es una estructura de código que nos permite aplicar iterativamente un mismo conjunto de comandos, variando el valor de una variable. </span>
+<span id="cb125-482"><a href="#cb125-482" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-483"><a href="#cb125-483" aria-hidden="true" tabindex="-1"></a>Un loop puede iterar sobre cualquier tipo de vector, independientemente de lo que contenga.</span>
+<span id="cb125-484"><a href="#cb125-484" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-485"><a href="#cb125-485" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Los loops son una estructura básica que existe en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.</span></span>
+<span id="cb125-486"><a href="#cb125-486" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-487"><a href="#cb125-487" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,warning=FALSE}</span></span>
+<span id="cb125-488"><a href="#cb125-488" aria-hidden="true" tabindex="-1"></a><span class="in">for(i in 1:10){</span></span>
+<span id="cb125-489"><a href="#cb125-489" aria-hidden="true" tabindex="-1"></a><span class="in">   print(i^2)</span></span>
+<span id="cb125-490"><a href="#cb125-490" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb125-491"><a href="#cb125-491" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-492"><a href="#cb125-492" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-493"><a href="#cb125-493" aria-hidden="true" tabindex="-1"></a>Esto se lee como: "Recorre cada uno de los valores (i) del vector numérico 1 a 10, y para cada uno de ellos imprimí el cuadrado (i^2)". </span>
+<span id="cb125-494"><a href="#cb125-494" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-495"><a href="#cb125-495" aria-hidden="true" tabindex="-1"></a>Se puede especificar la palabra que se desee que tome cada uno de los valores que debe tomar. En el ejemplo anterior fue **i**, pero bien podría ser "**Valores**".</span>
+<span id="cb125-496"><a href="#cb125-496" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-499"><a href="#cb125-499" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-500"><a href="#cb125-500" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(Valores <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>){</span>
+<span id="cb125-501"><a href="#cb125-501" aria-hidden="true" tabindex="-1"></a>   <span class="fu">print</span>(Valores<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb125-502"><a href="#cb125-502" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-503"><a href="#cb125-503" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-504"><a href="#cb125-504" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-505"><a href="#cb125-505" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-506"><a href="#cb125-506" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-507"><a href="#cb125-507" aria-hidden="true" tabindex="-1"></a>Al usar <span class="in">`print()`</span> sólo mostrará los resultados de las operaciones en la consola, no los asignará a un objeto.</span>
+<span id="cb125-508"><a href="#cb125-508" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-509"><a href="#cb125-509" aria-hidden="true" tabindex="-1"></a>Se puede usar estos valores para asignar cada valor resultante de nuestras operaciones a una posición específica en un vector, incluso si este está vacio.</span>
+<span id="cb125-510"><a href="#cb125-510" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-511"><a href="#cb125-511" aria-hidden="true" tabindex="-1"></a>Creamos un vector vacío, asignándole como <span class="in">`NULL`</span> como valor.</span>
+<span id="cb125-512"><a href="#cb125-512" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-515"><a href="#cb125-515" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-516"><a href="#cb125-516" aria-hidden="true" tabindex="-1"></a>mi_vector <span class="ot">&lt;-</span> <span class="cn">NULL</span> <span class="co"># creamos vector vacio</span></span>
+<span id="cb125-517"><a href="#cb125-517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-518"><a href="#cb125-518" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
+<span id="cb125-519"><a href="#cb125-519" aria-hidden="true" tabindex="-1"></a>  mi_vector[i] <span class="ot">&lt;-</span> i <span class="sc">^</span> <span class="dv">2</span></span>
+<span id="cb125-520"><a href="#cb125-520" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-521"><a href="#cb125-521" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-522"><a href="#cb125-522" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-523"><a href="#cb125-523" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-524"><a href="#cb125-524" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-525"><a href="#cb125-525" aria-hidden="true" tabindex="-1"></a>Aunque no fueron mostrados en la consola, los resultados han sido asignados al objeto <span class="in">`mi_vector`</span>.</span>
+<span id="cb125-526"><a href="#cb125-526" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-529"><a href="#cb125-529" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-530"><a href="#cb125-530" aria-hidden="true" tabindex="-1"></a>mi_vector</span>
+<span id="cb125-531"><a href="#cb125-531" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-532"><a href="#cb125-532" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-533"><a href="#cb125-533" aria-hidden="true" tabindex="-1"></a><span class="fu">## Estructuras Condicionales</span></span>
+<span id="cb125-534"><a href="#cb125-534" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-535"><a href="#cb125-535" aria-hidden="true" tabindex="-1"></a>Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.</span>
+<span id="cb125-536"><a href="#cb125-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-537"><a href="#cb125-537" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-538"><a href="#cb125-538" aria-hidden="true" tabindex="-1"></a><span class="fu">## if y else</span></span>
+<span id="cb125-539"><a href="#cb125-539" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-540"><a href="#cb125-540" aria-hidden="true" tabindex="-1"></a>Su funcionamiento es el siguiente:    </span>
+<span id="cb125-541"><a href="#cb125-541" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-542"><a href="#cb125-542" aria-hidden="true" tabindex="-1"></a>```if(condición){código a ejecutar si se cumple la condición}```</span>
+<span id="cb125-543"><a href="#cb125-543" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-544"><a href="#cb125-544" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,warning=FALSE}</span></span>
+<span id="cb125-545"><a href="#cb125-545" aria-hidden="true" tabindex="-1"></a><span class="in">if( 2+2 == 4){</span></span>
+<span id="cb125-546"><a href="#cb125-546" aria-hidden="true" tabindex="-1"></a><span class="in">  print("Menos Mal")</span></span>
+<span id="cb125-547"><a href="#cb125-547" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb125-548"><a href="#cb125-548" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-549"><a href="#cb125-549" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-550"><a href="#cb125-550" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-551"><a href="#cb125-551" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,warning=FALSE}</span></span>
+<span id="cb125-552"><a href="#cb125-552" aria-hidden="true" tabindex="-1"></a><span class="in">if( 2+2 == 148.24){</span></span>
+<span id="cb125-553"><a href="#cb125-553" aria-hidden="true" tabindex="-1"></a><span class="in">  print("R, tenemos un problema")</span></span>
+<span id="cb125-554"><a href="#cb125-554" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb125-555"><a href="#cb125-555" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-556"><a href="#cb125-556" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-557"><a href="#cb125-557" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-558"><a href="#cb125-558" aria-hidden="true" tabindex="-1"></a><span class="in">`else`</span> complementa un <span class="in">`if`</span>, pues indica qué ocurrirá cuando la condición no se cumple, es falsa (FALSE), en lugar de no hacer nada.</span>
+<span id="cb125-559"><a href="#cb125-559" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-560"><a href="#cb125-560" aria-hidden="true" tabindex="-1"></a>**SI** esta condición es cierta, **ENTONCES** realiza estas operaciones, **DE OTRO MODO** realiza estas otras operaciones.</span>
+<span id="cb125-561"><a href="#cb125-561" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-564"><a href="#cb125-564" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-565"><a href="#cb125-565" aria-hidden="true" tabindex="-1"></a><span class="co"># No se cumple la condición y se muestra "Falso"</span></span>
+<span id="cb125-566"><a href="#cb125-566" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="dv">4</span> <span class="sc">&gt;</span> <span class="dv">5</span>) {</span>
+<span id="cb125-567"><a href="#cb125-567" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Verdadero"</span></span>
+<span id="cb125-568"><a href="#cb125-568" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb125-569"><a href="#cb125-569" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Falso"</span></span>
+<span id="cb125-570"><a href="#cb125-570" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-571"><a href="#cb125-571" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-572"><a href="#cb125-572" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-573"><a href="#cb125-573" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-574"><a href="#cb125-574" aria-hidden="true" tabindex="-1"></a><span class="fu">### ifelse</span></span>
+<span id="cb125-575"><a href="#cb125-575" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-576"><a href="#cb125-576" aria-hidden="true" tabindex="-1"></a>La función <span class="in">`ifelse( )`</span> nos permite vectorizar <span class="in">`if`</span>, <span class="in">`else`</span>. En lugar de escribir una línea de código para cada comparación, podemos usar una sola llamada a esta función, que se aplicará a todos los elementos de un vector. </span>
+<span id="cb125-577"><a href="#cb125-577" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-578"><a href="#cb125-578" aria-hidden="true" tabindex="-1"></a>Su funcionamiento es el siguiente:    </span>
+<span id="cb125-579"><a href="#cb125-579" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-580"><a href="#cb125-580" aria-hidden="true" tabindex="-1"></a>```if_else(condición, función a aplicar si se cumple la condición, función a aplicar si no se cumple la condición)```</span>
+<span id="cb125-581"><a href="#cb125-581" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-584"><a href="#cb125-584" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-585"><a href="#cb125-585" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb125-586"><a href="#cb125-586" aria-hidden="true" tabindex="-1"></a><span class="fu">if_else</span>(<span class="dv">2</span><span class="sc">+</span><span class="dv">2</span> <span class="sc">==</span> <span class="dv">4</span>, <span class="co"># condicion</span></span>
+<span id="cb125-587"><a href="#cb125-587" aria-hidden="true" tabindex="-1"></a>        <span class="at">true =</span> <span class="st">"Joya"</span>, <span class="co"># si se cumple la condición</span></span>
+<span id="cb125-588"><a href="#cb125-588" aria-hidden="true" tabindex="-1"></a>        <span class="at">false =</span> <span class="st">"Error"</span>) <span class="co"># si no se cumple</span></span>
+<span id="cb125-589"><a href="#cb125-589" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-590"><a href="#cb125-590" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-591"><a href="#cb125-591" aria-hidden="true" tabindex="-1"></a>Muy util para  recodificar datos</span>
+<span id="cb125-592"><a href="#cb125-592" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-595"><a href="#cb125-595" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-596"><a href="#cb125-596" aria-hidden="true" tabindex="-1"></a>num <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb125-597"><a href="#cb125-597" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-598"><a href="#cb125-598" aria-hidden="true" tabindex="-1"></a>num <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(num <span class="sc">==</span> <span class="dv">0</span>, </span>
+<span id="cb125-599"><a href="#cb125-599" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Hombre"</span>,</span>
+<span id="cb125-600"><a href="#cb125-600" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Mujer"</span>)</span>
+<span id="cb125-601"><a href="#cb125-601" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-602"><a href="#cb125-602" aria-hidden="true" tabindex="-1"></a>num</span>
+<span id="cb125-603"><a href="#cb125-603" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-604"><a href="#cb125-604" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-605"><a href="#cb125-605" aria-hidden="true" tabindex="-1"></a><span class="fu">## Funciones</span></span>
+<span id="cb125-606"><a href="#cb125-606" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-607"><a href="#cb125-607" aria-hidden="true" tabindex="-1"></a>La creación de __funciones__ propias nos permite automatizar todas aquellas partes del código que se repiten mucho. Una vez diseñadas, funcionan igual que cualquier comando. </span>
+<span id="cb125-608"><a href="#cb125-608" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-609"><a href="#cb125-609" aria-hidden="true" tabindex="-1"></a>Por ejemplo, podemos definir la suma de dos elementos como</span>
+<span id="cb125-610"><a href="#cb125-610" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-613"><a href="#cb125-613" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-614"><a href="#cb125-614" aria-hidden="true" tabindex="-1"></a>suma <span class="ot">&lt;-</span> <span class="cf">function</span>(valor1, valor2) {</span>
+<span id="cb125-615"><a href="#cb125-615" aria-hidden="true" tabindex="-1"></a>  valor1<span class="sc">+</span>valor2</span>
+<span id="cb125-616"><a href="#cb125-616" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-617"><a href="#cb125-617" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-618"><a href="#cb125-618" aria-hidden="true" tabindex="-1"></a><span class="fu">suma</span>(<span class="dv">5</span>,<span class="dv">6</span>)</span>
+<span id="cb125-619"><a href="#cb125-619" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-620"><a href="#cb125-620" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-621"><a href="#cb125-621" aria-hidden="true" tabindex="-1"></a>Obviamente las funciones no son sólo para variables numéricas. Por ejemplo, podemos pegar dos strings con una flecha en el medio</span>
+<span id="cb125-622"><a href="#cb125-622" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-625"><a href="#cb125-625" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-626"><a href="#cb125-626" aria-hidden="true" tabindex="-1"></a>funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1,parametro2) {</span>
+<span id="cb125-627"><a href="#cb125-627" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
+<span id="cb125-628"><a href="#cb125-628" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-629"><a href="#cb125-629" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-630"><a href="#cb125-630" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"A ver"</span>, <span class="at">parametro2 =</span> <span class="st">"Qué pasa"</span>)</span>
+<span id="cb125-631"><a href="#cb125-631" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-632"><a href="#cb125-632" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-633"><a href="#cb125-633" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-634"><a href="#cb125-634" aria-hidden="true" tabindex="-1"></a>También podemos asignar un valor por default para los parametros en caso de que el usuario no defina su valor al utilizar la función.</span>
+<span id="cb125-635"><a href="#cb125-635" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-638"><a href="#cb125-638" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-639"><a href="#cb125-639" aria-hidden="true" tabindex="-1"></a>Otra_funcion_prueba <span class="ot">&lt;-</span> <span class="cf">function</span>(parametro1, <span class="at">parametro2 =</span> <span class="st">"String default"</span>) {</span>
+<span id="cb125-640"><a href="#cb125-640" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(parametro1, parametro2, <span class="at">sep =</span> <span class="st">" &lt;--&gt; "</span>)</span>
+<span id="cb125-641"><a href="#cb125-641" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-642"><a href="#cb125-642" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-643"><a href="#cb125-643" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>)</span>
+<span id="cb125-644"><a href="#cb125-644" aria-hidden="true" tabindex="-1"></a><span class="fu">Otra_funcion_prueba</span>(<span class="at">parametro1 =</span> <span class="st">"Valor 1"</span>, <span class="at">parametro2 =</span> <span class="st">"Valor 2"</span> )</span>
+<span id="cb125-645"><a href="#cb125-645" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-646"><a href="#cb125-646" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-647"><a href="#cb125-647" aria-hidden="true" tabindex="-1"></a>Las funciones que creamos nosotros permanecen en el ambiente de R temporariamente. Cuando removemos los objetos del ambiente, la función deja de existir. Por ende, debemos incorporarla en cada uno de los scripts en la cual la necesitemos.</span>
+<span id="cb125-648"><a href="#cb125-648" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-649"><a href="#cb125-649" aria-hidden="true" tabindex="-1"></a>Una buena práctica, es incorporar nuestras funciones útiles al comienzo de cada script junto a la carga de las librerías.                         </span>
+<span id="cb125-650"><a href="#cb125-650" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-651"><a href="#cb125-651" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Vale mencionar que __lo que ocurre en una función, queda en la función__ excepto que explícitamente pidamos que devuelva el resultado, con el comando </span><span class="in">`print()`</span><span class="at">. </span></span>
+<span id="cb125-652"><a href="#cb125-652" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-653"><a href="#cb125-653" aria-hidden="true" tabindex="-1"></a>Las funciones siempre devuelven el último objeto que se crea en ellas, o si explicitamente se utiliza el comando <span class="in">`return()`</span></span>
+<span id="cb125-654"><a href="#cb125-654" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-655"><a href="#cb125-655" aria-hidden="true" tabindex="-1"></a>**Funciones anónimas**</span>
+<span id="cb125-656"><a href="#cb125-656" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-657"><a href="#cb125-657" aria-hidden="true" tabindex="-1"></a>Son funciones a las cuales no les asignamos un nombre. Esto suele ser útil para hacer funciones pequeñas dentro de otras funciones o estructuras más complejas.</span>
+<span id="cb125-658"><a href="#cb125-658" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-661"><a href="#cb125-661" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb125-662"><a href="#cb125-662" aria-hidden="true" tabindex="-1"></a>(<span class="cf">function</span>(x) x<span class="sc">*</span><span class="dv">2</span>)(<span class="dv">10</span>)</span>
+<span id="cb125-663"><a href="#cb125-663" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb125-664"><a href="#cb125-664" aria-hidden="true" tabindex="-1"></a></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
