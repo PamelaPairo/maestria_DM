@@ -184,6 +184,33 @@ Parece tener bastantes problemas para estimar la probabilidad de supervivencia d
 
 ## Recap de Regresión Logística
 
+Odds
+
+Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.
+
+$Odds = \frac{P(x)}{1-P(x)}$
+
+Ej. si _Odds_ es 3 indica que por cada 4 repeticiones del evento se espera que ocurran 3 y que una no ocurra.
+
+Odds < 1 : es mas probable que no ocurra a que si
+
+Odds = 1 : equiprobabilidad
+
+Odds > 1: es mas probable que el evento ocurra a que no.
+
+En nuestro caso:
+
+$Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}$
+
+Por cada 191 pacientes con ECV, 200 no la tienen.
+
+
+$Logit = \log {\frac{P(x)}{1-P(x)}}= \log Odds$
+
+1- Escala del predictor lineal
+2- Odds
+3- Escala de la VR
+
 ![Imagen adaptada de la clase de RL de Adriana Perez](rl.png){}
 
 ## Ahora si modelamos los datos con una Regresión Logística

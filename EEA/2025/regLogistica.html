@@ -242,8 +242,8 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
 <pre><code># A tibble: 2 × 3
   cardio   cnt  freq
    &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
-1      0   504   0.5
-2      1   496   0.5</code></pre>
+1      0   495   0.5
+2      1   505   0.5</code></pre>
 </div>
 </div>
 <section id="partición-de-la-base-de-datos" class="level2">
@@ -310,19 +310,19 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 800
 Columns: 13
-$ id          &lt;int&gt; 8598, 98213, 25313, 1565, 14855, 51685, 71755, 57680, 2818…
-$ age         &lt;int&gt; 18900, 18755, 19789, 22761, 16607, 16910, 16651, 14496, 19…
-$ gender      &lt;int&gt; 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1…
-$ height      &lt;int&gt; 177, 158, 180, 164, 173, 169, 158, 162, 177, 153, 170, 167…
-$ weight      &lt;dbl&gt; 84, 74, 75, 78, 84, 73, 71, 68, 74, 49, 71, 81, 64, 89, 85…
-$ ap_hi       &lt;int&gt; 130, 14, 120, 130, 120, 120, 110, 110, 120, 120, 100, 140,…
-$ ap_lo       &lt;int&gt; 90, 90, 80, 79, 70, 80, 80, 80, 80, 80, 60, 90, 80, 90, 80…
-$ cholesterol &lt;int&gt; 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
-$ gluc        &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1…
-$ smoke       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0…
-$ alco        &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0…
-$ active      &lt;int&gt; 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0…
-$ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1…</code></pre>
+$ id          &lt;int&gt; 6715, 88133, 37378, 54574, 36301, 14598, 38135, 88984, 510…
+$ age         &lt;int&gt; 20320, 21292, 19569, 20639, 15319, 15965, 20375, 18278, 18…
+$ gender      &lt;int&gt; 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 2, 2, 1, 1, 2, 1, 1, 2…
+$ height      &lt;int&gt; 156, 160, 171, 158, 165, 160, 159, 165, 170, 160, 154, 178…
+$ weight      &lt;dbl&gt; 60, 79, 76, 60, 61, 63, 69, 70, 65, 65, 52, 82, 110, 58, 7…
+$ ap_hi       &lt;int&gt; 110, 140, 100, 120, 100, 11, 120, 130, 120, 110, 100, 140,…
+$ ap_lo       &lt;int&gt; 70, 90, 70, 80, 60, 60, 60, 80, 80, 70, 60, 90, 90, 70, 10…
+$ cholesterol &lt;int&gt; 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 2, 1, 2, 2, 1, 1, 1, 3…
+$ gluc        &lt;int&gt; 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 1, 1, 3…
+$ smoke       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0…
+$ alco        &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+$ active      &lt;int&gt; 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1…
+$ cardio      &lt;int&gt; 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1…</code></pre>
 </div>
 </div>
 <p>Seleccioamoslas variables con las que vamos a trabajar y les asignamos el tipo de dato correspondiente.</p>
@@ -383,10 +383,10 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
-  term        estimate std.error statistic    p.value
-  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
-1 (Intercept)  0.0580    0.0949      0.612 0.541     
-2 weight       0.00574   0.00124     4.62  0.00000448</code></pre>
+  term        estimate std.error statistic     p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+1 (Intercept)  0.0449    0.0926      0.484 0.628      
+2 weight       0.00636   0.00124     5.13  0.000000372</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -394,9 +394,9 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 12
-  r.squared adj.r.squared sigma statistic    p.value    df logLik   AIC   BIC
-      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1    0.0260        0.0248 0.494      21.3 0.00000448     1  -570. 1146. 1160.
+  r.squared adj.r.squared sigma statistic     p.value    df logLik   AIC   BIC
+      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1    0.0319        0.0307 0.492      26.3 0.000000372     1  -567. 1141. 1155.
 # ℹ 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
 </div>
 </div>
@@ -420,10 +420,22 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 
 </section>
 <section id="recap-de-regresión-logística" class="level2">
 <h2 class="anchored" data-anchor-id="recap-de-regresión-logística">Recap de Regresión Logística</h2>
+<p>Odds</p>
+<p>Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.</p>
+<p><span class="math inline">\(Odds = \frac{P(x)}{1-P(x)}\)</span></p>
+<p>Ej. si <em>Odds</em> es 3 indica que por cada 4 repeticiones del evento se espera que ocurran 3 y que una no ocurra.</p>
+<p>Odds &lt; 1 : es mas probable que no ocurra a que si</p>
+<p>Odds = 1 : equiprobabilidad</p>
+<p>Odds &gt; 1: es mas probable que el evento ocurra a que no.</p>
+<p>En nuestro caso:</p>
+<p><span class="math inline">\(Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}\)</span></p>
+<p>Por cada 191 pacientes con ECV, 200 no la tienen.</p>
+<p><span class="math inline">\(Logit = \log {\frac{P(x)}{1-P(x)}}= \log Odds\)</span></p>
+<p>1- Escala del predictor lineal 2- Odds 3- Escala de la VR</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="rl.png" class="img-fluid figure-img"></p>
-<figcaption>Imagen adapatada de la clase de RL de Adriana Perez</figcaption>
+<figcaption>Imagen adaptada de la clase de RL de Adriana Perez</figcaption>
 </figure>
 </div>
 </section>
@@ -457,13 +469,13 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 5
-  term         estimate std.error statistic     p.value
-  &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
-1 (Intercept)   -1.75     0.415      -4.22  0.0000249  
-2 weight         0.0208   0.00556     3.73  0.000190   
-3 cholesterol2   0.325    0.209       1.56  0.119      
-4 cholesterol3   1.44     0.275       5.24  0.000000162
-5 gender2       -0.111    0.155      -0.714 0.475      </code></pre>
+  term         estimate std.error statistic    p.value
+  &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+1 (Intercept)   -1.93     0.412      -4.69  0.00000279
+2 weight         0.0244   0.00566     4.32  0.0000159 
+3 cholesterol2   0.667    0.204       3.27  0.00109   
+4 cholesterol3   1.05     0.238       4.43  0.00000957
+5 gender2       -0.133    0.157      -0.846 0.397     </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -473,7 +485,7 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 
 <pre><code># A tibble: 1 × 8
   null.deviance df.null logLik   AIC   BIC deviance df.residual  nobs
           &lt;dbl&gt;   &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;       &lt;int&gt; &lt;int&gt;
-1         1109.     799  -527. 1063. 1087.    1053.         795   800</code></pre>
+1         1109.     799  -527. 1064. 1087.    1054.         795   800</code></pre>
 </div>
 </div>
 <!-- -->
@@ -1139,47 +1151,74 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb24-200"><a href="#cb24-200" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-201"><a href="#cb24-201" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recap de Regresión Logística</span></span>
 <span id="cb24-202"><a href="#cb24-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-203"><a href="#cb24-203" aria-hidden="true" tabindex="-1"></a><span class="al">![Imagen adapatada de la clase de RL de Adriana Perez](rl.png)</span>{}</span>
+<span id="cb24-203"><a href="#cb24-203" aria-hidden="true" tabindex="-1"></a>Odds</span>
 <span id="cb24-204"><a href="#cb24-204" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-205"><a href="#cb24-205" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ahora si modelamos los datos con una Regresión Logística</span></span>
+<span id="cb24-205"><a href="#cb24-205" aria-hidden="true" tabindex="-1"></a>Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.</span>
 <span id="cb24-206"><a href="#cb24-206" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-207"><a href="#cb24-207" aria-hidden="true" tabindex="-1"></a>Para evitar estos problemas, usamos la **función logística**.</span>
+<span id="cb24-207"><a href="#cb24-207" aria-hidden="true" tabindex="-1"></a>$Odds = \frac{P(x)}{1-P(x)}$</span>
 <span id="cb24-208"><a href="#cb24-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-209"><a href="#cb24-209" aria-hidden="true" tabindex="-1"></a>$P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$</span>
+<span id="cb24-209"><a href="#cb24-209" aria-hidden="true" tabindex="-1"></a>Ej. si _Odds_ es 3 indica que por cada 4 repeticiones del evento se espera que ocurran 3 y que una no ocurra.</span>
 <span id="cb24-210"><a href="#cb24-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-211"><a href="#cb24-211" aria-hidden="true" tabindex="-1"></a>El lado derecho se llama **expit**</span>
+<span id="cb24-211"><a href="#cb24-211" aria-hidden="true" tabindex="-1"></a>Odds &lt; 1 : es mas probable que no ocurra a que si</span>
 <span id="cb24-212"><a href="#cb24-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-213"><a href="#cb24-213" aria-hidden="true" tabindex="-1"></a>Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado para modelar una probabilidad.</span>
+<span id="cb24-213"><a href="#cb24-213" aria-hidden="true" tabindex="-1"></a>Odds = 1 : equiprobabilidad</span>
 <span id="cb24-214"><a href="#cb24-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-215"><a href="#cb24-215" aria-hidden="true" tabindex="-1"></a>Luego de hacer algunas operaciones, podemos llegar a la expresión:</span>
+<span id="cb24-215"><a href="#cb24-215" aria-hidden="true" tabindex="-1"></a>Odds &gt; 1: es mas probable que el evento ocurra a que no.</span>
 <span id="cb24-216"><a href="#cb24-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-217"><a href="#cb24-217" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$</span>
+<span id="cb24-217"><a href="#cb24-217" aria-hidden="true" tabindex="-1"></a>En nuestro caso:</span>
 <span id="cb24-218"><a href="#cb24-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-219"><a href="#cb24-219" aria-hidden="true" tabindex="-1"></a>El lado izquierdo es el logaritmo de los **odds** y se llama **logit**.</span>
+<span id="cb24-219"><a href="#cb24-219" aria-hidden="true" tabindex="-1"></a>$Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}$</span>
 <span id="cb24-220"><a href="#cb24-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-221"><a href="#cb24-221" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modelo </span></span>
+<span id="cb24-221"><a href="#cb24-221" aria-hidden="true" tabindex="-1"></a>Por cada 191 pacientes con ECV, 200 no la tienen.</span>
 <span id="cb24-222"><a href="#cb24-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-223"><a href="#cb24-223" aria-hidden="true" tabindex="-1"></a>La funcíón <span class="in">`glm()`</span> nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función <span class="in">`lm()`</span> toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. </span>
-<span id="cb24-224"><a href="#cb24-224" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-225"><a href="#cb24-225" aria-hidden="true" tabindex="-1"></a>Algunas familias son:</span>
-<span id="cb24-226"><a href="#cb24-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-227"><a href="#cb24-227" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Binomial*: link=logit</span>
-<span id="cb24-228"><a href="#cb24-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-229"><a href="#cb24-229" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Poisson*: link=log</span>
-<span id="cb24-230"><a href="#cb24-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-231"><a href="#cb24-231" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Gaussiana*: link=identidad</span>
-<span id="cb24-232"><a href="#cb24-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-233"><a href="#cb24-233" aria-hidden="true" tabindex="-1"></a>Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.</span>
-<span id="cb24-234"><a href="#cb24-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-235"><a href="#cb24-235" aria-hidden="true" tabindex="-1"></a>Realizamos un modelo de regresión logística para predecir la supervivencia en función de **wight**, **cholesterol** y **gender**. </span>
-<span id="cb24-236"><a href="#cb24-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-239"><a href="#cb24-239" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-240"><a href="#cb24-240" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo de regresión logística </span></span>
-<span id="cb24-241"><a href="#cb24-241" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train, cardio <span class="sc">~</span> weight <span class="sc">+</span> cholesterol <span class="sc">+</span> gender, <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
-<span id="cb24-242"><a href="#cb24-242" aria-hidden="true" tabindex="-1"></a><span class="co"># veo los resultados</span></span>
-<span id="cb24-243"><a href="#cb24-243" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glm1)</span>
-<span id="cb24-244"><a href="#cb24-244" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(glm1)</span>
-<span id="cb24-245"><a href="#cb24-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb24-223"><a href="#cb24-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-224"><a href="#cb24-224" aria-hidden="true" tabindex="-1"></a>$Logit = \log {\frac{P(x)}{1-P(x)}}= \log Odds$</span>
+<span id="cb24-225"><a href="#cb24-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-226"><a href="#cb24-226" aria-hidden="true" tabindex="-1"></a>1- Escala del predictor lineal</span>
+<span id="cb24-227"><a href="#cb24-227" aria-hidden="true" tabindex="-1"></a>2- Odds</span>
+<span id="cb24-228"><a href="#cb24-228" aria-hidden="true" tabindex="-1"></a>3- Escala de la VR</span>
+<span id="cb24-229"><a href="#cb24-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-230"><a href="#cb24-230" aria-hidden="true" tabindex="-1"></a><span class="al">![Imagen adaptada de la clase de RL de Adriana Perez](rl.png)</span>{}</span>
+<span id="cb24-231"><a href="#cb24-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-232"><a href="#cb24-232" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ahora si modelamos los datos con una Regresión Logística</span></span>
+<span id="cb24-233"><a href="#cb24-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-234"><a href="#cb24-234" aria-hidden="true" tabindex="-1"></a>Para evitar estos problemas, usamos la **función logística**.</span>
+<span id="cb24-235"><a href="#cb24-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-236"><a href="#cb24-236" aria-hidden="true" tabindex="-1"></a>$P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$</span>
+<span id="cb24-237"><a href="#cb24-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-238"><a href="#cb24-238" aria-hidden="true" tabindex="-1"></a>El lado derecho se llama **expit**</span>
+<span id="cb24-239"><a href="#cb24-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-240"><a href="#cb24-240" aria-hidden="true" tabindex="-1"></a>Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado para modelar una probabilidad.</span>
+<span id="cb24-241"><a href="#cb24-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-242"><a href="#cb24-242" aria-hidden="true" tabindex="-1"></a>Luego de hacer algunas operaciones, podemos llegar a la expresión:</span>
+<span id="cb24-243"><a href="#cb24-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-244"><a href="#cb24-244" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$</span>
+<span id="cb24-245"><a href="#cb24-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-246"><a href="#cb24-246" aria-hidden="true" tabindex="-1"></a>El lado izquierdo es el logaritmo de los **odds** y se llama **logit**.</span>
+<span id="cb24-247"><a href="#cb24-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-248"><a href="#cb24-248" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modelo </span></span>
+<span id="cb24-249"><a href="#cb24-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-250"><a href="#cb24-250" aria-hidden="true" tabindex="-1"></a>La funcíón <span class="in">`glm()`</span> nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función <span class="in">`lm()`</span> toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. </span>
+<span id="cb24-251"><a href="#cb24-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-252"><a href="#cb24-252" aria-hidden="true" tabindex="-1"></a>Algunas familias son:</span>
+<span id="cb24-253"><a href="#cb24-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-254"><a href="#cb24-254" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Binomial*: link=logit</span>
+<span id="cb24-255"><a href="#cb24-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-256"><a href="#cb24-256" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Poisson*: link=log</span>
+<span id="cb24-257"><a href="#cb24-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-258"><a href="#cb24-258" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Gaussiana*: link=identidad</span>
+<span id="cb24-259"><a href="#cb24-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-260"><a href="#cb24-260" aria-hidden="true" tabindex="-1"></a>Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.</span>
+<span id="cb24-261"><a href="#cb24-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-262"><a href="#cb24-262" aria-hidden="true" tabindex="-1"></a>Realizamos un modelo de regresión logística para predecir la supervivencia en función de **wight**, **cholesterol** y **gender**. </span>
+<span id="cb24-263"><a href="#cb24-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-266"><a href="#cb24-266" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb24-267"><a href="#cb24-267" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo de regresión logística </span></span>
+<span id="cb24-268"><a href="#cb24-268" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train, cardio <span class="sc">~</span> weight <span class="sc">+</span> cholesterol <span class="sc">+</span> gender, <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
+<span id="cb24-269"><a href="#cb24-269" aria-hidden="true" tabindex="-1"></a><span class="co"># veo los resultados</span></span>
+<span id="cb24-270"><a href="#cb24-270" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glm1)</span>
+<span id="cb24-271"><a href="#cb24-271" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(glm1)</span>
+<span id="cb24-272"><a href="#cb24-272" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
