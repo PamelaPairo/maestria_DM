@@ -1,0 +1,227 @@
+---
+title: "Regresión Logística"
+author: "Pamela Eugenia Pairo"
+lang: es
+format:
+  html:
+    theme: flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+# Cargamos las librerías que vamos a utilizar
+library(tidyverse)
+library(tidymodels)
+library(modelr)
+library(GGally)
+library(pROC)
+library(cowplot)
+library(OneR)
+library(rlang)
+library(caret)
+```
+
+# Presentación de la base de datos
+
+Vamos a trabajar con una base de datos extraída de [Kaggle](https://www.kaggle.com/code/robinreni/cardiovascular-disease-eda-detailed/notebook). Es una base de datos que consiste de 69301 registros de pacientes a los que se les registró 12 caracteristicas asociadas a una enfermedad cardiovascular.
+
+El objetivo de esta clase es utilizar diferentes modelos de regresión logística para predecir la presencia o ausencia de enfermedad cardiovascular (ECV) utilizando los resultados del examen del paciente.
+
+**Descripción de los datos**
+
+- Age: edad del paciente (días)
+- Height: altura del paciente (cm)
+- Weight: peso del paciente (kg)
+- Gender: sexo biológio del paciente 
+- Systolic blood pressure: Presión arterial sistólica
+- Diastolic blood pressure: Presión arterial diastólica
+- Cholesterol: colesterol en sangre del paciente (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)
+- Glucose: glucosa (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)
+- Smoking: fuma/no fuma
+- Alcohol intake: consume alcohol/ no consume alcohol
+- Physical activity; realiza actividad física/ no realiza actividad física
+- Cardiovascular disease: variable target (0:no, 1:si)
+
+```{r}
+df <- read.csv("cardio_train.csv", sep = ";")
+
+colSums(is.na(df))# chequeamos si hay datos faltantes
+```
+
+```{r}
+glimpse(df)
+```
+
+Se genera una muestra de tamaño 1000 con la que se realizaran los análisis y se analiza si hay desbalance en la variable respuesta.
+
+```{r}
+
+df <- df %>% 
+        sample_n(1000)
+
+df %>%
+  group_by(cardio) %>%
+  summarise(cnt = n()) %>%
+  mutate(freq = round(cnt / sum(cnt), 2))
+
+
+
+```
+## Partición de la base de datos
+
+```{r}
+set.seed(2025)
+
+df_split <- initial_split(df,
+                          prop = 0.8)
+
+train<- df_split %>%
+              training()
+
+test <- df_split %>%
+              testing()
+
+# Número de datos en train
+paste0("Total del dataset de entrenamiento: ", nrow(train))
+```
+Analizamos como quedo el balance de clases para `cardio` en cada dataset.
+
+```{r}
+# calculamos la distribución de clase en cada dataset
+train_ <- train %>% 
+  group_by(cardio) %>% 
+  summarise(numero_casos=n()) %>%
+  mutate(prop = round(prop.table(numero_casos)*100,2))
+test_ <- test %>% 
+  group_by(cardio) %>% 
+  summarise(numero_casos=n()) %>%
+  mutate(prop = round(prop.table(numero_casos)*100,2))
+# armamos tabla conjunta para graficar
+distrib = cbind(rbind(train_, test_), dataset = c("train", "train", "test", "test"))
+
+# graficamos las distribuciones
+ggplot(distrib, aes(x = cardio, y = prop, fill = factor(cardio), label = prop)) + 
+         geom_bar(stat="identity", position = "dodge") + facet_wrap(~ dataset) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "", y = "Proporción en %", title = "Proporción de cardio por dataset") + 
+  guides(fill=guide_legend(title="cardio"))+
+  theme_bw() +
+  scale_fill_brewer(palette="Set2")
+```
+
+```{r}
+glimpse(train)
+```
+Seleccioamoslas variables con las que vamos a trabajar y les asignamos el tipo de dato correspondiente.
+
+```{r}
+cols <- c("age", 
+          "height", 
+          "weight", 
+          "gender", 
+          "cholesterol",
+          "gluc",
+          "cardio")
+
+train$gender <- as.factor(train$gender)
+train$cholesterol <- as.factor(train$cholesterol)
+train$gluc <- as.factor(train$gluc)
+
+```
+
+```{r}
+
+# graficamos con ggpairs coloreando por variable a predecir
+
+g <- train %>% 
+        mutate(cardio = factor(cardio)) %>%
+        select(all_of(cols)) %>% 
+        ggpairs(title = "Correlograma de variables",
+                mapping = aes(colour= cardio),
+                progress = FALSE, 
+                lower=list(combo=wrap("facethist", binwidth=0.8))) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+        theme_bw() +
+        scale_fill_brewer(palette="Set2") +
+        scale_color_brewer(palette="Set2")
+g
+```
+
+### Regresión lineal
+
+En este caso estamos modelando la probabilidad de la siguiente manera: 
+
+$P(X)= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
+
+Veamos que tan bueno es el modelo lineal para esto, usando la edad como predictor.
+
+```{r}
+mrl <- train %>% 
+              lm(formula = cardio ~ weight) 
+tdy = mrl %>% tidy() 
+tdy
+mrl %>% glance()
+```
+
+Los estimadores son significativos y el test de significatividad global del modelo también es significativo.
+
+Veamos un gráfico de nuestro modelo.
+
+```{r, echo=FALSE}
+ggplot(train, aes(weight, cardio)) + 
+  geom_point(aes(color=factor(cardio))) +
+  scale_color_brewer(palette = "Set2") + 
+  geom_abline(intercept = tdy$estimate[1], slope = tdy$estimate[2], color='forestgreen', size=2) + 
+  labs(title="Modelo Lineal Simple", color='Clase') +
+  lims(y=c(-1,2))+
+  theme_bw()
+```
+
+Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuo: no existe un punto de corte claro, la predicción podría ser mayor a 1 o menor a cero llegado el caso.
+
+## Recap de Regresión Logística
+
+![Imagen adaptada de la clase de RL de Adriana Perez](rl.png){}
+
+## Ahora si modelamos los datos con una Regresión Logística
+
+Para evitar estos problemas, usamos la **función logística**.
+
+$P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$
+
+El lado derecho se llama **expit**
+
+Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado para modelar una probabilidad.
+
+Luego de hacer algunas operaciones, podemos llegar a la expresión:
+
+$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
+
+El lado izquierdo es el logaritmo de los **odds** y se llama **logit**.
+
+### Modelo 
+
+La funcíón `glm()` nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. 
+
+Algunas familias son:
+
+* *Binomial*: link=logit
+
+* *Poisson*: link=log
+
+* *Gaussiana*: link=identidad
+
+Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.
+
+Realizamos un modelo de regresión logística para predecir la supervivencia en función de **wight**, **cholesterol** y **gender**. 
+
+```{r}
+# modelo de regresión logística 
+glm1 <- glm(data = train, cardio ~ weight + cholesterol + gender, family = 'binomial')
+# veo los resultados
+tidy(glm1)
+glance(glm1)
+```
