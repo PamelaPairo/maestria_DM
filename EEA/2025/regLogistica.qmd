@@ -24,7 +24,7 @@ library(rlang)
 library(caret)
 ```
 
-# Presentación de la base de datos
+# Presentación del caso de estudio
 
 Vamos a trabajar con una base de datos extraída de [Kaggle](https://www.kaggle.com/code/robinreni/cardiovascular-disease-eda-detailed/notebook). Es una base de datos que consiste de 69301 registros de pacientes a los que se les registró 12 caracteristicas asociadas a una enfermedad cardiovascular.
 
@@ -66,9 +66,6 @@ df %>%
   group_by(cardio) %>%
   summarise(cnt = n()) %>%
   mutate(freq = round(cnt / sum(cnt), 2))
-
-
-
 ```
 ## Partición de la base de datos
 
@@ -184,7 +181,7 @@ Parece tener bastantes problemas para estimar la probabilidad de supervivencia d
 
 ## Recap de Regresión Logística
 
-Odds
+### **Odds**
 
 Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.
 
@@ -204,12 +201,34 @@ $Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}$
 
 Por cada 191 pacientes con ECV, 200 no la tienen.
 
+### **Logit**
 
 $Logit = \log {\frac{P(x)}{1-P(x)}}= \log Odds$
 
-1- Escala del predictor lineal
+### **_Odds Ratio_ (OR)**
+
+Es una medida de magnitud de efecto. Si tenemos el siguiente modelo de regresión logística
+
+
+$\log\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1 X$
+
+El odds ratio asociado a la variable $\ X $ es:
+
+$\text{OR} = e^{\beta_1}$
+
+OR = 1 No hay efecto
+
+OR > 1 asociación positiva
+
+OR <1 asociación negativa
+
+### Escalas de análisis
+
+1- Predictor lineal
+
 2- Odds
-3- Escala de la VR
+
+3- Variable respuesta
 
 ![Imagen adaptada de la clase de RL de Adriana Perez](rl.png){}
 
@@ -219,17 +238,13 @@ Para evitar estos problemas, usamos la **función logística**.
 
 $P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$
 
-El lado derecho se llama **expit**
-
 Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado para modelar una probabilidad.
 
 Luego de hacer algunas operaciones, podemos llegar a la expresión:
 
 $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
 
-El lado izquierdo es el logaritmo de los **odds** y se llama **logit**.
-
-### Modelo 
+## Modelo simple
 
 La funcíón `glm()` nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. 
 
@@ -243,12 +258,17 @@ Algunas familias son:
 
 Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.
 
-Realizamos un modelo de regresión logística para predecir la supervivencia en función de **wight**, **cholesterol** y **gender**. 
+Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de **weight**, **age** y **gender**. 
 
 ```{r}
 # modelo de regresión logística 
-glm1 <- glm(data = train, cardio ~ weight + cholesterol + gender, family = 'binomial')
+glm1 <- glm(data = train,
+            cardio ~ weight + age + gender, 
+            family = 'binomial')
+
 # veo los resultados
 tidy(glm1)
 glance(glm1)
 ```
+
+## Modelos multiples
