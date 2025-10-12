@@ -12,6 +12,10 @@ Para mas información de la Maestría visitar el siguiente link: http://datamini
 - [Análisis de Correspondencia Simple y Múltiple](https://pamelapairo.github.io/maestria_DM/AID/AC/AC.html)
 - [Análisis Discriminante](https://pamelapairo.github.io/maestria_DM/AID/AD/analisis_discriminante.html)
 
+## Enfoque Estadístico del Aprendizaje
+
+- [Regresión Logística](https://pamelapairo.github.io/maestria_DM/EEA/2025/regLogistica.html)
+
 ## Aprendizaje Automático
 
 - [Árboles de decisión](https://pamelapairo.github.io/maestria_DM/aprendizaje_automatico/03_practica.html#1)
