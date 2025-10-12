@@ -122,10 +122,13 @@ window.Quarto = {
   <li><a href="#odds-ratio-or" id="toc-odds-ratio-or" class="nav-link" data-scroll-target="#odds-ratio-or"><strong><em>Odds Ratio</em> (OR)</strong></a></li>
   <li><a href="#escalas-de-análisis" id="toc-escalas-de-análisis" class="nav-link" data-scroll-target="#escalas-de-análisis">Escalas de análisis</a></li>
   </ul></li>
-  <li><a href="#ahora-si-modelamos-los-datos-con-una-regresión-logística" id="toc-ahora-si-modelamos-los-datos-con-una-regresión-logística" class="nav-link" data-scroll-target="#ahora-si-modelamos-los-datos-con-una-regresión-logística">Ahora si modelamos los datos con una Regresión Logística</a>
+  <li><a href="#ahora-si-modelamos-los-datos-con-una-regresión-logística" id="toc-ahora-si-modelamos-los-datos-con-una-regresión-logística" class="nav-link" data-scroll-target="#ahora-si-modelamos-los-datos-con-una-regresión-logística">Ahora si modelamos los datos con una Regresión Logística</a></li>
+  <li><a href="#regresión-logística" id="toc-regresión-logística" class="nav-link" data-scroll-target="#regresión-logística">Regresión Logística</a>
   <ul class="collapse">
-  <li><a href="#modelo" id="toc-modelo" class="nav-link" data-scroll-target="#modelo">Modelo</a></li>
+  <li><a href="#interpretación-de-los-coeficientes-del-modelo" id="toc-interpretación-de-los-coeficientes-del-modelo" class="nav-link" data-scroll-target="#interpretación-de-los-coeficientes-del-modelo">Interpretación de los coeficientes del modelo</a></li>
+  <li><a href="#devianza" id="toc-devianza" class="nav-link" data-scroll-target="#devianza">Devianza</a></li>
   </ul></li>
+  <li><a href="#selección-de-modelos" id="toc-selección-de-modelos" class="nav-link" data-scroll-target="#selección-de-modelos">Selección de modelos</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -162,16 +165,17 @@ window.Quarto = {
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargamos las librerías que vamos a utilizar</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelr)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(OneR)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rlang)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">warning =</span> <span class="cn">FALSE</span>, <span class="at">message =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargamos las librerías que vamos a utilizar</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(OneR)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rlang)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="presentación-del-caso-de-estudio" class="level1">
@@ -183,7 +187,7 @@ window.Quarto = {
 <li>Age: edad del paciente (días)</li>
 <li>Height: altura del paciente (cm)</li>
 <li>Weight: peso del paciente (kg)</li>
-<li>Gender: sexo biológio del paciente</li>
+<li>Gender: sexo biológio del paciente (1: mujer, 2:varón)</li>
 <li>Systolic blood pressure: Presión arterial sistólica</li>
 <li>Diastolic blood pressure: Presión arterial diastólica</li>
 <li>Cholesterol: colesterol en sangre del paciente (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)</li>
@@ -248,8 +252,8 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
 <pre><code># A tibble: 2 × 3
   cardio   cnt  freq
    &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
-1      0   473  0.47
-2      1   527  0.53</code></pre>
+1      0   506  0.51
+2      1   494  0.49</code></pre>
 </div>
 </div>
 <section id="partición-de-la-base-de-datos" class="level2">
@@ -316,19 +320,19 @@ $ cardio      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 800
 Columns: 13
-$ id          &lt;int&gt; 56965, 95316, 43402, 73513, 47818, 12697, 15944, 414, 6822…
-$ age         &lt;int&gt; 17762, 19693, 23311, 19549, 21354, 17437, 21171, 19074, 18…
-$ gender      &lt;int&gt; 2, 1, 2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 1…
-$ height      &lt;int&gt; 168, 161, 170, 172, 164, 161, 174, 167, 167, 170, 167, 168…
-$ weight      &lt;dbl&gt; 65.0, 90.0, 85.0, 90.0, 87.0, 81.0, 54.0, 72.0, 63.0, 80.0…
-$ ap_hi       &lt;int&gt; 120, 150, 150, 120, 130, 100, 120, 130, 120, 140, 120, 120…
-$ ap_lo       &lt;int&gt; 80, 90, 90, 80, 80, 70, 80, 80, 80, 90, 70, 80, 90, 80, 80…
-$ cholesterol &lt;int&gt; 1, 1, 1, 1, 1, 1, 2, 1, 2, 3, 1, 1, 2, 1, 1, 3, 1, 1, 1, 1…
-$ gluc        &lt;int&gt; 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1…
-$ smoke       &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0…
-$ alco        &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0…
-$ active      &lt;int&gt; 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1…
-$ cardio      &lt;int&gt; 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0…</code></pre>
+$ id          &lt;int&gt; 64764, 14649, 2592, 56779, 12130, 68921, 40643, 62173, 844…
+$ age         &lt;int&gt; 20168, 21342, 21012, 14597, 19609, 18886, 20989, 16604, 20…
+$ gender      &lt;int&gt; 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 1, 1…
+$ height      &lt;int&gt; 157, 161, 169, 168, 156, 162, 173, 168, 160, 169, 172, 157…
+$ weight      &lt;dbl&gt; 84, 65, 68, 66, 87, 65, 88, 74, 70, 60, 106, 84, 79, 61, 1…
+$ ap_hi       &lt;int&gt; 150, 120, 140, 150, 180, 120, 120, 160, 120, 120, 120, 160…
+$ ap_lo       &lt;int&gt; 1000, 80, 80, 80, 100, 80, 79, 90, 80, 80, 80, 83, 90, 80,…
+$ cholesterol &lt;int&gt; 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 1, 1…
+$ gluc        &lt;int&gt; 3, 1, 3, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1…
+$ smoke       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0…
+$ alco        &lt;int&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0…
+$ active      &lt;int&gt; 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1…
+$ cardio      &lt;int&gt; 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0…</code></pre>
 </div>
 </div>
 <p>Seleccioamoslas variables con las que vamos a trabajar y les asignamos el tipo de dato correspondiente.</p>
@@ -345,7 +349,11 @@ $ cardio      &lt;int&gt; 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>gender)</span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>cholesterol <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>cholesterol)</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>gluc <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>gluc)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>gluc <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>gluc)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(test<span class="sc">$</span>gender)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>cholesterol <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(test<span class="sc">$</span>cholesterol)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>gluc <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(test<span class="sc">$</span>gluc)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -389,10 +397,10 @@ $ cardio      &lt;int&gt; 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
-  term        estimate std.error statistic      p.value
-  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
-1 (Intercept)  0.0174    0.0901      0.193 0.847       
-2 weight       0.00674   0.00118     5.70  0.0000000170</code></pre>
+  term        estimate std.error statistic       p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+1 (Intercept) -0.0288    0.0889     -0.324 0.746        
+2 weight       0.00709   0.00117     6.07  0.00000000202</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -400,19 +408,15 @@ $ cardio      &lt;int&gt; 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 12
-  r.squared adj.r.squared sigma statistic      p.value    df logLik   AIC   BIC
-      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1    0.0391        0.0379 0.490      32.5 0.0000000170     1  -564. 1134. 1148.
+  r.squared adj.r.squared sigma statistic       p.value    df logLik   AIC   BIC
+      &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1    0.0441        0.0429 0.489      36.8 0.00000000202     1  -563. 1131. 1145.
 # ℹ 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
 </div>
 </div>
 <p>Los estimadores son significativos y el test de significatividad global del modelo también es significativo.</p>
 <p>Veamos un gráfico de nuestro modelo.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.</code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -472,8 +476,9 @@ $ cardio      &lt;int&gt; 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 
 <p>Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado para modelar una probabilidad.</p>
 <p>Luego de hacer algunas operaciones, podemos llegar a la expresión:</p>
 <p><span class="math inline">\(\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j\)</span></p>
-<section id="modelo" class="level3">
-<h3 class="anchored" data-anchor-id="modelo">Modelo</h3>
+</section>
+<section id="regresión-logística" class="level2">
+<h2 class="anchored" data-anchor-id="regresión-logística">Regresión Logística</h2>
 <p>La funcíón <code>glm()</code> nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función <code>lm()</code> toma como argumentos una <strong>formula</strong> y los <strong>datos</strong> pero también se debe especificar el argumento <strong>family</strong>: indicamos la distribución del error y la función link que vamos a utilizar en el modelo.</p>
 <p>Algunas familias son:</p>
 <ul>
@@ -483,40 +488,346 @@ $ cardio      &lt;int&gt; 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 
 </ul>
 <p>Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro <strong>family</strong>.</p>
 <p>Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de <strong>weight</strong>, <strong>age</strong> y <strong>gender</strong>.</p>
+<p><span class="math inline">\(\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_2 varón\)</span></p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo de regresión logística </span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train,</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>            cardio <span class="sc">~</span> weight <span class="sc">+</span> age <span class="sc">+</span> gender, </span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"># veo los resultados</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glm1)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo de regresión logística </span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>            cardio <span class="sc">~</span> weight <span class="sc">+</span> gender, </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># veo los resultados</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glm1)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 5
-  term         estimate std.error statistic  p.value
-  &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-1 (Intercept) -5.95     0.765        -7.78  7.50e-15
-2 weight       0.0297   0.00554       5.36  8.14e- 8
-3 age          0.000195 0.0000317     6.14  8.06e-10
-4 gender2      0.0894   0.153         0.584 5.59e- 1</code></pre>
+<pre><code># A tibble: 3 × 5
+  term        estimate std.error statistic      p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
+1 (Intercept)  -2.33     0.411      -5.68  0.0000000138
+2 weight        0.0309   0.00554     5.58  0.0000000243
+3 gender2       0.0885   0.152       0.582 0.560       </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(glm1)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(glm1)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 8
   null.deviance df.null logLik   AIC   BIC deviance df.residual  nobs
           &lt;dbl&gt;   &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;       &lt;int&gt; &lt;int&gt;
-1         1108.     799  -517. 1043. 1062.    1035.         796   800</code></pre>
+1         1109.     799  -536. 1077. 1091.    1071.         797   800</code></pre>
+</div>
+</div>
+<section id="interpretación-de-los-coeficientes-del-modelo" class="level3">
+<h3 class="anchored" data-anchor-id="interpretación-de-los-coeficientes-del-modelo">Interpretación de los coeficientes del modelo</h3>
+<p>Modelo obtenido</p>
+<p><span class="math inline">\(\log {\frac{P(x)}{1-P(x)}}= -1.69 + 0.02* weight + 0.07*varón\)</span></p>
+<p><strong>Peso</strong></p>
+<p>Se espera un aumento de 0.022 unidades en el log de odds por cada aumento de 1kgr en el peso (manteniendo el resto de las variables constantes). La probabilidad de contraer una ECV aumenta con el aumento de peso del paciente.</p>
+<p><span class="math inline">\(\ OR = e^{\beta_{weight}}= e^{0.022}= 1.022\)</span></p>
+<p>Por cada aumento de 1 kgr se estima que el odds de contraer una ECV aumente 2.22%</p>
+<p><strong>Género</strong></p>
+<p><span class="math inline">\(\ Odds_{varón} = {\frac{Prob_{ECV} /varón}{Prob_{noECV}/varón}}\)</span></p>
+<p><span class="math inline">\(\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}\)</span></p>
+<p><span class="math inline">\(\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{0.07}\)</span></p>
+<p>Es decir, si un paciente pertenece a la categoría varón tiene mas probabilidad de contraer una ECV que si pertenece a la categoría mujer. Ser varón es factor de riesgo.</p>
+</section>
+<section id="devianza" class="level3">
+<h3 class="anchored" data-anchor-id="devianza">Devianza</h3>
+<p><span class="math inline">\(\ Devianza Explicada = {\frac{Dev_{mod null} - Dev_{Mod}}{Dev_{mod null}}}\)</span></p>
+<p><span class="math inline">\(\ Devianza Explicada = {\frac{1108.63 - 1083.82}{1108.63}}= 0.02\)</span></p>
+</section>
+</section>
+<section id="selección-de-modelos" class="level2">
+<h2 class="anchored" data-anchor-id="selección-de-modelos">Selección de modelos</h2>
+<p>Se generan la combinación de todos los modelos posibles.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"gender"</span>, <span class="st">"weight"</span>, <span class="st">"cholesterol"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear todas las combinaciones posibles de predictores</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>combs <span class="ot">&lt;-</span> <span class="fu">unlist</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(vars), <span class="cf">function</span>(i) <span class="fu">combn</span>(vars, i, <span class="at">simplify =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">recursive =</span> <span class="cn">FALSE</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear una lista de fórmulas</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>formulas <span class="ot">&lt;-</span> <span class="fu">map</span>(combs, <span class="sc">~</span> <span class="fu">reformulate</span>(<span class="at">termlabels =</span> .x, <span class="at">response =</span> <span class="st">"cardio"</span>))</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>formulas</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+cardio ~ gender
+&lt;environment: 0x0000029479b19c10&gt;
+
+[[2]]
+cardio ~ weight
+&lt;environment: 0x0000029479c5ee40&gt;
+
+[[3]]
+cardio ~ cholesterol
+&lt;environment: 0x000002947c72db18&gt;
+
+[[4]]
+cardio ~ gender + weight
+&lt;environment: 0x000002947c710d88&gt;
+
+[[5]]
+cardio ~ gender + cholesterol
+&lt;environment: 0x000002947c654b88&gt;
+
+[[6]]
+cardio ~ weight + cholesterol
+&lt;environment: 0x000002947c57bbc8&gt;
+
+[[7]]
+cardio ~ gender + weight + cholesterol
+&lt;environment: 0x000002947c564b50&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>modelos <span class="ot">&lt;-</span> <span class="fu">map</span>(formulas, <span class="sc">~</span> <span class="fu">glm</span>(.x, <span class="at">data =</span> train, <span class="at">family =</span> binomial))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>resultados <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">map_chr</span>(formulas, format),</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">deviance =</span> <span class="fu">map_dbl</span>(modelos, <span class="sc">~</span> .<span class="sc">$</span>deviance),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">null_deviance =</span> <span class="fu">map_dbl</span>(modelos, <span class="sc">~</span> .<span class="sc">$</span>null.deviance),</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">AIC =</span> <span class="fu">map_dbl</span>(modelos, AIC)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dev_explicada =</span> <span class="dv">1</span> <span class="sc">-</span> deviance <span class="sc">/</span> null_deviance)<span class="sc">%&gt;%</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dev_explicada))</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>resultados</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 5
+  formula                             deviance null_deviance   AIC dev_explicada
+  &lt;chr&gt;                                  &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;
+1 cardio ~ gender + weight + cholest…    1036.         1109. 1046.       0.0655 
+2 cardio ~ weight + cholesterol          1037.         1109. 1045.       0.0649 
+3 cardio ~ gender + cholesterol          1060.         1109. 1068.       0.0438 
+4 cardio ~ cholesterol                   1064.         1109. 1070.       0.0409 
+5 cardio ~ gender + weight               1071.         1109. 1077.       0.0339 
+6 cardio ~ weight                        1072.         1109. 1076.       0.0336 
+7 cardio ~ gender                        1106.         1109. 1110.       0.00255</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Añadir las predicciones</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>prediction_full <span class="ot">&lt;-</span> <span class="fu">map2</span>(modelos, formulas, <span class="sc">~</span> {</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.fitted =</span> <span class="fu">predict</span>(.x, <span class="at">newdata =</span> test, <span class="at">type =</span> <span class="st">"response"</span>),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">cardio =</span> test<span class="sc">$</span>cardio</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>roc_df <span class="ot">&lt;-</span> <span class="fu">map2_dfr</span>(modelos, resultados<span class="sc">$</span>formula, <span class="sc">~</span> {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  roc_obj <span class="ot">&lt;-</span> <span class="fu">roc</span>(train<span class="sc">$</span>cardio, <span class="fu">predict</span>(.x, <span class="at">type =</span> <span class="st">"response"</span>))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">tpr =</span> roc_obj<span class="sc">$</span>sensitivities,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">fpr =</span> <span class="dv">1</span> <span class="sc">-</span> roc_obj<span class="sc">$</span>specificities,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula =</span> .y</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(roc_df, <span class="fu">aes</span>(<span class="at">x =</span> fpr, <span class="at">y =</span> tpr, <span class="at">color =</span> formula)) <span class="sc">+</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"1 - Especificidad"</span>, <span class="at">y =</span> <span class="st">"Sensibilidad"</span>, <span class="at">title =</span> <span class="st">"Curvas ROC de todos los modelos"</span>) <span class="sc">+</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regLogistica_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>auc_values <span class="ot">&lt;-</span> <span class="fu">map_dbl</span>(modelos, <span class="sc">~</span> <span class="fu">auc</span>(<span class="fu">roc</span>(train<span class="sc">$</span>cardio, <span class="fu">predict</span>(.x, <span class="at">type =</span> <span class="st">"response"</span>))))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>resultados <span class="ot">&lt;-</span> resultados <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">AUC =</span> auc_values)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>resultados</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 6
+  formula                       deviance null_deviance   AIC dev_explicada   AUC
+  &lt;chr&gt;                            &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;
+1 cardio ~ gender + weight + c…    1036.         1109. 1046.       0.0655  0.529
+2 cardio ~ weight + cholesterol    1037.         1109. 1045.       0.0649  0.617
+3 cardio ~ gender + cholesterol    1060.         1109. 1068.       0.0438  0.604
+4 cardio ~ cholesterol             1064.         1109. 1070.       0.0409  0.618
+5 cardio ~ gender + weight         1071.         1109. 1077.       0.0339  0.624
+6 cardio ~ weight                  1072.         1109. 1076.       0.0336  0.663
+7 cardio ~ gender                  1106.         1109. 1110.       0.00255 0.664</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Supongamos que 'mejor_modelo'</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>best_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>            cardio <span class="sc">~</span> weight <span class="sc">+</span> gender<span class="sc">+</span> active, </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>test_model <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.fitted =</span> <span class="fu">predict</span>(best_model, <span class="at">newdata =</span> test, <span class="at">type =</span> <span class="st">"response"</span>),</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cardio =</span> test<span class="sc">$</span>cardio</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>prediction_metrics <span class="ot">&lt;-</span> <span class="cf">function</span>(cutoff, predictions) {</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  tab <span class="ot">&lt;-</span> predictions <span class="sc">%&gt;%</span> </span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">predicted_class =</span> <span class="fu">factor</span>(<span class="fu">if_else</span>(.fitted <span class="sc">&gt;</span> cutoff, <span class="dv">1</span>, <span class="dv">0</span>), <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>           <span class="at">cardio =</span> <span class="fu">factor</span>(cardio, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)))</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(tab<span class="sc">$</span>predicted_class, tab<span class="sc">$</span>cardio, <span class="at">positive =</span> <span class="st">"1"</span>)</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(cm) <span class="sc">%&gt;%</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(term, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'accuracy'</span>,<span class="st">'sensitivity'</span>,<span class="st">'specificity'</span>,<span class="st">'precision'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">cutoff =</span> cutoff)</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>cutoffs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>metricas_df <span class="ot">&lt;-</span> <span class="fu">map_df</span>(cutoffs, <span class="sc">~</span> <span class="fu">prediction_metrics</span>(.x, <span class="at">predictions =</span> test_model)) <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> <span class="fu">as.factor</span>(term), <span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">3</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(metricas_df, <span class="fu">aes</span>(<span class="at">x =</span> cutoff, <span class="at">y =</span> estimate, <span class="at">color =</span> term, <span class="at">group =</span> term)) <span class="sc">+</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Accuracy, Sensitivity, Specificity y Precision vs Cutoff"</span>,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Punto de corte"</span>,</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Valor de la métrica"</span>,</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Métrica"</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regLogistica_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>sel_cutoff <span class="ot">=</span> <span class="fl">0.48</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># calculamos las predicciones sobre el dataset de train</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>table_train <span class="ot">=</span> <span class="fu">augment</span>(<span class="at">x =</span> best_model, <span class="at">type.predict=</span><span class="st">'response'</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Clasificamos utilizamos el punto de corte</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>table_train <span class="ot">=</span> table_train <span class="sc">%&gt;%</span> </span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">predicted_class =</span> <span class="fu">if_else</span>(.fitted<span class="sc">&gt;</span>sel_cutoff, <span class="dv">1</span>, <span class="dv">0</span>) <span class="sc">%&gt;%</span> <span class="fu">as.factor</span>(), </span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">cardio =</span> <span class="fu">factor</span>(cardio))</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos la matriz de confusión</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">table</span>(table_train<span class="sc">$</span>predicted_class, table_train<span class="sc">$</span>cardio), <span class="at">positive =</span> <span class="st">"1"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+   
+      0   1
+  0 229 155
+  1 171 245
+                                          
+               Accuracy : 0.5925          
+                 95% CI : (0.5575, 0.6268)
+    No Information Rate : 0.5             
+    P-Value [Acc &gt; NIR] : 9.366e-08       
+                                          
+                  Kappa : 0.185           
+                                          
+ Mcnemar's Test P-Value : 0.4061          
+                                          
+            Sensitivity : 0.6125          
+            Specificity : 0.5725          
+         Pos Pred Value : 0.5889          
+         Neg Pred Value : 0.5964          
+             Prevalence : 0.5000          
+         Detection Rate : 0.3063          
+   Detection Prevalence : 0.5200          
+      Balanced Accuracy : 0.5925          
+                                          
+       'Positive' Class : 1               
+                                          </code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregamos la predicciones al dataset de testeo</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>table_test <span class="ot">=</span> <span class="fu">augment</span>(<span class="at">x =</span> best_model, <span class="at">newdata=</span>test, <span class="at">type.predict=</span><span class="st">'response'</span>) </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Clasificamos utilizamos el punto de corte</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>table_test <span class="ot">=</span> table_test <span class="sc">%&gt;%</span> </span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">predicted_class =</span> <span class="fu">if_else</span>(.fitted<span class="sc">&gt;</span>sel_cutoff, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos la matriz de confusión</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">table</span>(table_test<span class="sc">$</span>predicted_class, table_test<span class="sc">$</span>cardio), <span class="at">positive =</span> <span class="st">"1"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+   
+     0  1
+  0 71 43
+  1 35 51
+                                         
+               Accuracy : 0.61           
+                 95% CI : (0.5387, 0.678)
+    No Information Rate : 0.53           
+    P-Value [Acc &gt; NIR] : 0.01373        
+                                         
+                  Kappa : 0.2134         
+                                         
+ Mcnemar's Test P-Value : 0.42801        
+                                         
+            Sensitivity : 0.5426         
+            Specificity : 0.6698         
+         Pos Pred Value : 0.5930         
+         Neg Pred Value : 0.6228         
+             Prevalence : 0.4700         
+         Detection Rate : 0.2550         
+   Detection Prevalence : 0.4300         
+      Balanced Accuracy : 0.6062         
+                                         
+       'Positive' Class : 1              
+                                         </code></pre>
 </div>
 </div>
 <!-- -->
 
-</section>
 </section>
 </section>
 
@@ -993,276 +1304,465 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb24" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Regresión Logística"</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela Eugenia Pairo"</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: flatly</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=TRUE, message=FALSE, warning=FALSE}</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="in"># Cargamos las librerías que vamos a utilizar</span></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidymodels)</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(modelr)</span></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="in">library(GGally)</span></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="in">library(pROC)</span></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="in">library(cowplot)</span></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a><span class="in">library(OneR)</span></span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="in">library(rlang)</span></span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="in">library(caret)</span></span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a><span class="fu"># Presentación del caso de estudio</span></span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>Vamos a trabajar con una base de datos extraída de <span class="co">[</span><span class="ot">Kaggle</span><span class="co">](https://www.kaggle.com/code/robinreni/cardiovascular-disease-eda-detailed/notebook)</span>. Es una base de datos que consiste de 69301 registros de pacientes a los que se les registró 12 caracteristicas asociadas a una enfermedad cardiovascular.</span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>El objetivo de esta clase es utilizar diferentes modelos de regresión logística para predecir la presencia o ausencia de enfermedad cardiovascular (ECV) utilizando los resultados del examen del paciente.</span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>**Descripción de los datos**</span>
-<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Age: edad del paciente (días)</span>
-<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Height: altura del paciente (cm)</span>
-<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Weight: peso del paciente (kg)</span>
-<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Gender: sexo biológio del paciente </span>
-<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Systolic blood pressure: Presión arterial sistólica</span>
-<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Diastolic blood pressure: Presión arterial diastólica</span>
-<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cholesterol: colesterol en sangre del paciente (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)</span>
-<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Glucose: glucosa (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)</span>
-<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Smoking: fuma/no fuma</span>
-<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Alcohol intake: consume alcohol/ no consume alcohol</span>
-<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Physical activity; realiza actividad física/ no realiza actividad física</span>
-<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cardiovascular disease: variable target (0:no, 1:si)</span>
-<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"cardio_train.csv"</span>, <span class="at">sep =</span> <span class="st">";"</span>)</span>
-<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(df))<span class="co"># chequeamos si hay datos faltantes</span></span>
-<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span>
-<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a>Se genera una muestra de tamaño 1000 con la que se realizaran los análisis y se analiza si hay desbalance en la variable respuesta.</span>
-<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-66"><a href="#cb24-66" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-67"><a href="#cb24-67" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
-<span id="cb24-68"><a href="#cb24-68" aria-hidden="true" tabindex="-1"></a>        <span class="fu">sample_n</span>(<span class="dv">1000</span>)</span>
-<span id="cb24-69"><a href="#cb24-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-70"><a href="#cb24-70" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
-<span id="cb24-71"><a href="#cb24-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cardio) <span class="sc">%&gt;%</span></span>
-<span id="cb24-72"><a href="#cb24-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">cnt =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb24-73"><a href="#cb24-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">freq =</span> <span class="fu">round</span>(cnt <span class="sc">/</span> <span class="fu">sum</span>(cnt), <span class="dv">2</span>))</span>
-<span id="cb24-74"><a href="#cb24-74" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-75"><a href="#cb24-75" aria-hidden="true" tabindex="-1"></a><span class="fu">## Partición de la base de datos</span></span>
-<span id="cb24-76"><a href="#cb24-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-79"><a href="#cb24-79" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-80"><a href="#cb24-80" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2025</span>)</span>
-<span id="cb24-81"><a href="#cb24-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-82"><a href="#cb24-82" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df,</span>
-<span id="cb24-83"><a href="#cb24-83" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
-<span id="cb24-84"><a href="#cb24-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-85"><a href="#cb24-85" aria-hidden="true" tabindex="-1"></a>train<span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
-<span id="cb24-86"><a href="#cb24-86" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
-<span id="cb24-87"><a href="#cb24-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-88"><a href="#cb24-88" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
-<span id="cb24-89"><a href="#cb24-89" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
-<span id="cb24-90"><a href="#cb24-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-91"><a href="#cb24-91" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en train</span></span>
-<span id="cb24-92"><a href="#cb24-92" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(train))</span>
-<span id="cb24-93"><a href="#cb24-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-94"><a href="#cb24-94" aria-hidden="true" tabindex="-1"></a>Analizamos como quedo el balance de clases para <span class="in">`cardio`</span> en cada dataset.</span>
-<span id="cb24-95"><a href="#cb24-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-98"><a href="#cb24-98" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-99"><a href="#cb24-99" aria-hidden="true" tabindex="-1"></a><span class="co"># calculamos la distribución de clase en cada dataset</span></span>
-<span id="cb24-100"><a href="#cb24-100" aria-hidden="true" tabindex="-1"></a>train_ <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span> </span>
-<span id="cb24-101"><a href="#cb24-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cardio) <span class="sc">%&gt;%</span> </span>
-<span id="cb24-102"><a href="#cb24-102" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">numero_casos=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb24-103"><a href="#cb24-103" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> <span class="fu">round</span>(<span class="fu">prop.table</span>(numero_casos)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">2</span>))</span>
-<span id="cb24-104"><a href="#cb24-104" aria-hidden="true" tabindex="-1"></a>test_ <span class="ot">&lt;-</span> test <span class="sc">%&gt;%</span> </span>
-<span id="cb24-105"><a href="#cb24-105" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cardio) <span class="sc">%&gt;%</span> </span>
-<span id="cb24-106"><a href="#cb24-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">numero_casos=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb24-107"><a href="#cb24-107" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> <span class="fu">round</span>(<span class="fu">prop.table</span>(numero_casos)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">2</span>))</span>
-<span id="cb24-108"><a href="#cb24-108" aria-hidden="true" tabindex="-1"></a><span class="co"># armamos tabla conjunta para graficar</span></span>
-<span id="cb24-109"><a href="#cb24-109" aria-hidden="true" tabindex="-1"></a>distrib <span class="ot">=</span> <span class="fu">cbind</span>(<span class="fu">rbind</span>(train_, test_), <span class="at">dataset =</span> <span class="fu">c</span>(<span class="st">"train"</span>, <span class="st">"train"</span>, <span class="st">"test"</span>, <span class="st">"test"</span>))</span>
-<span id="cb24-110"><a href="#cb24-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-111"><a href="#cb24-111" aria-hidden="true" tabindex="-1"></a><span class="co"># graficamos las distribuciones</span></span>
-<span id="cb24-112"><a href="#cb24-112" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(distrib, <span class="fu">aes</span>(<span class="at">x =</span> cardio, <span class="at">y =</span> prop, <span class="at">fill =</span> <span class="fu">factor</span>(cardio), <span class="at">label =</span> prop)) <span class="sc">+</span> </span>
-<span id="cb24-113"><a href="#cb24-113" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="sc">~</span> dataset) <span class="sc">+</span></span>
-<span id="cb24-114"><a href="#cb24-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb24-115"><a href="#cb24-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Proporción en %"</span>, <span class="at">title =</span> <span class="st">"Proporción de cardio por dataset"</span>) <span class="sc">+</span> </span>
-<span id="cb24-116"><a href="#cb24-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"cardio"</span>))<span class="sc">+</span></span>
-<span id="cb24-117"><a href="#cb24-117" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb24-118"><a href="#cb24-118" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Set2"</span>)</span>
-<span id="cb24-119"><a href="#cb24-119" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-120"><a href="#cb24-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-123"><a href="#cb24-123" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-124"><a href="#cb24-124" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(train)</span>
-<span id="cb24-125"><a href="#cb24-125" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-126"><a href="#cb24-126" aria-hidden="true" tabindex="-1"></a>Seleccioamoslas variables con las que vamos a trabajar y les asignamos el tipo de dato correspondiente.</span>
-<span id="cb24-127"><a href="#cb24-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-130"><a href="#cb24-130" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-131"><a href="#cb24-131" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"age"</span>, </span>
-<span id="cb24-132"><a href="#cb24-132" aria-hidden="true" tabindex="-1"></a>          <span class="st">"height"</span>, </span>
-<span id="cb24-133"><a href="#cb24-133" aria-hidden="true" tabindex="-1"></a>          <span class="st">"weight"</span>, </span>
-<span id="cb24-134"><a href="#cb24-134" aria-hidden="true" tabindex="-1"></a>          <span class="st">"gender"</span>, </span>
-<span id="cb24-135"><a href="#cb24-135" aria-hidden="true" tabindex="-1"></a>          <span class="st">"cholesterol"</span>,</span>
-<span id="cb24-136"><a href="#cb24-136" aria-hidden="true" tabindex="-1"></a>          <span class="st">"gluc"</span>,</span>
-<span id="cb24-137"><a href="#cb24-137" aria-hidden="true" tabindex="-1"></a>          <span class="st">"cardio"</span>)</span>
-<span id="cb24-138"><a href="#cb24-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-139"><a href="#cb24-139" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>gender)</span>
-<span id="cb24-140"><a href="#cb24-140" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>cholesterol <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>cholesterol)</span>
-<span id="cb24-141"><a href="#cb24-141" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>gluc <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>gluc)</span>
-<span id="cb24-142"><a href="#cb24-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-143"><a href="#cb24-143" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-144"><a href="#cb24-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-147"><a href="#cb24-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-148"><a href="#cb24-148" aria-hidden="true" tabindex="-1"></a><span class="co"># graficamos con ggpairs coloreando por variable a predecir</span></span>
-<span id="cb24-149"><a href="#cb24-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-150"><a href="#cb24-150" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span> </span>
-<span id="cb24-151"><a href="#cb24-151" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">cardio =</span> <span class="fu">factor</span>(cardio)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-152"><a href="#cb24-152" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="fu">all_of</span>(cols)) <span class="sc">%&gt;%</span> </span>
-<span id="cb24-153"><a href="#cb24-153" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggpairs</span>(<span class="at">title =</span> <span class="st">"Correlograma de variables"</span>,</span>
-<span id="cb24-154"><a href="#cb24-154" aria-hidden="true" tabindex="-1"></a>                <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">colour=</span> cardio),</span>
-<span id="cb24-155"><a href="#cb24-155" aria-hidden="true" tabindex="-1"></a>                <span class="at">progress =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb24-156"><a href="#cb24-156" aria-hidden="true" tabindex="-1"></a>                <span class="at">lower=</span><span class="fu">list</span>(<span class="at">combo=</span><span class="fu">wrap</span>(<span class="st">"facethist"</span>, <span class="at">binwidth=</span><span class="fl">0.8</span>))) <span class="sc">+</span></span>
-<span id="cb24-157"><a href="#cb24-157" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span> </span>
-<span id="cb24-158"><a href="#cb24-158" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb24-159"><a href="#cb24-159" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Set2"</span>) <span class="sc">+</span></span>
-<span id="cb24-160"><a href="#cb24-160" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_brewer</span>(<span class="at">palette=</span><span class="st">"Set2"</span>)</span>
-<span id="cb24-161"><a href="#cb24-161" aria-hidden="true" tabindex="-1"></a>g</span>
-<span id="cb24-162"><a href="#cb24-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-163"><a href="#cb24-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-164"><a href="#cb24-164" aria-hidden="true" tabindex="-1"></a><span class="fu">### Regresión lineal</span></span>
-<span id="cb24-165"><a href="#cb24-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-166"><a href="#cb24-166" aria-hidden="true" tabindex="-1"></a>En este caso estamos modelando la probabilidad de la siguiente manera: </span>
-<span id="cb24-167"><a href="#cb24-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-168"><a href="#cb24-168" aria-hidden="true" tabindex="-1"></a>$P(X)= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$</span>
-<span id="cb24-169"><a href="#cb24-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-170"><a href="#cb24-170" aria-hidden="true" tabindex="-1"></a>Veamos que tan bueno es el modelo lineal para esto, usando la edad como predictor.</span>
-<span id="cb24-171"><a href="#cb24-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-174"><a href="#cb24-174" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-175"><a href="#cb24-175" aria-hidden="true" tabindex="-1"></a>mrl <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span> </span>
-<span id="cb24-176"><a href="#cb24-176" aria-hidden="true" tabindex="-1"></a>              <span class="fu">lm</span>(<span class="at">formula =</span> cardio <span class="sc">~</span> weight) </span>
-<span id="cb24-177"><a href="#cb24-177" aria-hidden="true" tabindex="-1"></a>tdy <span class="ot">=</span> mrl <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() </span>
-<span id="cb24-178"><a href="#cb24-178" aria-hidden="true" tabindex="-1"></a>tdy</span>
-<span id="cb24-179"><a href="#cb24-179" aria-hidden="true" tabindex="-1"></a>mrl <span class="sc">%&gt;%</span> <span class="fu">glance</span>()</span>
-<span id="cb24-180"><a href="#cb24-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-181"><a href="#cb24-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-182"><a href="#cb24-182" aria-hidden="true" tabindex="-1"></a>Los estimadores son significativos y el test de significatividad global del modelo también es significativo.</span>
-<span id="cb24-183"><a href="#cb24-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-184"><a href="#cb24-184" aria-hidden="true" tabindex="-1"></a>Veamos un gráfico de nuestro modelo.</span>
-<span id="cb24-185"><a href="#cb24-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-186"><a href="#cb24-186" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=FALSE}</span></span>
-<span id="cb24-187"><a href="#cb24-187" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(train, aes(weight, cardio)) + </span></span>
-<span id="cb24-188"><a href="#cb24-188" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_point(aes(color=factor(cardio))) +</span></span>
-<span id="cb24-189"><a href="#cb24-189" aria-hidden="true" tabindex="-1"></a><span class="in">  scale_color_brewer(palette = "Set2") + </span></span>
-<span id="cb24-190"><a href="#cb24-190" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_abline(intercept = tdy$estimate[1], slope = tdy$estimate[2], color='forestgreen', size=2) + </span></span>
-<span id="cb24-191"><a href="#cb24-191" aria-hidden="true" tabindex="-1"></a><span class="in">  labs(title="Modelo Lineal Simple", color='Clase') +</span></span>
-<span id="cb24-192"><a href="#cb24-192" aria-hidden="true" tabindex="-1"></a><span class="in">  lims(y=c(-1,2))+</span></span>
-<span id="cb24-193"><a href="#cb24-193" aria-hidden="true" tabindex="-1"></a><span class="in">  theme_bw()</span></span>
-<span id="cb24-194"><a href="#cb24-194" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb24-195"><a href="#cb24-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-196"><a href="#cb24-196" aria-hidden="true" tabindex="-1"></a>Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuo: no existe un punto de corte claro, la predicción podría ser mayor a 1 o menor a cero llegado el caso.</span>
-<span id="cb24-197"><a href="#cb24-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-198"><a href="#cb24-198" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recap de Regresión Logística</span></span>
-<span id="cb24-199"><a href="#cb24-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-200"><a href="#cb24-200" aria-hidden="true" tabindex="-1"></a><span class="fu">### **Odds**</span></span>
-<span id="cb24-201"><a href="#cb24-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-202"><a href="#cb24-202" aria-hidden="true" tabindex="-1"></a>Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.</span>
-<span id="cb24-203"><a href="#cb24-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-204"><a href="#cb24-204" aria-hidden="true" tabindex="-1"></a>$Odds = \frac{P(x)}{1-P(x)}$</span>
-<span id="cb24-205"><a href="#cb24-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-206"><a href="#cb24-206" aria-hidden="true" tabindex="-1"></a>Ej. si _Odds_ es 3 indica que por cada 4 repeticiones del evento se espera que ocurran 3 y que una no ocurra.</span>
-<span id="cb24-207"><a href="#cb24-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-208"><a href="#cb24-208" aria-hidden="true" tabindex="-1"></a>Odds &lt; 1 : es mas probable que no ocurra a que si</span>
-<span id="cb24-209"><a href="#cb24-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-210"><a href="#cb24-210" aria-hidden="true" tabindex="-1"></a>Odds = 1 : equiprobabilidad</span>
-<span id="cb24-211"><a href="#cb24-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-212"><a href="#cb24-212" aria-hidden="true" tabindex="-1"></a>Odds &gt; 1: es mas probable que el evento ocurra a que no.</span>
-<span id="cb24-213"><a href="#cb24-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-214"><a href="#cb24-214" aria-hidden="true" tabindex="-1"></a>En nuestro caso:</span>
-<span id="cb24-215"><a href="#cb24-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-216"><a href="#cb24-216" aria-hidden="true" tabindex="-1"></a>$Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}$</span>
-<span id="cb24-217"><a href="#cb24-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-218"><a href="#cb24-218" aria-hidden="true" tabindex="-1"></a>Por cada 191 pacientes con ECV, 200 no la tienen.</span>
-<span id="cb24-219"><a href="#cb24-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-220"><a href="#cb24-220" aria-hidden="true" tabindex="-1"></a><span class="fu">### **Logit**</span></span>
-<span id="cb24-221"><a href="#cb24-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-222"><a href="#cb24-222" aria-hidden="true" tabindex="-1"></a>$Logit = \log {\frac{P(x)}{1-P(x)}}= \log Odds$</span>
-<span id="cb24-223"><a href="#cb24-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-224"><a href="#cb24-224" aria-hidden="true" tabindex="-1"></a><span class="fu">### **_Odds Ratio_ (OR)**</span></span>
-<span id="cb24-225"><a href="#cb24-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-226"><a href="#cb24-226" aria-hidden="true" tabindex="-1"></a>Es una medida de magnitud de efecto. Si tenemos el siguiente modelo de regresión logística</span>
-<span id="cb24-227"><a href="#cb24-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-228"><a href="#cb24-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-229"><a href="#cb24-229" aria-hidden="true" tabindex="-1"></a>$\log\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1 X$</span>
-<span id="cb24-230"><a href="#cb24-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-231"><a href="#cb24-231" aria-hidden="true" tabindex="-1"></a>El odds ratio asociado a la variable $\ X $ es:</span>
-<span id="cb24-232"><a href="#cb24-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-233"><a href="#cb24-233" aria-hidden="true" tabindex="-1"></a>$\text{OR} = e^{\beta_1}$</span>
-<span id="cb24-234"><a href="#cb24-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-235"><a href="#cb24-235" aria-hidden="true" tabindex="-1"></a>OR = 1 No hay efecto</span>
-<span id="cb24-236"><a href="#cb24-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-237"><a href="#cb24-237" aria-hidden="true" tabindex="-1"></a>OR &gt; 1 asociación positiva</span>
-<span id="cb24-238"><a href="#cb24-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-239"><a href="#cb24-239" aria-hidden="true" tabindex="-1"></a>OR &lt;1 asociación negativa</span>
-<span id="cb24-240"><a href="#cb24-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-241"><a href="#cb24-241" aria-hidden="true" tabindex="-1"></a><span class="fu">### Escalas de análisis</span></span>
-<span id="cb24-242"><a href="#cb24-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-243"><a href="#cb24-243" aria-hidden="true" tabindex="-1"></a>1- Predictor lineal</span>
-<span id="cb24-244"><a href="#cb24-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-245"><a href="#cb24-245" aria-hidden="true" tabindex="-1"></a>2- Odds</span>
-<span id="cb24-246"><a href="#cb24-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-247"><a href="#cb24-247" aria-hidden="true" tabindex="-1"></a>3- Variable respuesta</span>
-<span id="cb24-248"><a href="#cb24-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-249"><a href="#cb24-249" aria-hidden="true" tabindex="-1"></a><span class="al">![Imagen adaptada de la clase de RL de Adriana Perez](rl.png)</span>{}</span>
-<span id="cb24-250"><a href="#cb24-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-251"><a href="#cb24-251" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ahora si modelamos los datos con una Regresión Logística</span></span>
-<span id="cb24-252"><a href="#cb24-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-253"><a href="#cb24-253" aria-hidden="true" tabindex="-1"></a>Para evitar estos problemas, usamos la **función logística**.</span>
-<span id="cb24-254"><a href="#cb24-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-255"><a href="#cb24-255" aria-hidden="true" tabindex="-1"></a>$P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$</span>
-<span id="cb24-256"><a href="#cb24-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-257"><a href="#cb24-257" aria-hidden="true" tabindex="-1"></a>Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado para modelar una probabilidad.</span>
-<span id="cb24-258"><a href="#cb24-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-259"><a href="#cb24-259" aria-hidden="true" tabindex="-1"></a>Luego de hacer algunas operaciones, podemos llegar a la expresión:</span>
-<span id="cb24-260"><a href="#cb24-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-261"><a href="#cb24-261" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$</span>
-<span id="cb24-262"><a href="#cb24-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-263"><a href="#cb24-263" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modelo </span></span>
-<span id="cb24-264"><a href="#cb24-264" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-265"><a href="#cb24-265" aria-hidden="true" tabindex="-1"></a>La funcíón <span class="in">`glm()`</span> nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función <span class="in">`lm()`</span> toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. </span>
-<span id="cb24-266"><a href="#cb24-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-267"><a href="#cb24-267" aria-hidden="true" tabindex="-1"></a>Algunas familias son:</span>
-<span id="cb24-268"><a href="#cb24-268" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-269"><a href="#cb24-269" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Binomial*: link=logit</span>
-<span id="cb24-270"><a href="#cb24-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-271"><a href="#cb24-271" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Poisson*: link=log</span>
-<span id="cb24-272"><a href="#cb24-272" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-273"><a href="#cb24-273" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Gaussiana*: link=identidad</span>
-<span id="cb24-274"><a href="#cb24-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-275"><a href="#cb24-275" aria-hidden="true" tabindex="-1"></a>Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.</span>
-<span id="cb24-276"><a href="#cb24-276" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-277"><a href="#cb24-277" aria-hidden="true" tabindex="-1"></a>Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de **weight**, **age** y **gender**. </span>
-<span id="cb24-278"><a href="#cb24-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-281"><a href="#cb24-281" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb24-282"><a href="#cb24-282" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo de regresión logística </span></span>
-<span id="cb24-283"><a href="#cb24-283" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train,</span>
-<span id="cb24-284"><a href="#cb24-284" aria-hidden="true" tabindex="-1"></a>            cardio <span class="sc">~</span> weight <span class="sc">+</span> age <span class="sc">+</span> gender, </span>
-<span id="cb24-285"><a href="#cb24-285" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
-<span id="cb24-286"><a href="#cb24-286" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-287"><a href="#cb24-287" aria-hidden="true" tabindex="-1"></a><span class="co"># veo los resultados</span></span>
-<span id="cb24-288"><a href="#cb24-288" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glm1)</span>
-<span id="cb24-289"><a href="#cb24-289" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(glm1)</span>
-<span id="cb24-290"><a href="#cb24-290" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb39" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Regresión Logística"</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela Eugenia Pairo"</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: flatly</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=TRUE, message=FALSE, warning=FALSE}</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = FALSE, message = FALSE)</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a><span class="in"># Cargamos las librerías que vamos a utilizar</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidymodels)</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a><span class="in">library(modelr)</span></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a><span class="in">library(GGally)</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a><span class="in">library(pROC)</span></span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a><span class="in">library(cowplot)</span></span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a><span class="in">library(OneR)</span></span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a><span class="in">library(rlang)</span></span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a><span class="in">library(caret)</span></span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a><span class="fu"># Presentación del caso de estudio</span></span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>Vamos a trabajar con una base de datos extraída de <span class="co">[</span><span class="ot">Kaggle</span><span class="co">](https://www.kaggle.com/code/robinreni/cardiovascular-disease-eda-detailed/notebook)</span>. Es una base de datos que consiste de 69301 registros de pacientes a los que se les registró 12 caracteristicas asociadas a una enfermedad cardiovascular.</span>
+<span id="cb39-31"><a href="#cb39-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-32"><a href="#cb39-32" aria-hidden="true" tabindex="-1"></a>El objetivo de esta clase es utilizar diferentes modelos de regresión logística para predecir la presencia o ausencia de enfermedad cardiovascular (ECV) utilizando los resultados del examen del paciente.</span>
+<span id="cb39-33"><a href="#cb39-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-34"><a href="#cb39-34" aria-hidden="true" tabindex="-1"></a>**Descripción de los datos**</span>
+<span id="cb39-35"><a href="#cb39-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-36"><a href="#cb39-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Age: edad del paciente (días)</span>
+<span id="cb39-37"><a href="#cb39-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Height: altura del paciente (cm)</span>
+<span id="cb39-38"><a href="#cb39-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Weight: peso del paciente (kg)</span>
+<span id="cb39-39"><a href="#cb39-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Gender: sexo biológio del paciente (1: mujer, 2:varón)</span>
+<span id="cb39-40"><a href="#cb39-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Systolic blood pressure: Presión arterial sistólica</span>
+<span id="cb39-41"><a href="#cb39-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Diastolic blood pressure: Presión arterial diastólica</span>
+<span id="cb39-42"><a href="#cb39-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cholesterol: colesterol en sangre del paciente (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)</span>
+<span id="cb39-43"><a href="#cb39-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Glucose: glucosa (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)</span>
+<span id="cb39-44"><a href="#cb39-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Smoking: fuma/no fuma</span>
+<span id="cb39-45"><a href="#cb39-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Alcohol intake: consume alcohol/ no consume alcohol</span>
+<span id="cb39-46"><a href="#cb39-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Physical activity; realiza actividad física/ no realiza actividad física</span>
+<span id="cb39-47"><a href="#cb39-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cardiovascular disease: variable target (0:no, 1:si)</span>
+<span id="cb39-48"><a href="#cb39-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-51"><a href="#cb39-51" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-52"><a href="#cb39-52" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"cardio_train.csv"</span>, <span class="at">sep =</span> <span class="st">";"</span>)</span>
+<span id="cb39-53"><a href="#cb39-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-54"><a href="#cb39-54" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(df))<span class="co"># chequeamos si hay datos faltantes</span></span>
+<span id="cb39-55"><a href="#cb39-55" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-56"><a href="#cb39-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-59"><a href="#cb39-59" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-60"><a href="#cb39-60" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span>
+<span id="cb39-61"><a href="#cb39-61" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-62"><a href="#cb39-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-63"><a href="#cb39-63" aria-hidden="true" tabindex="-1"></a>Se genera una muestra de tamaño 1000 con la que se realizaran los análisis y se analiza si hay desbalance en la variable respuesta.</span>
+<span id="cb39-64"><a href="#cb39-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-67"><a href="#cb39-67" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-68"><a href="#cb39-68" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb39-69"><a href="#cb39-69" aria-hidden="true" tabindex="-1"></a>        <span class="fu">sample_n</span>(<span class="dv">1000</span>)</span>
+<span id="cb39-70"><a href="#cb39-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-71"><a href="#cb39-71" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb39-72"><a href="#cb39-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cardio) <span class="sc">%&gt;%</span></span>
+<span id="cb39-73"><a href="#cb39-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">cnt =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb39-74"><a href="#cb39-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">freq =</span> <span class="fu">round</span>(cnt <span class="sc">/</span> <span class="fu">sum</span>(cnt), <span class="dv">2</span>))</span>
+<span id="cb39-75"><a href="#cb39-75" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-76"><a href="#cb39-76" aria-hidden="true" tabindex="-1"></a><span class="fu">## Partición de la base de datos</span></span>
+<span id="cb39-77"><a href="#cb39-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-80"><a href="#cb39-80" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-81"><a href="#cb39-81" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2025</span>)</span>
+<span id="cb39-82"><a href="#cb39-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-83"><a href="#cb39-83" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df,</span>
+<span id="cb39-84"><a href="#cb39-84" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb39-85"><a href="#cb39-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-86"><a href="#cb39-86" aria-hidden="true" tabindex="-1"></a>train<span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb39-87"><a href="#cb39-87" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb39-88"><a href="#cb39-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-89"><a href="#cb39-89" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb39-90"><a href="#cb39-90" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb39-91"><a href="#cb39-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-92"><a href="#cb39-92" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de datos en train</span></span>
+<span id="cb39-93"><a href="#cb39-93" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Total del dataset de entrenamiento: "</span>, <span class="fu">nrow</span>(train))</span>
+<span id="cb39-94"><a href="#cb39-94" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-95"><a href="#cb39-95" aria-hidden="true" tabindex="-1"></a>Analizamos como quedo el balance de clases para <span class="in">`cardio`</span> en cada dataset.</span>
+<span id="cb39-96"><a href="#cb39-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-99"><a href="#cb39-99" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-100"><a href="#cb39-100" aria-hidden="true" tabindex="-1"></a><span class="co"># calculamos la distribución de clase en cada dataset</span></span>
+<span id="cb39-101"><a href="#cb39-101" aria-hidden="true" tabindex="-1"></a>train_ <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span> </span>
+<span id="cb39-102"><a href="#cb39-102" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cardio) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-103"><a href="#cb39-103" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">numero_casos=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb39-104"><a href="#cb39-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> <span class="fu">round</span>(<span class="fu">prop.table</span>(numero_casos)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">2</span>))</span>
+<span id="cb39-105"><a href="#cb39-105" aria-hidden="true" tabindex="-1"></a>test_ <span class="ot">&lt;-</span> test <span class="sc">%&gt;%</span> </span>
+<span id="cb39-106"><a href="#cb39-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cardio) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-107"><a href="#cb39-107" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">numero_casos=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb39-108"><a href="#cb39-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> <span class="fu">round</span>(<span class="fu">prop.table</span>(numero_casos)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">2</span>))</span>
+<span id="cb39-109"><a href="#cb39-109" aria-hidden="true" tabindex="-1"></a><span class="co"># armamos tabla conjunta para graficar</span></span>
+<span id="cb39-110"><a href="#cb39-110" aria-hidden="true" tabindex="-1"></a>distrib <span class="ot">=</span> <span class="fu">cbind</span>(<span class="fu">rbind</span>(train_, test_), <span class="at">dataset =</span> <span class="fu">c</span>(<span class="st">"train"</span>, <span class="st">"train"</span>, <span class="st">"test"</span>, <span class="st">"test"</span>))</span>
+<span id="cb39-111"><a href="#cb39-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-112"><a href="#cb39-112" aria-hidden="true" tabindex="-1"></a><span class="co"># graficamos las distribuciones</span></span>
+<span id="cb39-113"><a href="#cb39-113" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(distrib, <span class="fu">aes</span>(<span class="at">x =</span> cardio, <span class="at">y =</span> prop, <span class="at">fill =</span> <span class="fu">factor</span>(cardio), <span class="at">label =</span> prop)) <span class="sc">+</span> </span>
+<span id="cb39-114"><a href="#cb39-114" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="sc">~</span> dataset) <span class="sc">+</span></span>
+<span id="cb39-115"><a href="#cb39-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb39-116"><a href="#cb39-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Proporción en %"</span>, <span class="at">title =</span> <span class="st">"Proporción de cardio por dataset"</span>) <span class="sc">+</span> </span>
+<span id="cb39-117"><a href="#cb39-117" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"cardio"</span>))<span class="sc">+</span></span>
+<span id="cb39-118"><a href="#cb39-118" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb39-119"><a href="#cb39-119" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Set2"</span>)</span>
+<span id="cb39-120"><a href="#cb39-120" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-121"><a href="#cb39-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-124"><a href="#cb39-124" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-125"><a href="#cb39-125" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(train)</span>
+<span id="cb39-126"><a href="#cb39-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-127"><a href="#cb39-127" aria-hidden="true" tabindex="-1"></a>Seleccioamoslas variables con las que vamos a trabajar y les asignamos el tipo de dato correspondiente.</span>
+<span id="cb39-128"><a href="#cb39-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-131"><a href="#cb39-131" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-132"><a href="#cb39-132" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"age"</span>, </span>
+<span id="cb39-133"><a href="#cb39-133" aria-hidden="true" tabindex="-1"></a>          <span class="st">"height"</span>, </span>
+<span id="cb39-134"><a href="#cb39-134" aria-hidden="true" tabindex="-1"></a>          <span class="st">"weight"</span>, </span>
+<span id="cb39-135"><a href="#cb39-135" aria-hidden="true" tabindex="-1"></a>          <span class="st">"gender"</span>, </span>
+<span id="cb39-136"><a href="#cb39-136" aria-hidden="true" tabindex="-1"></a>          <span class="st">"cholesterol"</span>,</span>
+<span id="cb39-137"><a href="#cb39-137" aria-hidden="true" tabindex="-1"></a>          <span class="st">"gluc"</span>,</span>
+<span id="cb39-138"><a href="#cb39-138" aria-hidden="true" tabindex="-1"></a>          <span class="st">"cardio"</span>)</span>
+<span id="cb39-139"><a href="#cb39-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-140"><a href="#cb39-140" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>gender)</span>
+<span id="cb39-141"><a href="#cb39-141" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>cholesterol <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>cholesterol)</span>
+<span id="cb39-142"><a href="#cb39-142" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>gluc <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>gluc)</span>
+<span id="cb39-143"><a href="#cb39-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-144"><a href="#cb39-144" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(test<span class="sc">$</span>gender)</span>
+<span id="cb39-145"><a href="#cb39-145" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>cholesterol <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(test<span class="sc">$</span>cholesterol)</span>
+<span id="cb39-146"><a href="#cb39-146" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>gluc <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(test<span class="sc">$</span>gluc)</span>
+<span id="cb39-147"><a href="#cb39-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-148"><a href="#cb39-148" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-149"><a href="#cb39-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-152"><a href="#cb39-152" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-153"><a href="#cb39-153" aria-hidden="true" tabindex="-1"></a><span class="co"># graficamos con ggpairs coloreando por variable a predecir</span></span>
+<span id="cb39-154"><a href="#cb39-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-155"><a href="#cb39-155" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span> </span>
+<span id="cb39-156"><a href="#cb39-156" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">cardio =</span> <span class="fu">factor</span>(cardio)) <span class="sc">%&gt;%</span></span>
+<span id="cb39-157"><a href="#cb39-157" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="fu">all_of</span>(cols)) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-158"><a href="#cb39-158" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggpairs</span>(<span class="at">title =</span> <span class="st">"Correlograma de variables"</span>,</span>
+<span id="cb39-159"><a href="#cb39-159" aria-hidden="true" tabindex="-1"></a>                <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">colour=</span> cardio),</span>
+<span id="cb39-160"><a href="#cb39-160" aria-hidden="true" tabindex="-1"></a>                <span class="at">progress =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb39-161"><a href="#cb39-161" aria-hidden="true" tabindex="-1"></a>                <span class="at">lower=</span><span class="fu">list</span>(<span class="at">combo=</span><span class="fu">wrap</span>(<span class="st">"facethist"</span>, <span class="at">binwidth=</span><span class="fl">0.8</span>))) <span class="sc">+</span></span>
+<span id="cb39-162"><a href="#cb39-162" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb39-163"><a href="#cb39-163" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb39-164"><a href="#cb39-164" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Set2"</span>) <span class="sc">+</span></span>
+<span id="cb39-165"><a href="#cb39-165" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_brewer</span>(<span class="at">palette=</span><span class="st">"Set2"</span>)</span>
+<span id="cb39-166"><a href="#cb39-166" aria-hidden="true" tabindex="-1"></a>g</span>
+<span id="cb39-167"><a href="#cb39-167" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-168"><a href="#cb39-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-169"><a href="#cb39-169" aria-hidden="true" tabindex="-1"></a><span class="fu">### Regresión lineal</span></span>
+<span id="cb39-170"><a href="#cb39-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-171"><a href="#cb39-171" aria-hidden="true" tabindex="-1"></a>En este caso estamos modelando la probabilidad de la siguiente manera: </span>
+<span id="cb39-172"><a href="#cb39-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-173"><a href="#cb39-173" aria-hidden="true" tabindex="-1"></a>$P(X)= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$</span>
+<span id="cb39-174"><a href="#cb39-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-175"><a href="#cb39-175" aria-hidden="true" tabindex="-1"></a>Veamos que tan bueno es el modelo lineal para esto, usando la edad como predictor.</span>
+<span id="cb39-176"><a href="#cb39-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-179"><a href="#cb39-179" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-180"><a href="#cb39-180" aria-hidden="true" tabindex="-1"></a>mrl <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span> </span>
+<span id="cb39-181"><a href="#cb39-181" aria-hidden="true" tabindex="-1"></a>              <span class="fu">lm</span>(<span class="at">formula =</span> cardio <span class="sc">~</span> weight) </span>
+<span id="cb39-182"><a href="#cb39-182" aria-hidden="true" tabindex="-1"></a>tdy <span class="ot">=</span> mrl <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() </span>
+<span id="cb39-183"><a href="#cb39-183" aria-hidden="true" tabindex="-1"></a>tdy</span>
+<span id="cb39-184"><a href="#cb39-184" aria-hidden="true" tabindex="-1"></a>mrl <span class="sc">%&gt;%</span> <span class="fu">glance</span>()</span>
+<span id="cb39-185"><a href="#cb39-185" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-186"><a href="#cb39-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-187"><a href="#cb39-187" aria-hidden="true" tabindex="-1"></a>Los estimadores son significativos y el test de significatividad global del modelo también es significativo.</span>
+<span id="cb39-188"><a href="#cb39-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-189"><a href="#cb39-189" aria-hidden="true" tabindex="-1"></a>Veamos un gráfico de nuestro modelo.</span>
+<span id="cb39-190"><a href="#cb39-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-191"><a href="#cb39-191" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=FALSE}</span></span>
+<span id="cb39-192"><a href="#cb39-192" aria-hidden="true" tabindex="-1"></a><span class="in">ggplot(train, aes(weight, cardio)) + </span></span>
+<span id="cb39-193"><a href="#cb39-193" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_point(aes(color=factor(cardio))) +</span></span>
+<span id="cb39-194"><a href="#cb39-194" aria-hidden="true" tabindex="-1"></a><span class="in">  scale_color_brewer(palette = "Set2") + </span></span>
+<span id="cb39-195"><a href="#cb39-195" aria-hidden="true" tabindex="-1"></a><span class="in">  geom_abline(intercept = tdy$estimate[1], slope = tdy$estimate[2], color='forestgreen', size=2) + </span></span>
+<span id="cb39-196"><a href="#cb39-196" aria-hidden="true" tabindex="-1"></a><span class="in">  labs(title="Modelo Lineal Simple", color='Clase') +</span></span>
+<span id="cb39-197"><a href="#cb39-197" aria-hidden="true" tabindex="-1"></a><span class="in">  lims(y=c(-1,2))+</span></span>
+<span id="cb39-198"><a href="#cb39-198" aria-hidden="true" tabindex="-1"></a><span class="in">  theme_bw()</span></span>
+<span id="cb39-199"><a href="#cb39-199" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-200"><a href="#cb39-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-201"><a href="#cb39-201" aria-hidden="true" tabindex="-1"></a>Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuo: no existe un punto de corte claro, la predicción podría ser mayor a 1 o menor a cero llegado el caso.</span>
+<span id="cb39-202"><a href="#cb39-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-203"><a href="#cb39-203" aria-hidden="true" tabindex="-1"></a><span class="fu">## Recap de Regresión Logística</span></span>
+<span id="cb39-204"><a href="#cb39-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-205"><a href="#cb39-205" aria-hidden="true" tabindex="-1"></a><span class="fu">### **Odds**</span></span>
+<span id="cb39-206"><a href="#cb39-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-207"><a href="#cb39-207" aria-hidden="true" tabindex="-1"></a>Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.</span>
+<span id="cb39-208"><a href="#cb39-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-209"><a href="#cb39-209" aria-hidden="true" tabindex="-1"></a>$Odds = \frac{P(x)}{1-P(x)}$</span>
+<span id="cb39-210"><a href="#cb39-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-211"><a href="#cb39-211" aria-hidden="true" tabindex="-1"></a>Ej. si _Odds_ es 3 indica que por cada 4 repeticiones del evento se espera que ocurran 3 y que una no ocurra.</span>
+<span id="cb39-212"><a href="#cb39-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-213"><a href="#cb39-213" aria-hidden="true" tabindex="-1"></a>Odds &lt; 1 : es mas probable que no ocurra a que si</span>
+<span id="cb39-214"><a href="#cb39-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-215"><a href="#cb39-215" aria-hidden="true" tabindex="-1"></a>Odds = 1 : equiprobabilidad</span>
+<span id="cb39-216"><a href="#cb39-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-217"><a href="#cb39-217" aria-hidden="true" tabindex="-1"></a>Odds &gt; 1: es mas probable que el evento ocurra a que no.</span>
+<span id="cb39-218"><a href="#cb39-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-219"><a href="#cb39-219" aria-hidden="true" tabindex="-1"></a>En nuestro caso:</span>
+<span id="cb39-220"><a href="#cb39-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-221"><a href="#cb39-221" aria-hidden="true" tabindex="-1"></a>$Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}$</span>
+<span id="cb39-222"><a href="#cb39-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-223"><a href="#cb39-223" aria-hidden="true" tabindex="-1"></a>Por cada 191 pacientes con ECV, 200 no la tienen.</span>
+<span id="cb39-224"><a href="#cb39-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-225"><a href="#cb39-225" aria-hidden="true" tabindex="-1"></a><span class="fu">### **Logit**</span></span>
+<span id="cb39-226"><a href="#cb39-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-227"><a href="#cb39-227" aria-hidden="true" tabindex="-1"></a>$Logit = \log {\frac{P(x)}{1-P(x)}}= \log Odds$</span>
+<span id="cb39-228"><a href="#cb39-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-229"><a href="#cb39-229" aria-hidden="true" tabindex="-1"></a><span class="fu">### **_Odds Ratio_ (OR)**</span></span>
+<span id="cb39-230"><a href="#cb39-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-231"><a href="#cb39-231" aria-hidden="true" tabindex="-1"></a>Es una medida de magnitud de efecto. Si tenemos el siguiente modelo de regresión logística</span>
+<span id="cb39-232"><a href="#cb39-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-233"><a href="#cb39-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-234"><a href="#cb39-234" aria-hidden="true" tabindex="-1"></a>$\log\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1 X$</span>
+<span id="cb39-235"><a href="#cb39-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-236"><a href="#cb39-236" aria-hidden="true" tabindex="-1"></a>El odds ratio asociado a la variable $\ X $ es:</span>
+<span id="cb39-237"><a href="#cb39-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-238"><a href="#cb39-238" aria-hidden="true" tabindex="-1"></a>$\text{OR} = e^{\beta_1}$</span>
+<span id="cb39-239"><a href="#cb39-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-240"><a href="#cb39-240" aria-hidden="true" tabindex="-1"></a>OR = 1 No hay efecto</span>
+<span id="cb39-241"><a href="#cb39-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-242"><a href="#cb39-242" aria-hidden="true" tabindex="-1"></a>OR &gt; 1 asociación positiva</span>
+<span id="cb39-243"><a href="#cb39-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-244"><a href="#cb39-244" aria-hidden="true" tabindex="-1"></a>OR &lt;1 asociación negativa</span>
+<span id="cb39-245"><a href="#cb39-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-246"><a href="#cb39-246" aria-hidden="true" tabindex="-1"></a><span class="fu">### Escalas de análisis</span></span>
+<span id="cb39-247"><a href="#cb39-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-248"><a href="#cb39-248" aria-hidden="true" tabindex="-1"></a>1- Predictor lineal</span>
+<span id="cb39-249"><a href="#cb39-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-250"><a href="#cb39-250" aria-hidden="true" tabindex="-1"></a>2- Odds</span>
+<span id="cb39-251"><a href="#cb39-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-252"><a href="#cb39-252" aria-hidden="true" tabindex="-1"></a>3- Variable respuesta</span>
+<span id="cb39-253"><a href="#cb39-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-254"><a href="#cb39-254" aria-hidden="true" tabindex="-1"></a><span class="al">![Imagen adaptada de la clase de RL de Adriana Perez](rl.png)</span>{}</span>
+<span id="cb39-255"><a href="#cb39-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-256"><a href="#cb39-256" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ahora si modelamos los datos con una Regresión Logística</span></span>
+<span id="cb39-257"><a href="#cb39-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-258"><a href="#cb39-258" aria-hidden="true" tabindex="-1"></a>Para evitar estos problemas, usamos la **función logística**.</span>
+<span id="cb39-259"><a href="#cb39-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-260"><a href="#cb39-260" aria-hidden="true" tabindex="-1"></a>$P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$</span>
+<span id="cb39-261"><a href="#cb39-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-262"><a href="#cb39-262" aria-hidden="true" tabindex="-1"></a>Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado para modelar una probabilidad.</span>
+<span id="cb39-263"><a href="#cb39-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-264"><a href="#cb39-264" aria-hidden="true" tabindex="-1"></a>Luego de hacer algunas operaciones, podemos llegar a la expresión:</span>
+<span id="cb39-265"><a href="#cb39-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-266"><a href="#cb39-266" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$</span>
+<span id="cb39-267"><a href="#cb39-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-268"><a href="#cb39-268" aria-hidden="true" tabindex="-1"></a><span class="fu">## Regresión Logística</span></span>
+<span id="cb39-269"><a href="#cb39-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-270"><a href="#cb39-270" aria-hidden="true" tabindex="-1"></a>La funcíón <span class="in">`glm()`</span> nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función <span class="in">`lm()`</span> toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. </span>
+<span id="cb39-271"><a href="#cb39-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-272"><a href="#cb39-272" aria-hidden="true" tabindex="-1"></a>Algunas familias son:</span>
+<span id="cb39-273"><a href="#cb39-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-274"><a href="#cb39-274" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Binomial*: link=logit</span>
+<span id="cb39-275"><a href="#cb39-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-276"><a href="#cb39-276" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Poisson*: link=log</span>
+<span id="cb39-277"><a href="#cb39-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-278"><a href="#cb39-278" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Gaussiana*: link=identidad</span>
+<span id="cb39-279"><a href="#cb39-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-280"><a href="#cb39-280" aria-hidden="true" tabindex="-1"></a>Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.</span>
+<span id="cb39-281"><a href="#cb39-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-282"><a href="#cb39-282" aria-hidden="true" tabindex="-1"></a>Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de **weight**, **age** y **gender**. </span>
+<span id="cb39-283"><a href="#cb39-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-284"><a href="#cb39-284" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_2 varón$</span>
+<span id="cb39-285"><a href="#cb39-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-288"><a href="#cb39-288" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-289"><a href="#cb39-289" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo de regresión logística </span></span>
+<span id="cb39-290"><a href="#cb39-290" aria-hidden="true" tabindex="-1"></a>glm1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train,</span>
+<span id="cb39-291"><a href="#cb39-291" aria-hidden="true" tabindex="-1"></a>            cardio <span class="sc">~</span> weight <span class="sc">+</span> gender, </span>
+<span id="cb39-292"><a href="#cb39-292" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
+<span id="cb39-293"><a href="#cb39-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-294"><a href="#cb39-294" aria-hidden="true" tabindex="-1"></a><span class="co"># veo los resultados</span></span>
+<span id="cb39-295"><a href="#cb39-295" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(glm1)</span>
+<span id="cb39-296"><a href="#cb39-296" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(glm1)</span>
+<span id="cb39-297"><a href="#cb39-297" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-298"><a href="#cb39-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-299"><a href="#cb39-299" aria-hidden="true" tabindex="-1"></a><span class="fu">### Interpretación de los coeficientes del modelo</span></span>
+<span id="cb39-300"><a href="#cb39-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-301"><a href="#cb39-301" aria-hidden="true" tabindex="-1"></a>Modelo obtenido</span>
+<span id="cb39-302"><a href="#cb39-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-303"><a href="#cb39-303" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= -1.69 + 0.02* weight + 0.07*varón$</span>
+<span id="cb39-304"><a href="#cb39-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-305"><a href="#cb39-305" aria-hidden="true" tabindex="-1"></a>**Peso**</span>
+<span id="cb39-306"><a href="#cb39-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-307"><a href="#cb39-307" aria-hidden="true" tabindex="-1"></a>Se espera un aumento de 0.022 unidades en el log de odds por cada aumento de 1kgr en el peso (manteniendo el resto de las variables constantes). La probabilidad de contraer una ECV aumenta con el aumento de peso del paciente.</span>
+<span id="cb39-308"><a href="#cb39-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-309"><a href="#cb39-309" aria-hidden="true" tabindex="-1"></a>$\ OR = e^{\beta_{weight}}= e^{0.022}= 1.022$</span>
+<span id="cb39-310"><a href="#cb39-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-311"><a href="#cb39-311" aria-hidden="true" tabindex="-1"></a>Por cada aumento de 1 kgr se estima que el odds de contraer una ECV aumente 2.22%</span>
+<span id="cb39-312"><a href="#cb39-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-313"><a href="#cb39-313" aria-hidden="true" tabindex="-1"></a>**Género**</span>
+<span id="cb39-314"><a href="#cb39-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-315"><a href="#cb39-315" aria-hidden="true" tabindex="-1"></a>$\ Odds_{varón} = {\frac{Prob_{ECV} /varón}{Prob_{noECV}/varón}}$</span>
+<span id="cb39-316"><a href="#cb39-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-317"><a href="#cb39-317" aria-hidden="true" tabindex="-1"></a>$\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}$</span>
+<span id="cb39-318"><a href="#cb39-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-319"><a href="#cb39-319" aria-hidden="true" tabindex="-1"></a>$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{0.07}$</span>
+<span id="cb39-320"><a href="#cb39-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-321"><a href="#cb39-321" aria-hidden="true" tabindex="-1"></a>Es decir, si un paciente pertenece a la categoría varón tiene mas probabilidad de contraer una ECV que si pertenece a la categoría mujer. Ser varón es factor de riesgo. </span>
+<span id="cb39-322"><a href="#cb39-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-323"><a href="#cb39-323" aria-hidden="true" tabindex="-1"></a><span class="fu">### Devianza</span></span>
+<span id="cb39-324"><a href="#cb39-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-325"><a href="#cb39-325" aria-hidden="true" tabindex="-1"></a>$\ Devianza Explicada = {\frac{Dev_{mod null} - Dev_{Mod}}{Dev_{mod null}}}$</span>
+<span id="cb39-326"><a href="#cb39-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-327"><a href="#cb39-327" aria-hidden="true" tabindex="-1"></a>$\ Devianza Explicada = {\frac{1108.63 - 1083.82}{1108.63}}= 0.02$</span>
+<span id="cb39-328"><a href="#cb39-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-329"><a href="#cb39-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-330"><a href="#cb39-330" aria-hidden="true" tabindex="-1"></a><span class="fu">## Selección de modelos</span></span>
+<span id="cb39-331"><a href="#cb39-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-332"><a href="#cb39-332" aria-hidden="true" tabindex="-1"></a>Se generan la combinación de todos los modelos posibles.</span>
+<span id="cb39-333"><a href="#cb39-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-336"><a href="#cb39-336" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-337"><a href="#cb39-337" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"gender"</span>, <span class="st">"weight"</span>, <span class="st">"cholesterol"</span>)</span>
+<span id="cb39-338"><a href="#cb39-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-339"><a href="#cb39-339" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear todas las combinaciones posibles de predictores</span></span>
+<span id="cb39-340"><a href="#cb39-340" aria-hidden="true" tabindex="-1"></a>combs <span class="ot">&lt;-</span> <span class="fu">unlist</span>(</span>
+<span id="cb39-341"><a href="#cb39-341" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(vars), <span class="cf">function</span>(i) <span class="fu">combn</span>(vars, i, <span class="at">simplify =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb39-342"><a href="#cb39-342" aria-hidden="true" tabindex="-1"></a>  <span class="at">recursive =</span> <span class="cn">FALSE</span></span>
+<span id="cb39-343"><a href="#cb39-343" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-344"><a href="#cb39-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-345"><a href="#cb39-345" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear una lista de fórmulas</span></span>
+<span id="cb39-346"><a href="#cb39-346" aria-hidden="true" tabindex="-1"></a>formulas <span class="ot">&lt;-</span> <span class="fu">map</span>(combs, <span class="sc">~</span> <span class="fu">reformulate</span>(<span class="at">termlabels =</span> .x, <span class="at">response =</span> <span class="st">"cardio"</span>))</span>
+<span id="cb39-347"><a href="#cb39-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-348"><a href="#cb39-348" aria-hidden="true" tabindex="-1"></a>formulas</span>
+<span id="cb39-349"><a href="#cb39-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-350"><a href="#cb39-350" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-351"><a href="#cb39-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-354"><a href="#cb39-354" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-355"><a href="#cb39-355" aria-hidden="true" tabindex="-1"></a>modelos <span class="ot">&lt;-</span> <span class="fu">map</span>(formulas, <span class="sc">~</span> <span class="fu">glm</span>(.x, <span class="at">data =</span> train, <span class="at">family =</span> binomial))</span>
+<span id="cb39-356"><a href="#cb39-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-357"><a href="#cb39-357" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-358"><a href="#cb39-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-361"><a href="#cb39-361" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-362"><a href="#cb39-362" aria-hidden="true" tabindex="-1"></a>resultados <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb39-363"><a href="#cb39-363" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">map_chr</span>(formulas, format),</span>
+<span id="cb39-364"><a href="#cb39-364" aria-hidden="true" tabindex="-1"></a>  <span class="at">deviance =</span> <span class="fu">map_dbl</span>(modelos, <span class="sc">~</span> .<span class="sc">$</span>deviance),</span>
+<span id="cb39-365"><a href="#cb39-365" aria-hidden="true" tabindex="-1"></a>  <span class="at">null_deviance =</span> <span class="fu">map_dbl</span>(modelos, <span class="sc">~</span> .<span class="sc">$</span>null.deviance),</span>
+<span id="cb39-366"><a href="#cb39-366" aria-hidden="true" tabindex="-1"></a>  <span class="at">AIC =</span> <span class="fu">map_dbl</span>(modelos, AIC)</span>
+<span id="cb39-367"><a href="#cb39-367" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb39-368"><a href="#cb39-368" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dev_explicada =</span> <span class="dv">1</span> <span class="sc">-</span> deviance <span class="sc">/</span> null_deviance)<span class="sc">%&gt;%</span></span>
+<span id="cb39-369"><a href="#cb39-369" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dev_explicada))</span>
+<span id="cb39-370"><a href="#cb39-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-371"><a href="#cb39-371" aria-hidden="true" tabindex="-1"></a>resultados</span>
+<span id="cb39-372"><a href="#cb39-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-373"><a href="#cb39-373" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-374"><a href="#cb39-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-375"><a href="#cb39-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-378"><a href="#cb39-378" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-379"><a href="#cb39-379" aria-hidden="true" tabindex="-1"></a><span class="co"># Añadir las predicciones</span></span>
+<span id="cb39-380"><a href="#cb39-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-381"><a href="#cb39-381" aria-hidden="true" tabindex="-1"></a>prediction_full <span class="ot">&lt;-</span> <span class="fu">map2</span>(modelos, formulas, <span class="sc">~</span> {</span>
+<span id="cb39-382"><a href="#cb39-382" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb39-383"><a href="#cb39-383" aria-hidden="true" tabindex="-1"></a>    <span class="at">.fitted =</span> <span class="fu">predict</span>(.x, <span class="at">newdata =</span> test, <span class="at">type =</span> <span class="st">"response"</span>),</span>
+<span id="cb39-384"><a href="#cb39-384" aria-hidden="true" tabindex="-1"></a>    <span class="at">cardio =</span> test<span class="sc">$</span>cardio</span>
+<span id="cb39-385"><a href="#cb39-385" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-386"><a href="#cb39-386" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb39-387"><a href="#cb39-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-388"><a href="#cb39-388" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-389"><a href="#cb39-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-392"><a href="#cb39-392" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-393"><a href="#cb39-393" aria-hidden="true" tabindex="-1"></a>roc_df <span class="ot">&lt;-</span> <span class="fu">map2_dfr</span>(modelos, resultados<span class="sc">$</span>formula, <span class="sc">~</span> {</span>
+<span id="cb39-394"><a href="#cb39-394" aria-hidden="true" tabindex="-1"></a>  roc_obj <span class="ot">&lt;-</span> <span class="fu">roc</span>(train<span class="sc">$</span>cardio, <span class="fu">predict</span>(.x, <span class="at">type =</span> <span class="st">"response"</span>))</span>
+<span id="cb39-395"><a href="#cb39-395" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb39-396"><a href="#cb39-396" aria-hidden="true" tabindex="-1"></a>    <span class="at">tpr =</span> roc_obj<span class="sc">$</span>sensitivities,</span>
+<span id="cb39-397"><a href="#cb39-397" aria-hidden="true" tabindex="-1"></a>    <span class="at">fpr =</span> <span class="dv">1</span> <span class="sc">-</span> roc_obj<span class="sc">$</span>specificities,</span>
+<span id="cb39-398"><a href="#cb39-398" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula =</span> .y</span>
+<span id="cb39-399"><a href="#cb39-399" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-400"><a href="#cb39-400" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb39-401"><a href="#cb39-401" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-402"><a href="#cb39-402" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(roc_df, <span class="fu">aes</span>(<span class="at">x =</span> fpr, <span class="at">y =</span> tpr, <span class="at">color =</span> formula)) <span class="sc">+</span></span>
+<span id="cb39-403"><a href="#cb39-403" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb39-404"><a href="#cb39-404" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb39-405"><a href="#cb39-405" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"1 - Especificidad"</span>, <span class="at">y =</span> <span class="st">"Sensibilidad"</span>, <span class="at">title =</span> <span class="st">"Curvas ROC de todos los modelos"</span>) <span class="sc">+</span></span>
+<span id="cb39-406"><a href="#cb39-406" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb39-407"><a href="#cb39-407" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-410"><a href="#cb39-410" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-411"><a href="#cb39-411" aria-hidden="true" tabindex="-1"></a>auc_values <span class="ot">&lt;-</span> <span class="fu">map_dbl</span>(modelos, <span class="sc">~</span> <span class="fu">auc</span>(<span class="fu">roc</span>(train<span class="sc">$</span>cardio, <span class="fu">predict</span>(.x, <span class="at">type =</span> <span class="st">"response"</span>))))</span>
+<span id="cb39-412"><a href="#cb39-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-413"><a href="#cb39-413" aria-hidden="true" tabindex="-1"></a>resultados <span class="ot">&lt;-</span> resultados <span class="sc">%&gt;%</span></span>
+<span id="cb39-414"><a href="#cb39-414" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">AUC =</span> auc_values)</span>
+<span id="cb39-415"><a href="#cb39-415" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-416"><a href="#cb39-416" aria-hidden="true" tabindex="-1"></a>resultados</span>
+<span id="cb39-417"><a href="#cb39-417" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-418"><a href="#cb39-418" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-419"><a href="#cb39-419" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-422"><a href="#cb39-422" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-423"><a href="#cb39-423" aria-hidden="true" tabindex="-1"></a><span class="co"># Supongamos que 'mejor_modelo'</span></span>
+<span id="cb39-424"><a href="#cb39-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-425"><a href="#cb39-425" aria-hidden="true" tabindex="-1"></a>best_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">data =</span> train,</span>
+<span id="cb39-426"><a href="#cb39-426" aria-hidden="true" tabindex="-1"></a>            cardio <span class="sc">~</span> weight <span class="sc">+</span> gender<span class="sc">+</span> active, </span>
+<span id="cb39-427"><a href="#cb39-427" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
+<span id="cb39-428"><a href="#cb39-428" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-429"><a href="#cb39-429" aria-hidden="true" tabindex="-1"></a>test_model <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb39-430"><a href="#cb39-430" aria-hidden="true" tabindex="-1"></a>  <span class="at">.fitted =</span> <span class="fu">predict</span>(best_model, <span class="at">newdata =</span> test, <span class="at">type =</span> <span class="st">"response"</span>),</span>
+<span id="cb39-431"><a href="#cb39-431" aria-hidden="true" tabindex="-1"></a>  <span class="at">cardio =</span> test<span class="sc">$</span>cardio</span>
+<span id="cb39-432"><a href="#cb39-432" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-433"><a href="#cb39-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-434"><a href="#cb39-434" aria-hidden="true" tabindex="-1"></a>prediction_metrics <span class="ot">&lt;-</span> <span class="cf">function</span>(cutoff, predictions) {</span>
+<span id="cb39-435"><a href="#cb39-435" aria-hidden="true" tabindex="-1"></a>  tab <span class="ot">&lt;-</span> predictions <span class="sc">%&gt;%</span> </span>
+<span id="cb39-436"><a href="#cb39-436" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">predicted_class =</span> <span class="fu">factor</span>(<span class="fu">if_else</span>(.fitted <span class="sc">&gt;</span> cutoff, <span class="dv">1</span>, <span class="dv">0</span>), <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)),</span>
+<span id="cb39-437"><a href="#cb39-437" aria-hidden="true" tabindex="-1"></a>           <span class="at">cardio =</span> <span class="fu">factor</span>(cardio, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)))</span>
+<span id="cb39-438"><a href="#cb39-438" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb39-439"><a href="#cb39-439" aria-hidden="true" tabindex="-1"></a>  cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(tab<span class="sc">$</span>predicted_class, tab<span class="sc">$</span>cardio, <span class="at">positive =</span> <span class="st">"1"</span>)</span>
+<span id="cb39-440"><a href="#cb39-440" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb39-441"><a href="#cb39-441" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>(cm) <span class="sc">%&gt;%</span></span>
+<span id="cb39-442"><a href="#cb39-442" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(term, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb39-443"><a href="#cb39-443" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'accuracy'</span>,<span class="st">'sensitivity'</span>,<span class="st">'specificity'</span>,<span class="st">'precision'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb39-444"><a href="#cb39-444" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">cutoff =</span> cutoff)</span>
+<span id="cb39-445"><a href="#cb39-445" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb39-446"><a href="#cb39-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-447"><a href="#cb39-447" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-448"><a href="#cb39-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-449"><a href="#cb39-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-452"><a href="#cb39-452" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-453"><a href="#cb39-453" aria-hidden="true" tabindex="-1"></a>cutoffs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>)</span>
+<span id="cb39-454"><a href="#cb39-454" aria-hidden="true" tabindex="-1"></a>metricas_df <span class="ot">&lt;-</span> <span class="fu">map_df</span>(cutoffs, <span class="sc">~</span> <span class="fu">prediction_metrics</span>(.x, <span class="at">predictions =</span> test_model)) <span class="sc">%&gt;%</span></span>
+<span id="cb39-455"><a href="#cb39-455" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> <span class="fu">as.factor</span>(term), <span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">3</span>))</span>
+<span id="cb39-456"><a href="#cb39-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-457"><a href="#cb39-457" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-458"><a href="#cb39-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-459"><a href="#cb39-459" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-460"><a href="#cb39-460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-463"><a href="#cb39-463" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-464"><a href="#cb39-464" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(metricas_df, <span class="fu">aes</span>(<span class="at">x =</span> cutoff, <span class="at">y =</span> estimate, <span class="at">color =</span> term, <span class="at">group =</span> term)) <span class="sc">+</span></span>
+<span id="cb39-465"><a href="#cb39-465" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb39-466"><a href="#cb39-466" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb39-467"><a href="#cb39-467" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb39-468"><a href="#cb39-468" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb39-469"><a href="#cb39-469" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Accuracy, Sensitivity, Specificity y Precision vs Cutoff"</span>,</span>
+<span id="cb39-470"><a href="#cb39-470" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Punto de corte"</span>,</span>
+<span id="cb39-471"><a href="#cb39-471" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Valor de la métrica"</span>,</span>
+<span id="cb39-472"><a href="#cb39-472" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Métrica"</span></span>
+<span id="cb39-473"><a href="#cb39-473" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-474"><a href="#cb39-474" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-475"><a href="#cb39-475" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-476"><a href="#cb39-476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-479"><a href="#cb39-479" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-480"><a href="#cb39-480" aria-hidden="true" tabindex="-1"></a>sel_cutoff <span class="ot">=</span> <span class="fl">0.48</span></span>
+<span id="cb39-481"><a href="#cb39-481" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-482"><a href="#cb39-482" aria-hidden="true" tabindex="-1"></a><span class="co"># calculamos las predicciones sobre el dataset de train</span></span>
+<span id="cb39-483"><a href="#cb39-483" aria-hidden="true" tabindex="-1"></a>table_train <span class="ot">=</span> <span class="fu">augment</span>(<span class="at">x =</span> best_model, <span class="at">type.predict=</span><span class="st">'response'</span>)</span>
+<span id="cb39-484"><a href="#cb39-484" aria-hidden="true" tabindex="-1"></a><span class="co"># Clasificamos utilizamos el punto de corte</span></span>
+<span id="cb39-485"><a href="#cb39-485" aria-hidden="true" tabindex="-1"></a>table_train <span class="ot">=</span> table_train <span class="sc">%&gt;%</span> </span>
+<span id="cb39-486"><a href="#cb39-486" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">predicted_class =</span> <span class="fu">if_else</span>(.fitted<span class="sc">&gt;</span>sel_cutoff, <span class="dv">1</span>, <span class="dv">0</span>) <span class="sc">%&gt;%</span> <span class="fu">as.factor</span>(), </span>
+<span id="cb39-487"><a href="#cb39-487" aria-hidden="true" tabindex="-1"></a>         <span class="at">cardio =</span> <span class="fu">factor</span>(cardio))</span>
+<span id="cb39-488"><a href="#cb39-488" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos la matriz de confusión</span></span>
+<span id="cb39-489"><a href="#cb39-489" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">table</span>(table_train<span class="sc">$</span>predicted_class, table_train<span class="sc">$</span>cardio), <span class="at">positive =</span> <span class="st">"1"</span>)</span>
+<span id="cb39-490"><a href="#cb39-490" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb39-493"><a href="#cb39-493" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb39-494"><a href="#cb39-494" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregamos la predicciones al dataset de testeo</span></span>
+<span id="cb39-495"><a href="#cb39-495" aria-hidden="true" tabindex="-1"></a>table_test <span class="ot">=</span> <span class="fu">augment</span>(<span class="at">x =</span> best_model, <span class="at">newdata=</span>test, <span class="at">type.predict=</span><span class="st">'response'</span>) </span>
+<span id="cb39-496"><a href="#cb39-496" aria-hidden="true" tabindex="-1"></a><span class="co"># Clasificamos utilizamos el punto de corte</span></span>
+<span id="cb39-497"><a href="#cb39-497" aria-hidden="true" tabindex="-1"></a>table_test <span class="ot">=</span> table_test <span class="sc">%&gt;%</span> </span>
+<span id="cb39-498"><a href="#cb39-498" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">predicted_class =</span> <span class="fu">if_else</span>(.fitted<span class="sc">&gt;</span>sel_cutoff, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb39-499"><a href="#cb39-499" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos la matriz de confusión</span></span>
+<span id="cb39-500"><a href="#cb39-500" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">table</span>(table_test<span class="sc">$</span>predicted_class, table_test<span class="sc">$</span>cardio), <span class="at">positive =</span> <span class="st">"1"</span>)</span>
+<span id="cb39-501"><a href="#cb39-501" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

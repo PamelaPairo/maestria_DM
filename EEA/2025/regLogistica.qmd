@@ -12,6 +12,7 @@ format:
 ---
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 # Cargamos las librerías que vamos a utilizar
 library(tidyverse)
 library(tidymodels)
@@ -35,7 +36,7 @@ El objetivo de esta clase es utilizar diferentes modelos de regresión logístic
 - Age: edad del paciente (días)
 - Height: altura del paciente (cm)
 - Weight: peso del paciente (kg)
-- Gender: sexo biológio del paciente 
+- Gender: sexo biológio del paciente (1: mujer, 2:varón)
 - Systolic blood pressure: Presión arterial sistólica
 - Diastolic blood pressure: Presión arterial diastólica
 - Cholesterol: colesterol en sangre del paciente (1: normal, 2: por encima de lo normal, 3: muy por encima de lo normal)
@@ -126,6 +127,10 @@ cols <- c("age",
 train$gender <- as.factor(train$gender)
 train$cholesterol <- as.factor(train$cholesterol)
 train$gluc <- as.factor(train$gluc)
+
+test$gender <- as.factor(test$gender)
+test$cholesterol <- as.factor(test$cholesterol)
+test$gluc <- as.factor(test$gluc)
 
 ```
 
@@ -244,7 +249,7 @@ Luego de hacer algunas operaciones, podemos llegar a la expresión:
 
 $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
 
-## Modelo simple
+## Regresión Logística
 
 La funcíón `glm()` nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. 
 
@@ -260,10 +265,12 @@ Como estamos trabajando con un fenómeno que suponemos tiene una distribución b
 
 Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de **weight**, **age** y **gender**. 
 
+$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_2 varón$
+
 ```{r}
 # modelo de regresión logística 
 glm1 <- glm(data = train,
-            cardio ~ weight + age + gender, 
+            cardio ~ weight + gender, 
             family = 'binomial')
 
 # veo los resultados
@@ -271,4 +278,185 @@ tidy(glm1)
 glance(glm1)
 ```
 
-## Modelos multiples
+### Interpretación de los coeficientes del modelo
+
+Modelo obtenido
+
+$\log {\frac{P(x)}{1-P(x)}}= -1.69 + 0.02* weight + 0.07*varón$
+
+**Peso**
+
+Se espera un aumento de 0.022 unidades en el log de odds por cada aumento de 1kgr en el peso (manteniendo el resto de las variables constantes). La probabilidad de contraer una ECV aumenta con el aumento de peso del paciente.
+
+$\ OR = e^{\beta_{weight}}= e^{0.022}= 1.022$
+
+Por cada aumento de 1 kgr se estima que el odds de contraer una ECV aumente 2.22%
+
+**Género**
+
+$\ Odds_{varón} = {\frac{Prob_{ECV} /varón}{Prob_{noECV}/varón}}$
+
+$\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}$
+
+$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{0.07}$
+
+Es decir, si un paciente pertenece a la categoría varón tiene mas probabilidad de contraer una ECV que si pertenece a la categoría mujer. Ser varón es factor de riesgo. 
+
+### Devianza
+
+$\ Devianza Explicada = {\frac{Dev_{mod null} - Dev_{Mod}}{Dev_{mod null}}}$
+
+$\ Devianza Explicada = {\frac{1108.63 - 1083.82}{1108.63}}= 0.02$
+
+
+## Selección de modelos
+
+Se generan la combinación de todos los modelos posibles.
+
+```{r}
+vars <- c("gender", "weight", "cholesterol")
+
+# Crear todas las combinaciones posibles de predictores
+combs <- unlist(
+  lapply(1:length(vars), function(i) combn(vars, i, simplify = FALSE)),
+  recursive = FALSE
+)
+
+# Crear una lista de fórmulas
+formulas <- map(combs, ~ reformulate(termlabels = .x, response = "cardio"))
+
+formulas
+
+```
+
+```{r}
+modelos <- map(formulas, ~ glm(.x, data = train, family = binomial))
+
+```
+
+```{r}
+resultados <- tibble(
+  formula = map_chr(formulas, format),
+  deviance = map_dbl(modelos, ~ .$deviance),
+  null_deviance = map_dbl(modelos, ~ .$null.deviance),
+  AIC = map_dbl(modelos, AIC)
+) %>%
+  mutate(dev_explicada = 1 - deviance / null_deviance)%>%
+  arrange(desc(dev_explicada))
+
+resultados
+
+```
+
+
+```{r}
+# Añadir las predicciones
+
+prediction_full <- map2(modelos, formulas, ~ {
+  tibble(
+    .fitted = predict(.x, newdata = test, type = "response"),
+    cardio = test$cardio
+  )
+})
+
+```
+
+```{r}
+roc_df <- map2_dfr(modelos, resultados$formula, ~ {
+  roc_obj <- roc(train$cardio, predict(.x, type = "response"))
+  tibble(
+    tpr = roc_obj$sensitivities,
+    fpr = 1 - roc_obj$specificities,
+    formula = .y
+  )
+})
+
+ggplot(roc_df, aes(x = fpr, y = tpr, color = formula)) +
+  geom_line(size = 1.2) +
+  geom_abline(linetype = "dashed") +
+  labs(x = "1 - Especificidad", y = "Sensibilidad", title = "Curvas ROC de todos los modelos") +
+  theme_minimal()
+```
+```{r}
+auc_values <- map_dbl(modelos, ~ auc(roc(train$cardio, predict(.x, type = "response"))))
+
+resultados <- resultados %>%
+  mutate(AUC = auc_values)
+
+resultados
+
+```
+
+```{r}
+# Supongamos que 'mejor_modelo'
+
+best_model <- glm(data = train,
+            cardio ~ weight + gender+ active, 
+            family = 'binomial')
+
+test_model <- tibble(
+  .fitted = predict(best_model, newdata = test, type = "response"),
+  cardio = test$cardio
+)
+
+prediction_metrics <- function(cutoff, predictions) {
+  tab <- predictions %>% 
+    mutate(predicted_class = factor(if_else(.fitted > cutoff, 1, 0), levels = c(0,1)),
+           cardio = factor(cardio, levels = c(0,1)))
+  
+  cm <- confusionMatrix(tab$predicted_class, tab$cardio, positive = "1")
+  
+  tidy(cm) %>%
+    select(term, estimate) %>%
+    filter(term %in% c('accuracy','sensitivity','specificity','precision')) %>%
+    mutate(cutoff = cutoff)
+}
+
+```
+
+
+```{r}
+cutoffs <- seq(0.05, 0.95, 0.05)
+metricas_df <- map_df(cutoffs, ~ prediction_metrics(.x, predictions = test_model)) %>%
+  mutate(term = as.factor(term), estimate = round(estimate, 3))
+
+```
+
+
+
+```{r}
+ggplot(metricas_df, aes(x = cutoff, y = estimate, color = term, group = term)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  theme_bw() +
+  labs(
+    title = "Accuracy, Sensitivity, Specificity y Precision vs Cutoff",
+    x = "Punto de corte",
+    y = "Valor de la métrica",
+    color = "Métrica"
+  )
+
+```
+
+```{r}
+sel_cutoff = 0.48
+
+# calculamos las predicciones sobre el dataset de train
+table_train = augment(x = best_model, type.predict='response')
+# Clasificamos utilizamos el punto de corte
+table_train = table_train %>% 
+  mutate(predicted_class = if_else(.fitted>sel_cutoff, 1, 0) %>% as.factor(), 
+         cardio = factor(cardio))
+# Creamos la matriz de confusión
+confusionMatrix(table(table_train$predicted_class, table_train$cardio), positive = "1")
+```
+```{r}
+# Agregamos la predicciones al dataset de testeo
+table_test = augment(x = best_model, newdata=test, type.predict='response') 
+# Clasificamos utilizamos el punto de corte
+table_test = table_test %>% 
+  mutate(predicted_class = if_else(.fitted>sel_cutoff, 1, 0))
+# Creamos la matriz de confusión
+confusionMatrix(table(table_test$predicted_class, table_test$cardio), positive = "1")
+```
+
