@@ -13,6 +13,7 @@ format:
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
 # Cargamos las librerías que vamos a utilizar
 library(tidyverse)
 library(tidymodels)
@@ -53,12 +54,20 @@ colSums(is.na(df))# chequeamos si hay datos faltantes
 ```
 
 ```{r}
+sum(duplicated(df))#chequeamos duplicados
+
+```
+
+```{r}
 glimpse(df)
 ```
+
+# Creación de base de datos
 
 Se genera una muestra de tamaño 1000 con la que se realizaran los análisis y se analiza si hay desbalance en la variable respuesta.
 
 ```{r}
+set.seed(09)
 
 df <- df %>% 
         sample_n(1000)
@@ -152,7 +161,7 @@ g <- train %>%
 g
 ```
 
-### Regresión lineal
+# Regresión lineal
 
 En este caso estamos modelando la probabilidad de la siguiente manera: 
 
@@ -184,9 +193,9 @@ ggplot(train, aes(weight, cardio)) +
 
 Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuo: no existe un punto de corte claro, la predicción podría ser mayor a 1 o menor a cero llegado el caso.
 
-## Recap de Regresión Logística
+# Recap de Regresión Logística
 
-### **Odds**
+## **Odds**
 
 Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.
 
@@ -206,18 +215,18 @@ $Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}$
 
 Por cada 191 pacientes con ECV, 200 no la tienen.
 
-### **Logit**
+## **Logit**
 
 $Logit = \log {\frac{P(x)}{1-P(x)}}= \log Odds$
 
-### **_Odds Ratio_ (OR)**
+## **_Odds Ratio_ (OR)**
 
 Es una medida de magnitud de efecto. Si tenemos el siguiente modelo de regresión logística
 
 
 $\log\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1 X$
 
-El odds ratio asociado a la variable $\ X $ es:
+El odds ratio asociado a la variable $\ X$ es:
 
 $\text{OR} = e^{\beta_1}$
 
@@ -225,9 +234,9 @@ OR = 1 No hay efecto
 
 OR > 1 asociación positiva
 
-OR <1 asociación negativa
+OR < 1 asociación negativa
 
-### Escalas de análisis
+## Escalas de análisis
 
 1- Predictor lineal
 
@@ -237,9 +246,9 @@ OR <1 asociación negativa
 
 ![Imagen adaptada de la clase de RL de Adriana Perez](rl.png){}
 
-## Ahora si modelamos los datos con una Regresión Logística
+# Regresión Logística
 
-Para evitar estos problemas, usamos la **función logística**.
+Para evitar los problemas vistos con regresión lineal, usamos la **función logística**.
 
 $P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$
 
@@ -249,7 +258,6 @@ Luego de hacer algunas operaciones, podemos llegar a la expresión:
 
 $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
 
-## Regresión Logística
 
 La funcíón `glm()` nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. 
 
@@ -278,19 +286,19 @@ tidy(glm1)
 glance(glm1)
 ```
 
-### Interpretación de los coeficientes del modelo
+## Interpretación de los coeficientes del modelo
 
 Modelo obtenido
 
-$\log {\frac{P(x)}{1-P(x)}}= -1.69 + 0.02* weight + 0.07*varón$
+$\log {\frac{P(x)}{1-P(x)}}= -2.64 + 0.03* weight + 0.04*varón$
 
 **Peso**
 
-Se espera un aumento de 0.022 unidades en el log de odds por cada aumento de 1kgr en el peso (manteniendo el resto de las variables constantes). La probabilidad de contraer una ECV aumenta con el aumento de peso del paciente.
+Se espera un aumento de 0.03 unidades en el log de odds por cada aumento de 1kgr en el peso (manteniendo el resto de las variables constantes). La probabilidad de contraer una ECV aumenta con el aumento de peso del paciente.
 
-$\ OR = e^{\beta_{weight}}= e^{0.022}= 1.022$
+$\ OR = e^{\beta_{weight}}= e^{0.03}= 1.03$
 
-Por cada aumento de 1 kgr se estima que el odds de contraer una ECV aumente 2.22%
+Por cada aumento de 1 kgr se estima que el odds de contraer una ECV aumente 3.05%
 
 **Género**
 
@@ -298,23 +306,32 @@ $\ Odds_{varón} = {\frac{Prob_{ECV} /varón}{Prob_{noECV}/varón}}$
 
 $\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}$
 
-$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{0.07}$
+$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{0.04}$
 
-Es decir, si un paciente pertenece a la categoría varón tiene mas probabilidad de contraer una ECV que si pertenece a la categoría mujer. Ser varón es factor de riesgo. 
+El odds ratio para la variable género es 1.04, lo que indica que los varones tienen un 4.08 % mas de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser varón se asocia con un mayor riesgo relativo de ECV.
 
 ### Devianza
 
+Es una medida de la falta de ajuste del modelo. Cuanto menor es la devianza, mejor se ajusta el modelo.
+
 $\ Devianza Explicada = {\frac{Dev_{mod null} - Dev_{Mod}}{Dev_{mod null}}}$
 
-$\ Devianza Explicada = {\frac{1108.63 - 1083.82}{1108.63}}= 0.02$
+$\ Devianza Explicada = {\frac{1105.38 - 1063.38}{1105.38}}= 0.037$
 
+```{r}
+
+1 - (glm1$deviance / glm1$null.deviance)
+
+```
 
 ## Selección de modelos
 
-Se generan la combinación de todos los modelos posibles.
+Se generan la combinación de todos los modelos posibles a partir de las variables `gender`, `weight`, y `cholesterol`.
 
 ```{r}
-vars <- c("gender", "weight", "cholesterol")
+vars <- c("gender", 
+          "weight", 
+          "cholesterol")
 
 # Crear todas las combinaciones posibles de predictores
 combs <- unlist(
@@ -330,9 +347,13 @@ formulas
 ```
 
 ```{r}
+#se realizan las regresiones logisticas para todos los modelos
+
 modelos <- map(formulas, ~ glm(.x, data = train, family = binomial))
 
 ```
+
+Analizamos la performance de los modelos generados
 
 ```{r}
 resultados <- tibble(
@@ -342,7 +363,7 @@ resultados <- tibble(
   AIC = map_dbl(modelos, AIC)
 ) %>%
   mutate(dev_explicada = 1 - deviance / null_deviance)%>%
-  arrange(desc(dev_explicada))
+  arrange(desc(dev_explicada))# se ordena segñun devianza explicada
 
 resultados
 
@@ -350,8 +371,6 @@ resultados
 
 
 ```{r}
-# Añadir las predicciones
-
 prediction_full <- map2(modelos, formulas, ~ {
   tibble(
     .fitted = predict(.x, newdata = test, type = "response"),
@@ -387,17 +406,43 @@ resultados
 
 ```
 
+## Buscando el umbral
+
+Hasta ahora hemos evaluado el modelo de manera general, pero el resultado final del modelo debe consistir en asignar a la persona una clase predicha. En nuestro caso debemos establecer un punto de corte según el cual vamos a separar a los pacientes con ECV de los que no tienen ECV.
+
+Probamos varios puntos de corte y graficamos el accuracy, la sensibilidad o recall, la especificidad y la precisión para cada uno de ellos.
+
+| Clases predichas / Clases | Negativa | Positiva |
+|--------------------------|---------|----------|
+| Negativa                 | True Neg | False Neg |
+| Positiva                 | False Pos | True Pos |
+
+Recordemos que:
+
+$accuracy = \frac{TP+TN}{TP+FP+FN+TN}$
+
+$sensitivity = recall = \frac{TP}{TP+FN}$
+
+$specificity = \frac{TN}{TN+FP}$
+
+$precision = \frac{TP}{TP+FP}$
+
+## Evaluando en test
+
 ```{r}
 # Supongamos que 'mejor_modelo'
 
-best_model <- glm(data = train,
-            cardio ~ weight + gender+ active, 
-            family = 'binomial')
+best_model <- glm(data = test,
+                  cardio ~ weight + gender+ active, 
+                  family = 'binomial')
 
+# generamos las predicciones para el mejor modelo
 test_model <- tibble(
   .fitted = predict(best_model, newdata = test, type = "response"),
   cardio = test$cardio
 )
+
+# generamos una funcion que evalua diferentes umbrales y calcula las metricas
 
 prediction_metrics <- function(cutoff, predictions) {
   tab <- predictions %>% 
@@ -415,16 +460,16 @@ prediction_metrics <- function(cutoff, predictions) {
 ```
 
 
+
 ```{r}
+
+# se calculan las metricas para diferentes valores de umbrales
+
 cutoffs <- seq(0.05, 0.95, 0.05)
 metricas_df <- map_df(cutoffs, ~ prediction_metrics(.x, predictions = test_model)) %>%
   mutate(term = as.factor(term), estimate = round(estimate, 3))
 
-```
-
-
-
-```{r}
+#graficamos los resultados
 ggplot(metricas_df, aes(x = cutoff, y = estimate, color = term, group = term)) +
   geom_line(size = 1.2) +
   geom_point(size = 2) +
@@ -438,25 +483,94 @@ ggplot(metricas_df, aes(x = cutoff, y = estimate, color = term, group = term)) +
 
 ```
 
+¿Cuál seria el umbral adecuado?
+
 ```{r}
-sel_cutoff = 0.48
+sel_cutoff = 0.51
 
 # calculamos las predicciones sobre el dataset de train
-table_train = augment(x = best_model, type.predict='response')
+table_train = augment(x = best_model, 
+                      newdata = train,
+                      type.predict='response')
+
 # Clasificamos utilizamos el punto de corte
 table_train = table_train %>% 
   mutate(predicted_class = if_else(.fitted>sel_cutoff, 1, 0) %>% as.factor(), 
          cardio = factor(cardio))
+
 # Creamos la matriz de confusión
 confusionMatrix(table(table_train$predicted_class, table_train$cardio), positive = "1")
 ```
+
 ```{r}
 # Agregamos la predicciones al dataset de testeo
-table_test = augment(x = best_model, newdata=test, type.predict='response') 
-# Clasificamos utilizamos el punto de corte
+table_test = augment(x = best_model, 
+                     newdata=test, 
+                     type.predict='response') 
+
+# Clasificamos utilizando el punto de corte
 table_test = table_test %>% 
   mutate(predicted_class = if_else(.fitted>sel_cutoff, 1, 0))
 # Creamos la matriz de confusión
 confusionMatrix(table(table_test$predicted_class, table_test$cardio), positive = "1")
 ```
 
+
+### Gráfico de Hosmer Lemeshow
+
+Los gráficos de residuos vs predichos no son informativos para evaluar el ajuste del modelo, ya que la variable solo toma dos valores.
+
+
+  * En el eje X se observa la probabilidad predicha de contrarer una ECV.
+  
+  * En el eje Y se observa la frecuencia de clase, el cociente entre cantidad de individuos con ECV y el total de pacientes.
+  
+  * La línea punteada designa la igualdad entre probabilidad predicha y frecuencia de clase.
+  
+  * Los círculos, que se construyen de la siguiente manera:
+      * Se dividen a las observaciones en bins en base a la probabilidad predicha
+      * Se calcula la frecuencia de clase para cada bin
+      * En base a estas dos coordenadas se ubica al círculo en el gráfico
+      * El número y tamaño indican la cantidad de observaciones en dicho grupo
+
+Aquellos **círculos que se ubiquen por encima** de la línea punteada indican que el **modelo está subestimando** la probabilidad para dichos grupos. Mientras que si los **círculos se ubican por debajo** el modelo está **sobreestimando** la probabilidad para dichos grupos.
+
+¿Para qué valores parece existir una sobreestimación de la probabilidad? ¿Para cuáles subestimación?
+
+```{r}
+Hosmer_Lemeshow_plot <- function(dataset, predicted_column, class_column, bins, positive_value, color='forestgreen', nudge_x=0, nudge_y=0.05){
+  # Asignar los grupos a las observaciones de acuerdo a la probabilidad predicha
+  dataset['group'] <- bin(dataset[predicted_column], nbins = bins, method = 'l', labels=c(1:bins))
+  # Contar la cantidad de casos positivos por grupo
+  positive_class <- dataset %>% filter(!!sym(class_column)==positive_value) %>% group_by(group) %>% count()
+  # Obtener la media de las predicciones por grupo
+  HL_df <- dataset %>% group_by(group) %>% summarise(pred=mean(!!sym(predicted_column)), count=n()) %>%
+            inner_join(.,positive_class) %>%
+            mutate(freq=n/count)
+  # Gráfico 
+  HM_plot <- ggplot(HL_df, aes(x=pred, y=freq)) + 
+    geom_point(aes(size=n), color=color) +
+    geom_text(aes(label=n),nudge_y = nudge_y)+
+    geom_abline(slope = 1, intercept = 0, linetype='dashed') + 
+    theme_bw() +
+    labs(title='Hosmer-Lemeshow', size='Casos', x="Probabilidad Predicha", y="Frecuencia observada")
+  return(HM_plot)
+}
+```
+
+```{r}
+# modelo completo
+Hosmer_Lemeshow_plot(test_model, '.fitted', 'cardio', 10, 1) +
+  labs(subtitle="Modelo final")
+```
+
+
+La prueba de Hosmer Lemeshow permite evaluar el buen ajuste del modelo
+
+```{r}
+library(ResourceSelection)
+
+h1 <- hoslem.test (test$cardio , 
+                   fitted(best_model), g=8)
+h1
+```
