@@ -24,6 +24,8 @@ library(cowplot)
 library(OneR)
 library(rlang)
 library(caret)
+
+set.seed(15)
 ```
 
 # Presentación del caso de estudio
@@ -67,8 +69,6 @@ glimpse(df)
 Se genera una muestra de tamaño 1000 con la que se realizaran los análisis y se analiza si hay desbalance en la variable respuesta.
 
 ```{r}
-set.seed(09)
-
 df <- df %>% 
         sample_n(1000)
 
@@ -80,7 +80,6 @@ df %>%
 ## Partición de la base de datos
 
 ```{r}
-set.seed(2025)
 
 df_split <- initial_split(df,
                           prop = 0.8)
@@ -290,7 +289,7 @@ glance(glm1)
 
 Modelo obtenido
 
-$\log {\frac{P(x)}{1-P(x)}}= -2.64 + 0.03* weight + 0.04*varón$
+$\log {\frac{P(x)}{1-P(x)}}= -2.71 + 0.03* weight - 0.2*varón$
 
 **Peso**
 
@@ -306,9 +305,9 @@ $\ Odds_{varón} = {\frac{Prob_{ECV} /varón}{Prob_{noECV}/varón}}$
 
 $\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}$
 
-$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{0.04}$
+$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{-0.02}$
 
-El odds ratio para la variable género es 1.04, lo que indica que los varones tienen un 4.08 % mas de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser varón se asocia con un mayor riesgo relativo de ECV.
+El odds ratio para la variable género es 0.98, lo que indica que los varones tienen un 2 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un riesgo mayor riesgo relativo de ECV.
 
 ### Devianza
 
@@ -316,7 +315,7 @@ Es una medida de la falta de ajuste del modelo. Cuanto menor es la devianza, mej
 
 $\ Devianza Explicada = {\frac{Dev_{mod null} - Dev_{Mod}}{Dev_{mod null}}}$
 
-$\ Devianza Explicada = {\frac{1105.38 - 1063.38}{1105.38}}= 0.037$
+$\ Devianza Explicada = {\frac{1108.71 - 1056.63}{1108.71}}= 0.046$
 
 ```{r}
 
@@ -486,7 +485,7 @@ ggplot(metricas_df, aes(x = cutoff, y = estimate, color = term, group = term)) +
 ¿Cuál seria el umbral adecuado?
 
 ```{r}
-sel_cutoff = 0.51
+sel_cutoff = 0.45
 
 # calculamos las predicciones sobre el dataset de train
 table_train = augment(x = best_model, 
