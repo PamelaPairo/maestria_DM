@@ -93,7 +93,7 @@ test <- df_split %>%
 # Número de datos en train
 paste0("Total del dataset de entrenamiento: ", nrow(train))
 ```
-Analizamos como quedo el balance de clases para `cardio` en cada dataset.
+Analizamos cómo quedo el balance de clases para `cardio` en cada dataset.
 
 ```{r}
 # calculamos la distribución de clase en cada dataset
@@ -121,7 +121,7 @@ ggplot(distrib, aes(x = cardio, y = prop, fill = factor(cardio), label = prop)) 
 ```{r}
 glimpse(train)
 ```
-Seleccioamoslas variables con las que vamos a trabajar y les asignamos el tipo de dato correspondiente.
+Seleccioamos las variables con las que vamos a trabajar y les asignamos el tipo de dato correspondiente.
 
 ```{r}
 cols <- c("age", 
@@ -166,7 +166,7 @@ En este caso estamos modelando la probabilidad de la siguiente manera:
 
 $P(X)= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
 
-Veamos que tan bueno es el modelo lineal para esto, usando la edad como predictor.
+Veamos que tan bueno es el modelo lineal para esto, usando el peso como predictor.
 
 ```{r}
 mrl <- train %>% 
@@ -270,9 +270,11 @@ Algunas familias son:
 
 Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.
 
-Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de **weight**, **age** y **gender**. 
+Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de **weight** y **gender**. 
 
 $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_2 varón$
+
+
 
 ```{r}
 # modelo de regresión logística 
@@ -287,7 +289,7 @@ glance(glm1)
 
 ## Interpretación de los coeficientes del modelo
 
-Modelo obtenido
+Modelo estimado
 
 $\log {\frac{P(x)}{1-P(x)}}= -2.71 + 0.03* weight - 0.2*varón$
 
@@ -311,7 +313,7 @@ El odds ratio para la variable género es 0.98, lo que indica que los varones ti
 
 ### Devianza
 
-Es una medida de la falta de ajuste del modelo. Cuanto menor es la devianza, mejor se ajusta el modelo.
+Es una medida de la falta de ajuste del modelo. Cuanto menor es la devianza residual, mejor se ajusta el modelo.
 
 $\ Devianza Explicada = {\frac{Dev_{mod null} - Dev_{Mod}}{Dev_{mod null}}}$
 
@@ -323,9 +325,17 @@ $\ Devianza Explicada = {\frac{1108.71 - 1056.63}{1108.71}}= 0.046$
 
 ```
 
-## Selección de modelos
+# Selección de modelos
 
-Se generan la combinación de todos los modelos posibles a partir de las variables `gender`, `weight`, y `cholesterol`.
+Se generan la combinación de todos los modelos posibles a partir de las variables `gender`, `weight`, y `cholesterol`. Antes hacemos un boxplot con `weight`, `cholesterol` y `cardio`.
+
+```{r}
+ggplot(train, aes(x = cholesterol, y = weight, fill = factor(cardio))) +
+  geom_boxplot() +
+  labs(x = "cholesterol", y = "Peso", fill = "cardio") +
+  theme_bw() +
+  scale_fill_brewer(palette="Set2")
+```
 
 ```{r}
 vars <- c("gender", 
@@ -352,6 +362,9 @@ modelos <- map(formulas, ~ glm(.x, data = train, family = binomial))
 
 ```
 
+
+## Evaluando los modelos en train
+
 Analizamos la performance de los modelos generados
 
 ```{r}
@@ -372,8 +385,8 @@ resultados
 ```{r}
 prediction_full <- map2(modelos, formulas, ~ {
   tibble(
-    .fitted = predict(.x, newdata = test, type = "response"),
-    cardio = test$cardio
+    .fitted = predict(.x, newdata = train, type = "response"),
+    cardio = train$cardio
   )
 })
 
@@ -432,7 +445,7 @@ $precision = \frac{TP}{TP+FP}$
 # Supongamos que 'mejor_modelo'
 
 best_model <- glm(data = test,
-                  cardio ~ weight + gender+ active, 
+                  cardio ~ weight + gender+ cholesterol, 
                   family = 'binomial')
 
 # generamos las predicciones para el mejor modelo
@@ -472,6 +485,7 @@ metricas_df <- map_df(cutoffs, ~ prediction_metrics(.x, predictions = test_model
 ggplot(metricas_df, aes(x = cutoff, y = estimate, color = term, group = term)) +
   geom_line(size = 1.2) +
   geom_point(size = 2) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.1))+
   theme_bw() +
   labs(
     title = "Accuracy, Sensitivity, Specificity y Precision vs Cutoff",
@@ -483,6 +497,8 @@ ggplot(metricas_df, aes(x = cutoff, y = estimate, color = term, group = term)) +
 ```
 
 ¿Cuál seria el umbral adecuado?
+
+Punto de cruce entre sensitivity y specificity dado que se minimizan tanto FP y FN. Útil cuando no hay una clara preferencia por minimizar FP o FN.
 
 ```{r}
 sel_cutoff = 0.45
@@ -512,6 +528,17 @@ table_test = table_test %>%
   mutate(predicted_class = if_else(.fitted>sel_cutoff, 1, 0))
 # Creamos la matriz de confusión
 confusionMatrix(table(table_test$predicted_class, table_test$cardio), positive = "1")
+```
+
+El 69.8 % de los casos positivos reales fueron correctamente identificados.
+(Probabilidad de detectar correctamente una ECV si la persona realmente la tiene.)
+
+El 66.4 % de los casos negativos fueron correctamente identificados como tales.
+
+De todos los que el modelo predijo como negativos, el 70.4 % realmente no tienen ECV.
+
+```{r}
+best_model
 ```
 
 
@@ -573,3 +600,30 @@ h1 <- hoslem.test (test$cardio ,
                    fitted(best_model), g=8)
 h1
 ```
+
+```{r}
+
+# Crear una secuencia de valores para 'weight' y combinar con los niveles de 'cholesterol'
+new_data <- expand.grid(
+  weight = seq(min(train$weight), max(train$weight), length.out = 150),
+  cholesterol = "1",  # fijamos un valor para el género
+  gender = levels(train$gender)
+)
+
+# Obtener probabilidades predichas del modelo
+new_data$predicted <- predict(best_model, newdata = new_data, type = "response")
+
+# Graficar la función sigmoidea
+ggplot(new_data, aes(x = weight, y = predicted, color = gender)) +
+  geom_line(size = 1.2) +
+  labs(
+    x = "Peso",
+    y = "Probabilidad predicha de ECV",
+    title = "Predicciones según género",
+    color = "Género"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+```
+
