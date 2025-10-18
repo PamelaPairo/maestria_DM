@@ -627,3 +627,32 @@ ggplot(new_data, aes(x = weight, y = predicted, color = gender)) +
 
 ```
 
+## Interpretación del modelo final
+
+```{r}
+results_ <- tidy(best_model, exponentiate = TRUE, conf.int = TRUE)
+
+
+results_ %>%
+  filter(term != "(Intercept)") %>%  # elimina el intercepto
+  mutate(across(c(estimate, conf.low, conf.high), round, 2)) %>%
+  mutate(IC95 = paste0("[", conf.low, ", ", conf.high, "]")) %>%
+  select(term, OR = estimate, IC95, p.value)
+
+```
+
+**`weight`**
+
+Por cada aumento de una unidad de peso, los odds de presentar una ECV aumentan un 5%, manteniendo constantes el resto de las variables. Al no incluir el 1 se puede decir que el efecto es estadísticamente significativo
+
+Conclusión: el peso se asocia positivamente con la probabilidad de contraer ECV.
+
+**`gender`**
+
+Aunque parece haber una tendencia a menor riesgo en varones, el intervalo incluye al 1, por lo tanto no hay evidencia estadística suficiente para afirmarlo.
+
+**`cholesteol`**
+
+Los pacientes con colesterol en nivel 3 tienen 3.56 veces más odds de presentar ECV que aquellos con colesterol normal (nivel base).
+Es decir, los odds de tener ECV se incrementan en un 256% en comparación con el grupo de referencia, manteniendo constantes las demás variables del modelo.
+
