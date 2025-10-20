@@ -610,31 +610,31 @@ $ cardio      &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 cardio ~ gender
-&lt;environment: 0x00000292e34965a8&gt;
+&lt;environment: 0x000002490961be78&gt;
 
 [[2]]
 cardio ~ weight
-&lt;environment: 0x00000292e3489958&gt;
+&lt;environment: 0x000002490960f5f0&gt;
 
 [[3]]
 cardio ~ cholesterol
-&lt;environment: 0x00000292e3a4d880&gt;
+&lt;environment: 0x0000024909015008&gt;
 
 [[4]]
 cardio ~ gender + weight
-&lt;environment: 0x00000292e3a4a4c0&gt;
+&lt;environment: 0x0000024908dbe730&gt;
 
 [[5]]
 cardio ~ gender + cholesterol
-&lt;environment: 0x00000292e3aa47a0&gt;
+&lt;environment: 0x0000024908d8f568&gt;
 
 [[6]]
 cardio ~ weight + cholesterol
-&lt;environment: 0x00000292e3aa9530&gt;
+&lt;environment: 0x0000024908d695e0&gt;
 
 [[7]]
 cardio ~ gender + weight + cholesterol
-&lt;environment: 0x00000292e3a8c3b0&gt;</code></pre>
+&lt;environment: 0x0000024908d50760&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -966,24 +966,37 @@ Residual Deviance: 249.3    AIC: 259.3</code></pre>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>Hosmer_Lemeshow_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataset, predicted_column, class_column, bins, positive_value, <span class="at">color=</span><span class="st">'forestgreen'</span>, <span class="at">nudge_x=</span><span class="dv">0</span>, <span class="at">nudge_y=</span><span class="fl">0.05</span>){</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Asignar los grupos a las observaciones de acuerdo a la probabilidad predicha</span></span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  dataset[<span class="st">'group'</span>] <span class="ot">&lt;-</span> <span class="fu">bin</span>(dataset[predicted_column], <span class="at">nbins =</span> bins, <span class="at">method =</span> <span class="st">'l'</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>bins))</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Contar la cantidad de casos positivos por grupo</span></span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  positive_class <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(class_column)<span class="sc">==</span>positive_value) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span> <span class="fu">count</span>()</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Obtener la media de las predicciones por grupo</span></span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  HL_df <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">pred=</span><span class="fu">mean</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column)), <span class="at">count=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">inner_join</span>(.,positive_class) <span class="sc">%&gt;%</span></span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mutate</span>(<span class="at">freq=</span>n<span class="sc">/</span>count)</span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Gráfico </span></span>
-<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  HM_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(HL_df, <span class="fu">aes</span>(<span class="at">x=</span>pred, <span class="at">y=</span>freq)) <span class="sc">+</span> </span>
-<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size=</span>n), <span class="at">color=</span>color) <span class="sc">+</span></span>
-<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>n),<span class="at">nudge_y =</span> nudge_y)<span class="sc">+</span></span>
-<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>) <span class="sc">+</span> </span>
-<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Hosmer-Lemeshow'</span>, <span class="at">size=</span><span class="st">'Casos'</span>, <span class="at">x=</span><span class="st">"Probabilidad Predicha"</span>, <span class="at">y=</span><span class="st">"Frecuencia observada"</span>)</span>
-<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(HM_plot)</span>
-<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>Hosmer_Lemeshow_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataset, predicted_column, class_column, <span class="at">bins =</span> <span class="dv">10</span>,</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">positive_value =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">'forestgreen'</span>, <span class="at">nudge_x =</span> <span class="dv">0</span>, <span class="at">nudge_y =</span> <span class="fl">0.05</span>){</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  dataset <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">cut</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column),</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">breaks =</span> <span class="fu">quantile</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column), <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> bins <span class="sc">+</span> <span class="dv">1</span>)),</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">include.lowest =</span> <span class="cn">TRUE</span>, <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span>bins))</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  positive_class <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(class_column) <span class="sc">==</span> positive_value) <span class="sc">%&gt;%</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">n_positive =</span> <span class="fu">n</span>())</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>  HL_df <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">pred =</span> <span class="fu">mean</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column)), <span class="at">n_total =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(positive_class, <span class="at">by =</span> <span class="st">"group"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">n_positive =</span> <span class="fu">replace_na</span>(n_positive, <span class="dv">0</span>),</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>           <span class="at">freq =</span> n_positive <span class="sc">/</span> n_total)</span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(HL_df, <span class="fu">aes</span>(<span class="at">x =</span> pred, <span class="at">y =</span> freq)) <span class="sc">+</span></span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size =</span> n_total), <span class="at">color =</span> color) <span class="sc">+</span></span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> n_total), <span class="at">nudge_x =</span> nudge_x, <span class="at">nudge_y =</span> nudge_y, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Hosmer-Lemeshow"</span>,</span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>         <span class="at">subtitle =</span> <span class="st">"Modelo final"</span>,</span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="st">"Probabilidad Predicha"</span>,</span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a>         <span class="at">y =</span> <span class="st">"Frecuencia observada"</span>,</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a>         <span class="at">size =</span> <span class="st">"Casos"</span>) <span class="sc">+</span></span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -1019,38 +1032,6 @@ data:  test$cardio, fitted(best_model)
 X-squared = 2.0033, df = 6, p-value = 0.9194</code></pre>
 </div>
 </div>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Código</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear una secuencia de valores para 'weight' y combinar con los niveles de 'cholesterol'</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight =</span> <span class="fu">seq</span>(<span class="fu">min</span>(train<span class="sc">$</span>weight), <span class="fu">max</span>(train<span class="sc">$</span>weight), <span class="at">length.out =</span> <span class="dv">150</span>),</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cholesterol =</span> <span class="st">"1"</span>,  <span class="co"># fijamos un valor para el género</span></span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">levels</span>(train<span class="sc">$</span>gender)</span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtener probabilidades predichas del modelo</span></span>
-<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>new_data<span class="sc">$</span>predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(best_model, <span class="at">newdata =</span> new_data, <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Graficar la función sigmoidea</span></span>
-<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(new_data, <span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> predicted, <span class="at">color =</span> gender)) <span class="sc">+</span></span>
-<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Peso"</span>,</span>
-<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probabilidad predicha de ECV"</span>,</span>
-<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predicciones según género"</span>,</span>
-<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Género"</span></span>
-<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="regLogistica_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
 </section>
 </section>
 <section id="interpretación-del-modelo-final" class="level2">
@@ -1058,14 +1039,14 @@ X-squared = 2.0033, df = 6, p-value = 0.9194</code></pre>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>results_ <span class="ot">&lt;-</span> <span class="fu">tidy</span>(best_model, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>results_ <span class="sc">%&gt;%</span></span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">"(Intercept)"</span>) <span class="sc">%&gt;%</span>  <span class="co"># elimina el intercepto</span></span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(estimate, conf.low, conf.high), round, <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">IC95 =</span> <span class="fu">paste0</span>(<span class="st">"["</span>, conf.low, <span class="st">", "</span>, conf.high, <span class="st">"]"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term, <span class="at">OR =</span> estimate, IC95, p.value)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>results_ <span class="ot">&lt;-</span> <span class="fu">tidy</span>(best_model, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>results_ <span class="sc">%&gt;%</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">"(Intercept)"</span>) <span class="sc">%&gt;%</span>  <span class="co"># elimina el intercepto</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(estimate, conf.low, conf.high), round, <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">IC95 =</span> <span class="fu">paste0</span>(<span class="st">"["</span>, conf.low, <span class="st">", "</span>, conf.high, <span class="st">"]"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term, <span class="at">OR =</span> estimate, IC95, p.value)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 4
@@ -1082,8 +1063,54 @@ X-squared = 2.0033, df = 6, p-value = 0.9194</code></pre>
 <p>Conclusión: el peso se asocia positivamente con la probabilidad de contraer ECV.</p>
 <p><strong><code>gender</code></strong></p>
 <p>Aunque parece haber una tendencia a menor riesgo en varones, el intervalo incluye al 1, por lo tanto no hay evidencia estadística suficiente para afirmarlo.</p>
-<p><strong><code>cholesteol</code></strong></p>
+<p><strong><code>cholesterol</code></strong></p>
 <p>Los pacientes con colesterol en nivel 3 tienen 3.56 veces más odds de presentar ECV que aquellos con colesterol normal (nivel base). Es decir, los odds de tener ECV se incrementan en un 256% en comparación con el grupo de referencia, manteniendo constantes las demás variables del modelo.</p>
+<p>A continuación se muestra las curvas que representan la probabilidad predicha de presentar una ECV en función del peso, comparando varones y mujeres y manteniendo fijo el colesterol en el nivel “1”.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear nueva grilla de datos</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight =</span> <span class="fu">seq</span>(<span class="fu">min</span>(train<span class="sc">$</span>weight), <span class="fu">max</span>(train<span class="sc">$</span>weight), <span class="at">length.out =</span> <span class="dv">150</span>),</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cholesterol =</span> <span class="st">"1"</span>,  <span class="co"># fijamos un valor de colesterol</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">levels</span>(train<span class="sc">$</span>gender)</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtener predicciones en escala del logit con error estándar</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(best_model, <span class="at">newdata =</span> new_data, <span class="at">type =</span> <span class="st">"link"</span>, <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular límites de confianza en la escala del logit</span></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> new_data <span class="sc">%&gt;%</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">fit =</span> pred<span class="sc">$</span>fit,</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">se.fit =</span> pred<span class="sc">$</span>se.fit,</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower =</span> fit <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit,</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> fit <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit,</span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">predicted =</span> <span class="fu">plogis</span>(fit),          <span class="co"># transformar a probabilidad</span></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower_ci =</span> <span class="fu">plogis</span>(lower),</span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper_ci =</span> <span class="fu">plogis</span>(upper)</span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Graficar con bandas de confianza</span></span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(new_data, <span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> predicted, <span class="at">color =</span> gender, <span class="at">fill =</span> gender)) <span class="sc">+</span></span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower_ci, <span class="at">ymax =</span> upper_ci), <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Peso"</span>,</span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probabilidad predicha de ECV"</span>,</span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Género"</span>,</span>
+<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Género"</span></span>
+<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regLogistica_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 <!-- -->
 
 </section>
@@ -2124,96 +2151,124 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb52-608"><a href="#cb52-608" aria-hidden="true" tabindex="-1"></a>¿Para qué valores parece existir una sobreestimación de la probabilidad? ¿Para cuáles subestimación?</span>
 <span id="cb52-609"><a href="#cb52-609" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-612"><a href="#cb52-612" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb52-613"><a href="#cb52-613" aria-hidden="true" tabindex="-1"></a>Hosmer_Lemeshow_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataset, predicted_column, class_column, bins, positive_value, <span class="at">color=</span><span class="st">'forestgreen'</span>, <span class="at">nudge_x=</span><span class="dv">0</span>, <span class="at">nudge_y=</span><span class="fl">0.05</span>){</span>
-<span id="cb52-614"><a href="#cb52-614" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Asignar los grupos a las observaciones de acuerdo a la probabilidad predicha</span></span>
-<span id="cb52-615"><a href="#cb52-615" aria-hidden="true" tabindex="-1"></a>  dataset[<span class="st">'group'</span>] <span class="ot">&lt;-</span> <span class="fu">bin</span>(dataset[predicted_column], <span class="at">nbins =</span> bins, <span class="at">method =</span> <span class="st">'l'</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>bins))</span>
-<span id="cb52-616"><a href="#cb52-616" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Contar la cantidad de casos positivos por grupo</span></span>
-<span id="cb52-617"><a href="#cb52-617" aria-hidden="true" tabindex="-1"></a>  positive_class <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(class_column)<span class="sc">==</span>positive_value) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span> <span class="fu">count</span>()</span>
-<span id="cb52-618"><a href="#cb52-618" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Obtener la media de las predicciones por grupo</span></span>
-<span id="cb52-619"><a href="#cb52-619" aria-hidden="true" tabindex="-1"></a>  HL_df <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">pred=</span><span class="fu">mean</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column)), <span class="at">count=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb52-620"><a href="#cb52-620" aria-hidden="true" tabindex="-1"></a>            <span class="fu">inner_join</span>(.,positive_class) <span class="sc">%&gt;%</span></span>
-<span id="cb52-621"><a href="#cb52-621" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mutate</span>(<span class="at">freq=</span>n<span class="sc">/</span>count)</span>
-<span id="cb52-622"><a href="#cb52-622" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Gráfico </span></span>
-<span id="cb52-623"><a href="#cb52-623" aria-hidden="true" tabindex="-1"></a>  HM_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(HL_df, <span class="fu">aes</span>(<span class="at">x=</span>pred, <span class="at">y=</span>freq)) <span class="sc">+</span> </span>
-<span id="cb52-624"><a href="#cb52-624" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size=</span>n), <span class="at">color=</span>color) <span class="sc">+</span></span>
-<span id="cb52-625"><a href="#cb52-625" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>n),<span class="at">nudge_y =</span> nudge_y)<span class="sc">+</span></span>
-<span id="cb52-626"><a href="#cb52-626" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">linetype=</span><span class="st">'dashed'</span>) <span class="sc">+</span> </span>
-<span id="cb52-627"><a href="#cb52-627" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb52-628"><a href="#cb52-628" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Hosmer-Lemeshow'</span>, <span class="at">size=</span><span class="st">'Casos'</span>, <span class="at">x=</span><span class="st">"Probabilidad Predicha"</span>, <span class="at">y=</span><span class="st">"Frecuencia observada"</span>)</span>
-<span id="cb52-629"><a href="#cb52-629" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(HM_plot)</span>
-<span id="cb52-630"><a href="#cb52-630" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb52-631"><a href="#cb52-631" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb52-613"><a href="#cb52-613" aria-hidden="true" tabindex="-1"></a>Hosmer_Lemeshow_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataset, predicted_column, class_column, <span class="at">bins =</span> <span class="dv">10</span>,</span>
+<span id="cb52-614"><a href="#cb52-614" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">positive_value =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">'forestgreen'</span>, <span class="at">nudge_x =</span> <span class="dv">0</span>, <span class="at">nudge_y =</span> <span class="fl">0.05</span>){</span>
+<span id="cb52-615"><a href="#cb52-615" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-616"><a href="#cb52-616" aria-hidden="true" tabindex="-1"></a>  dataset <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span></span>
+<span id="cb52-617"><a href="#cb52-617" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">cut</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column),</span>
+<span id="cb52-618"><a href="#cb52-618" aria-hidden="true" tabindex="-1"></a>                       <span class="at">breaks =</span> <span class="fu">quantile</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column), <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> bins <span class="sc">+</span> <span class="dv">1</span>)),</span>
+<span id="cb52-619"><a href="#cb52-619" aria-hidden="true" tabindex="-1"></a>                       <span class="at">include.lowest =</span> <span class="cn">TRUE</span>, <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span>bins))</span>
+<span id="cb52-620"><a href="#cb52-620" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-621"><a href="#cb52-621" aria-hidden="true" tabindex="-1"></a>  positive_class <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span></span>
+<span id="cb52-622"><a href="#cb52-622" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!!</span><span class="fu">sym</span>(class_column) <span class="sc">==</span> positive_value) <span class="sc">%&gt;%</span></span>
+<span id="cb52-623"><a href="#cb52-623" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb52-624"><a href="#cb52-624" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">n_positive =</span> <span class="fu">n</span>())</span>
+<span id="cb52-625"><a href="#cb52-625" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-626"><a href="#cb52-626" aria-hidden="true" tabindex="-1"></a>  HL_df <span class="ot">&lt;-</span> dataset <span class="sc">%&gt;%</span></span>
+<span id="cb52-627"><a href="#cb52-627" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb52-628"><a href="#cb52-628" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">pred =</span> <span class="fu">mean</span>(<span class="sc">!!</span><span class="fu">sym</span>(predicted_column)), <span class="at">n_total =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb52-629"><a href="#cb52-629" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(positive_class, <span class="at">by =</span> <span class="st">"group"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb52-630"><a href="#cb52-630" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">n_positive =</span> <span class="fu">replace_na</span>(n_positive, <span class="dv">0</span>),</span>
+<span id="cb52-631"><a href="#cb52-631" aria-hidden="true" tabindex="-1"></a>           <span class="at">freq =</span> n_positive <span class="sc">/</span> n_total)</span>
 <span id="cb52-632"><a href="#cb52-632" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-635"><a href="#cb52-635" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb52-636"><a href="#cb52-636" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo completo</span></span>
-<span id="cb52-637"><a href="#cb52-637" aria-hidden="true" tabindex="-1"></a><span class="fu">Hosmer_Lemeshow_plot</span>(test_model, <span class="st">'.fitted'</span>, <span class="st">'cardio'</span>, <span class="dv">10</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb52-638"><a href="#cb52-638" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle=</span><span class="st">"Modelo final"</span>)</span>
-<span id="cb52-639"><a href="#cb52-639" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb52-640"><a href="#cb52-640" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-641"><a href="#cb52-641" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-642"><a href="#cb52-642" aria-hidden="true" tabindex="-1"></a>La prueba de Hosmer Lemeshow permite evaluar el buen ajuste del modelo</span>
-<span id="cb52-643"><a href="#cb52-643" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-646"><a href="#cb52-646" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb52-647"><a href="#cb52-647" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ResourceSelection)</span>
-<span id="cb52-648"><a href="#cb52-648" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-649"><a href="#cb52-649" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> <span class="fu">hoslem.test</span> (test<span class="sc">$</span>cardio , </span>
-<span id="cb52-650"><a href="#cb52-650" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">fitted</span>(best_model), <span class="at">g=</span><span class="dv">8</span>)</span>
-<span id="cb52-651"><a href="#cb52-651" aria-hidden="true" tabindex="-1"></a>h1</span>
-<span id="cb52-652"><a href="#cb52-652" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb52-653"><a href="#cb52-653" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-656"><a href="#cb52-656" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb52-657"><a href="#cb52-657" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear una secuencia de valores para 'weight' y combinar con los niveles de 'cholesterol'</span></span>
-<span id="cb52-658"><a href="#cb52-658" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb52-659"><a href="#cb52-659" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight =</span> <span class="fu">seq</span>(<span class="fu">min</span>(train<span class="sc">$</span>weight), <span class="fu">max</span>(train<span class="sc">$</span>weight), <span class="at">length.out =</span> <span class="dv">150</span>),</span>
-<span id="cb52-660"><a href="#cb52-660" aria-hidden="true" tabindex="-1"></a>  <span class="at">cholesterol =</span> <span class="st">"1"</span>,  <span class="co"># fijamos un valor para el género</span></span>
-<span id="cb52-661"><a href="#cb52-661" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">levels</span>(train<span class="sc">$</span>gender)</span>
-<span id="cb52-662"><a href="#cb52-662" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb52-663"><a href="#cb52-663" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-664"><a href="#cb52-664" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtener probabilidades predichas del modelo</span></span>
-<span id="cb52-665"><a href="#cb52-665" aria-hidden="true" tabindex="-1"></a>new_data<span class="sc">$</span>predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(best_model, <span class="at">newdata =</span> new_data, <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb52-666"><a href="#cb52-666" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-667"><a href="#cb52-667" aria-hidden="true" tabindex="-1"></a><span class="co"># Graficar la función sigmoidea</span></span>
-<span id="cb52-668"><a href="#cb52-668" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(new_data, <span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> predicted, <span class="at">color =</span> gender)) <span class="sc">+</span></span>
-<span id="cb52-669"><a href="#cb52-669" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb52-670"><a href="#cb52-670" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb52-671"><a href="#cb52-671" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Peso"</span>,</span>
-<span id="cb52-672"><a href="#cb52-672" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probabilidad predicha de ECV"</span>,</span>
-<span id="cb52-673"><a href="#cb52-673" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predicciones según género"</span>,</span>
-<span id="cb52-674"><a href="#cb52-674" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Género"</span></span>
-<span id="cb52-675"><a href="#cb52-675" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb52-676"><a href="#cb52-676" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
-<span id="cb52-677"><a href="#cb52-677" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-678"><a href="#cb52-678" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-679"><a href="#cb52-679" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb52-680"><a href="#cb52-680" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-681"><a href="#cb52-681" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interpretación del modelo final</span></span>
-<span id="cb52-682"><a href="#cb52-682" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-685"><a href="#cb52-685" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb52-686"><a href="#cb52-686" aria-hidden="true" tabindex="-1"></a>results_ <span class="ot">&lt;-</span> <span class="fu">tidy</span>(best_model, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb52-633"><a href="#cb52-633" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(HL_df, <span class="fu">aes</span>(<span class="at">x =</span> pred, <span class="at">y =</span> freq)) <span class="sc">+</span></span>
+<span id="cb52-634"><a href="#cb52-634" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size =</span> n_total), <span class="at">color =</span> color) <span class="sc">+</span></span>
+<span id="cb52-635"><a href="#cb52-635" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> n_total), <span class="at">nudge_x =</span> nudge_x, <span class="at">nudge_y =</span> nudge_y, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb52-636"><a href="#cb52-636" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb52-637"><a href="#cb52-637" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Hosmer-Lemeshow"</span>,</span>
+<span id="cb52-638"><a href="#cb52-638" aria-hidden="true" tabindex="-1"></a>         <span class="at">subtitle =</span> <span class="st">"Modelo final"</span>,</span>
+<span id="cb52-639"><a href="#cb52-639" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="st">"Probabilidad Predicha"</span>,</span>
+<span id="cb52-640"><a href="#cb52-640" aria-hidden="true" tabindex="-1"></a>         <span class="at">y =</span> <span class="st">"Frecuencia observada"</span>,</span>
+<span id="cb52-641"><a href="#cb52-641" aria-hidden="true" tabindex="-1"></a>         <span class="at">size =</span> <span class="st">"Casos"</span>) <span class="sc">+</span></span>
+<span id="cb52-642"><a href="#cb52-642" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb52-643"><a href="#cb52-643" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb52-644"><a href="#cb52-644" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-645"><a href="#cb52-645" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb52-646"><a href="#cb52-646" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-647"><a href="#cb52-647" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-650"><a href="#cb52-650" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb52-651"><a href="#cb52-651" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo completo</span></span>
+<span id="cb52-652"><a href="#cb52-652" aria-hidden="true" tabindex="-1"></a><span class="fu">Hosmer_Lemeshow_plot</span>(test_model, <span class="st">'.fitted'</span>, <span class="st">'cardio'</span>, <span class="dv">10</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb52-653"><a href="#cb52-653" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle=</span><span class="st">"Modelo final"</span>)</span>
+<span id="cb52-654"><a href="#cb52-654" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb52-655"><a href="#cb52-655" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-656"><a href="#cb52-656" aria-hidden="true" tabindex="-1"></a>La prueba de Hosmer Lemeshow permite evaluar el buen ajuste del modelo</span>
+<span id="cb52-657"><a href="#cb52-657" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-660"><a href="#cb52-660" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb52-661"><a href="#cb52-661" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ResourceSelection)</span>
+<span id="cb52-662"><a href="#cb52-662" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-663"><a href="#cb52-663" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> <span class="fu">hoslem.test</span> (test<span class="sc">$</span>cardio , </span>
+<span id="cb52-664"><a href="#cb52-664" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">fitted</span>(best_model), <span class="at">g=</span><span class="dv">8</span>)</span>
+<span id="cb52-665"><a href="#cb52-665" aria-hidden="true" tabindex="-1"></a>h1</span>
+<span id="cb52-666"><a href="#cb52-666" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb52-667"><a href="#cb52-667" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-668"><a href="#cb52-668" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interpretación del modelo final</span></span>
+<span id="cb52-669"><a href="#cb52-669" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-672"><a href="#cb52-672" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb52-673"><a href="#cb52-673" aria-hidden="true" tabindex="-1"></a>results_ <span class="ot">&lt;-</span> <span class="fu">tidy</span>(best_model, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb52-674"><a href="#cb52-674" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-675"><a href="#cb52-675" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-676"><a href="#cb52-676" aria-hidden="true" tabindex="-1"></a>results_ <span class="sc">%&gt;%</span></span>
+<span id="cb52-677"><a href="#cb52-677" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">"(Intercept)"</span>) <span class="sc">%&gt;%</span>  <span class="co"># elimina el intercepto</span></span>
+<span id="cb52-678"><a href="#cb52-678" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(estimate, conf.low, conf.high), round, <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb52-679"><a href="#cb52-679" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">IC95 =</span> <span class="fu">paste0</span>(<span class="st">"["</span>, conf.low, <span class="st">", "</span>, conf.high, <span class="st">"]"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb52-680"><a href="#cb52-680" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term, <span class="at">OR =</span> estimate, IC95, p.value)</span>
+<span id="cb52-681"><a href="#cb52-681" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-682"><a href="#cb52-682" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb52-683"><a href="#cb52-683" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-684"><a href="#cb52-684" aria-hidden="true" tabindex="-1"></a>**`weight`**</span>
+<span id="cb52-685"><a href="#cb52-685" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-686"><a href="#cb52-686" aria-hidden="true" tabindex="-1"></a>Por cada aumento de una unidad de peso, los odds de presentar una ECV aumentan un 5%, manteniendo constantes el resto de las variables. Al no incluir el 1 se puede decir que el efecto es estadísticamente significativo</span>
 <span id="cb52-687"><a href="#cb52-687" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-688"><a href="#cb52-688" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-689"><a href="#cb52-689" aria-hidden="true" tabindex="-1"></a>results_ <span class="sc">%&gt;%</span></span>
-<span id="cb52-690"><a href="#cb52-690" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">"(Intercept)"</span>) <span class="sc">%&gt;%</span>  <span class="co"># elimina el intercepto</span></span>
-<span id="cb52-691"><a href="#cb52-691" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(estimate, conf.low, conf.high), round, <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb52-692"><a href="#cb52-692" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">IC95 =</span> <span class="fu">paste0</span>(<span class="st">"["</span>, conf.low, <span class="st">", "</span>, conf.high, <span class="st">"]"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb52-693"><a href="#cb52-693" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term, <span class="at">OR =</span> estimate, IC95, p.value)</span>
-<span id="cb52-694"><a href="#cb52-694" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-695"><a href="#cb52-695" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb52-696"><a href="#cb52-696" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-697"><a href="#cb52-697" aria-hidden="true" tabindex="-1"></a>**`weight`**</span>
+<span id="cb52-688"><a href="#cb52-688" aria-hidden="true" tabindex="-1"></a>Conclusión: el peso se asocia positivamente con la probabilidad de contraer ECV.</span>
+<span id="cb52-689"><a href="#cb52-689" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-690"><a href="#cb52-690" aria-hidden="true" tabindex="-1"></a>**`gender`**</span>
+<span id="cb52-691"><a href="#cb52-691" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-692"><a href="#cb52-692" aria-hidden="true" tabindex="-1"></a>Aunque parece haber una tendencia a menor riesgo en varones, el intervalo incluye al 1, por lo tanto no hay evidencia estadística suficiente para afirmarlo.</span>
+<span id="cb52-693"><a href="#cb52-693" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-694"><a href="#cb52-694" aria-hidden="true" tabindex="-1"></a>**`cholesterol`**</span>
+<span id="cb52-695"><a href="#cb52-695" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-696"><a href="#cb52-696" aria-hidden="true" tabindex="-1"></a>Los pacientes con colesterol en nivel 3 tienen 3.56 veces más odds de presentar ECV que aquellos con colesterol normal (nivel base).</span>
+<span id="cb52-697"><a href="#cb52-697" aria-hidden="true" tabindex="-1"></a>Es decir, los odds de tener ECV se incrementan en un 256% en comparación con el grupo de referencia, manteniendo constantes las demás variables del modelo.</span>
 <span id="cb52-698"><a href="#cb52-698" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-699"><a href="#cb52-699" aria-hidden="true" tabindex="-1"></a>Por cada aumento de una unidad de peso, los odds de presentar una ECV aumentan un 5%, manteniendo constantes el resto de las variables. Al no incluir el 1 se puede decir que el efecto es estadísticamente significativo</span>
+<span id="cb52-699"><a href="#cb52-699" aria-hidden="true" tabindex="-1"></a>A continuación se muestra las curvas que representan la probabilidad predicha de presentar una ECV en función del peso, comparando varones y mujeres y manteniendo fijo el colesterol en el nivel “1”.</span>
 <span id="cb52-700"><a href="#cb52-700" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-701"><a href="#cb52-701" aria-hidden="true" tabindex="-1"></a>Conclusión: el peso se asocia positivamente con la probabilidad de contraer ECV.</span>
-<span id="cb52-702"><a href="#cb52-702" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-703"><a href="#cb52-703" aria-hidden="true" tabindex="-1"></a>**`gender`**</span>
-<span id="cb52-704"><a href="#cb52-704" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-705"><a href="#cb52-705" aria-hidden="true" tabindex="-1"></a>Aunque parece haber una tendencia a menor riesgo en varones, el intervalo incluye al 1, por lo tanto no hay evidencia estadística suficiente para afirmarlo.</span>
-<span id="cb52-706"><a href="#cb52-706" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-707"><a href="#cb52-707" aria-hidden="true" tabindex="-1"></a>**`cholesteol`**</span>
-<span id="cb52-708"><a href="#cb52-708" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-709"><a href="#cb52-709" aria-hidden="true" tabindex="-1"></a>Los pacientes con colesterol en nivel 3 tienen 3.56 veces más odds de presentar ECV que aquellos con colesterol normal (nivel base).</span>
-<span id="cb52-710"><a href="#cb52-710" aria-hidden="true" tabindex="-1"></a>Es decir, los odds de tener ECV se incrementan en un 256% en comparación con el grupo de referencia, manteniendo constantes las demás variables del modelo.</span>
+<span id="cb52-703"><a href="#cb52-703" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb52-704"><a href="#cb52-704" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear nueva grilla de datos</span></span>
+<span id="cb52-705"><a href="#cb52-705" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb52-706"><a href="#cb52-706" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight =</span> <span class="fu">seq</span>(<span class="fu">min</span>(train<span class="sc">$</span>weight), <span class="fu">max</span>(train<span class="sc">$</span>weight), <span class="at">length.out =</span> <span class="dv">150</span>),</span>
+<span id="cb52-707"><a href="#cb52-707" aria-hidden="true" tabindex="-1"></a>  <span class="at">cholesterol =</span> <span class="st">"1"</span>,  <span class="co"># fijamos un valor de colesterol</span></span>
+<span id="cb52-708"><a href="#cb52-708" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">levels</span>(train<span class="sc">$</span>gender)</span>
+<span id="cb52-709"><a href="#cb52-709" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb52-710"><a href="#cb52-710" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-711"><a href="#cb52-711" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtener predicciones en escala del logit con error estándar</span></span>
+<span id="cb52-712"><a href="#cb52-712" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(best_model, <span class="at">newdata =</span> new_data, <span class="at">type =</span> <span class="st">"link"</span>, <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb52-713"><a href="#cb52-713" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-714"><a href="#cb52-714" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular límites de confianza en la escala del logit</span></span>
+<span id="cb52-715"><a href="#cb52-715" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> new_data <span class="sc">%&gt;%</span></span>
+<span id="cb52-716"><a href="#cb52-716" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb52-717"><a href="#cb52-717" aria-hidden="true" tabindex="-1"></a>    <span class="at">fit =</span> pred<span class="sc">$</span>fit,</span>
+<span id="cb52-718"><a href="#cb52-718" aria-hidden="true" tabindex="-1"></a>    <span class="at">se.fit =</span> pred<span class="sc">$</span>se.fit,</span>
+<span id="cb52-719"><a href="#cb52-719" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower =</span> fit <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit,</span>
+<span id="cb52-720"><a href="#cb52-720" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> fit <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit,</span>
+<span id="cb52-721"><a href="#cb52-721" aria-hidden="true" tabindex="-1"></a>    <span class="at">predicted =</span> <span class="fu">plogis</span>(fit),          <span class="co"># transformar a probabilidad</span></span>
+<span id="cb52-722"><a href="#cb52-722" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower_ci =</span> <span class="fu">plogis</span>(lower),</span>
+<span id="cb52-723"><a href="#cb52-723" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper_ci =</span> <span class="fu">plogis</span>(upper)</span>
+<span id="cb52-724"><a href="#cb52-724" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb52-725"><a href="#cb52-725" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-726"><a href="#cb52-726" aria-hidden="true" tabindex="-1"></a><span class="co"># Graficar con bandas de confianza</span></span>
+<span id="cb52-727"><a href="#cb52-727" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(new_data, <span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> predicted, <span class="at">color =</span> gender, <span class="at">fill =</span> gender)) <span class="sc">+</span></span>
+<span id="cb52-728"><a href="#cb52-728" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb52-729"><a href="#cb52-729" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower_ci, <span class="at">ymax =</span> upper_ci), <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb52-730"><a href="#cb52-730" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb52-731"><a href="#cb52-731" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Peso"</span>,</span>
+<span id="cb52-732"><a href="#cb52-732" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probabilidad predicha de ECV"</span>,</span>
+<span id="cb52-733"><a href="#cb52-733" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Género"</span>,</span>
+<span id="cb52-734"><a href="#cb52-734" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Género"</span></span>
+<span id="cb52-735"><a href="#cb52-735" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb52-736"><a href="#cb52-736" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb52-737"><a href="#cb52-737" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-738"><a href="#cb52-738" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

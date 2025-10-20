@@ -564,32 +564,46 @@ Aquellos **círculos que se ubiquen por encima** de la línea punteada indican q
 ¿Para qué valores parece existir una sobreestimación de la probabilidad? ¿Para cuáles subestimación?
 
 ```{r}
-Hosmer_Lemeshow_plot <- function(dataset, predicted_column, class_column, bins, positive_value, color='forestgreen', nudge_x=0, nudge_y=0.05){
-  # Asignar los grupos a las observaciones de acuerdo a la probabilidad predicha
-  dataset['group'] <- bin(dataset[predicted_column], nbins = bins, method = 'l', labels=c(1:bins))
-  # Contar la cantidad de casos positivos por grupo
-  positive_class <- dataset %>% filter(!!sym(class_column)==positive_value) %>% group_by(group) %>% count()
-  # Obtener la media de las predicciones por grupo
-  HL_df <- dataset %>% group_by(group) %>% summarise(pred=mean(!!sym(predicted_column)), count=n()) %>%
-            inner_join(.,positive_class) %>%
-            mutate(freq=n/count)
-  # Gráfico 
-  HM_plot <- ggplot(HL_df, aes(x=pred, y=freq)) + 
-    geom_point(aes(size=n), color=color) +
-    geom_text(aes(label=n),nudge_y = nudge_y)+
-    geom_abline(slope = 1, intercept = 0, linetype='dashed') + 
-    theme_bw() +
-    labs(title='Hosmer-Lemeshow', size='Casos', x="Probabilidad Predicha", y="Frecuencia observada")
-  return(HM_plot)
+Hosmer_Lemeshow_plot <- function(dataset, predicted_column, class_column, bins = 10,
+                                 positive_value = 1, color = 'forestgreen', nudge_x = 0, nudge_y = 0.05){
+
+  dataset <- dataset %>%
+    mutate(group = cut(!!sym(predicted_column),
+                       breaks = quantile(!!sym(predicted_column), probs = seq(0, 1, length.out = bins + 1)),
+                       include.lowest = TRUE, labels = 1:bins))
+
+  positive_class <- dataset %>%
+    filter(!!sym(class_column) == positive_value) %>%
+    group_by(group) %>%
+    summarise(n_positive = n())
+
+  HL_df <- dataset %>%
+    group_by(group) %>%
+    summarise(pred = mean(!!sym(predicted_column)), n_total = n()) %>%
+    left_join(positive_class, by = "group") %>%
+    mutate(n_positive = replace_na(n_positive, 0),
+           freq = n_positive / n_total)
+
+  ggplot(HL_df, aes(x = pred, y = freq)) +
+    geom_point(aes(size = n_total), color = color) +
+    geom_text(aes(label = n_total), nudge_x = nudge_x, nudge_y = nudge_y, size = 3) +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+    labs(title = "Hosmer-Lemeshow",
+         subtitle = "Modelo final",
+         x = "Probabilidad Predicha",
+         y = "Frecuencia observada",
+         size = "Casos") +
+    theme_minimal()
 }
+
 ```
+
 
 ```{r}
 # modelo completo
 Hosmer_Lemeshow_plot(test_model, '.fitted', 'cardio', 10, 1) +
   labs(subtitle="Modelo final")
 ```
-
 
 La prueba de Hosmer Lemeshow permite evaluar el buen ajuste del modelo
 
@@ -599,32 +613,6 @@ library(ResourceSelection)
 h1 <- hoslem.test (test$cardio , 
                    fitted(best_model), g=8)
 h1
-```
-
-```{r}
-
-# Crear una secuencia de valores para 'weight' y combinar con los niveles de 'cholesterol'
-new_data <- expand.grid(
-  weight = seq(min(train$weight), max(train$weight), length.out = 150),
-  cholesterol = "1",  # fijamos un valor para el género
-  gender = levels(train$gender)
-)
-
-# Obtener probabilidades predichas del modelo
-new_data$predicted <- predict(best_model, newdata = new_data, type = "response")
-
-# Graficar la función sigmoidea
-ggplot(new_data, aes(x = weight, y = predicted, color = gender)) +
-  geom_line(size = 1.2) +
-  labs(
-    x = "Peso",
-    y = "Probabilidad predicha de ECV",
-    title = "Predicciones según género",
-    color = "Género"
-  ) +
-  theme_minimal(base_size = 14)
-
-
 ```
 
 ## Interpretación del modelo final
@@ -651,8 +639,47 @@ Conclusión: el peso se asocia positivamente con la probabilidad de contraer ECV
 
 Aunque parece haber una tendencia a menor riesgo en varones, el intervalo incluye al 1, por lo tanto no hay evidencia estadística suficiente para afirmarlo.
 
-**`cholesteol`**
+**`cholesterol`**
 
 Los pacientes con colesterol en nivel 3 tienen 3.56 veces más odds de presentar ECV que aquellos con colesterol normal (nivel base).
 Es decir, los odds de tener ECV se incrementan en un 256% en comparación con el grupo de referencia, manteniendo constantes las demás variables del modelo.
 
+A continuación se muestra las curvas que representan la probabilidad predicha de presentar una ECV en función del peso, comparando varones y mujeres y manteniendo fijo el colesterol en el nivel “1”.
+
+```{r}
+
+# Crear nueva grilla de datos
+new_data <- expand.grid(
+  weight = seq(min(train$weight), max(train$weight), length.out = 150),
+  cholesterol = "1",  # fijamos un valor de colesterol
+  gender = levels(train$gender)
+)
+
+# Obtener predicciones en escala del logit con error estándar
+pred <- predict(best_model, newdata = new_data, type = "link", se.fit = TRUE)
+
+# Calcular límites de confianza en la escala del logit
+new_data <- new_data %>%
+  mutate(
+    fit = pred$fit,
+    se.fit = pred$se.fit,
+    lower = fit - 1.96 * se.fit,
+    upper = fit + 1.96 * se.fit,
+    predicted = plogis(fit),          # transformar a probabilidad
+    lower_ci = plogis(lower),
+    upper_ci = plogis(upper)
+  )
+
+# Graficar con bandas de confianza
+ggplot(new_data, aes(x = weight, y = predicted, color = gender, fill = gender)) +
+  geom_line(size = 1.2) +
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.2, color = NA) +
+  labs(
+    x = "Peso",
+    y = "Probabilidad predicha de ECV",
+    color = "Género",
+    fill = "Género"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
