@@ -111,3 +111,39 @@ df %>%
 
 ```
 
+
+```{r}
+ggplot(df, aes(y = new_value)) +
+  geom_boxplot()
+```
+
+
+```{r}
+#paises con mas jugadores
+top_10 <- df %>%
+  count(country, sort = TRUE) %>% 
+  head(n=10)
+
+
+#barplot
+ggplot(top_10, aes(x = reorder(country, n), y = n)) +
+  geom_bar(stat = "identity", fill = "#FDB462") + 
+  coord_flip() +
+  labs(
+    x = "País",
+    y = "Cantidad de jugadores",
+    title = "Top 10 países con mas jugadores"
+  ) +
+  theme_minimal()
+
+```
+```{r}
+ggplot(df, aes(height)) +
+     geom_histogram(fill="#FDB462", colour="black")
+
+```
+```{r}
+    ggplot(data = df, aes(x = aggression, y = finishing, color = shot_power)) +
+      geom_point()+ scale_color_gradientn(colours = terrain.colors(8))
+```
+
