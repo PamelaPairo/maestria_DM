@@ -7,7 +7,7 @@ Para mas información de la Maestría visitar el siguiente link: http://datamini
 ## Análisis Inteligente de Datos
 
 - [Análisis bivariado](https://pamelapairo.github.io/maestria_DM/AID/analisis_univariado/04_analisis_univariado.html)
-- [Regresión Lineal y Múltiple](https://pamelapairo.github.io/maestria_DM/AID/analisis_univariado/regresion/regresion_2024.html)
+- [Regresión Lineal Simple y Múltiple](https://pamelapairo.github.io/maestria_DM/AID/regresion/2025/regresion.html)
 - [PCA y PCA Robusto](https://pamelapairo.github.io/maestria_DM/AID/PCA/2025/01_pca.html)
 - [Análisis de Correspondencia Simple y Múltiple](https://pamelapairo.github.io/maestria_DM/AID/AC/AC.html)
 - [Análisis Discriminante](https://pamelapairo.github.io/maestria_DM/AID/AD/analisis_discriminante.html)
@@ -15,6 +15,7 @@ Para mas información de la Maestría visitar el siguiente link: http://datamini
 ## Enfoque Estadístico del Aprendizaje
 
 - [Regresión Logística](https://pamelapairo.github.io/maestria_DM/EEA/2025/regLogistica.html)
+- [Regularización](https://pamelapairo.github.io/maestria_DM/EEA/2025/regularizacion.html)
 
 ## Aprendizaje Automático
 
