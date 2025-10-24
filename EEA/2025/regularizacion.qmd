@@ -1,0 +1,113 @@
+---
+title: "Regularización"
+author: "Pamela Eugenia Pairo"
+lang: es
+format:
+  html:
+    theme: flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Cargamos las librerías que vamos a utilizar
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+library(cowplot)
+library(glmnet)
+library(RColorBrewer)
+library(knitr)
+library(kableExtra)
+
+set.seed(15)
+```
+
+# Presentación del caso de estudio
+
+En esta clase vamos a trabajar con la base de datos de los jugadores de FIFA 2024 MEN, la cual fue extraída de [Kaggle](https://www.kaggle.com/datasets/rehandl23/fifa-24-player-stats-dataset/data).
+
+El **objetivo de la clase** es predecir el precio de los jugadores utilizando diferentes modelos de regresión y regularización.
+
+```{r}
+df <- read.csv("player_stats.csv")
+
+colSums(is.na(df))# chequeamos si hay datos faltantes
+```
+```{r}
+sum(duplicated(df))#chequeamos duplicados
+
+```
+```{r}
+glimpse(df)
+```
+
+Atributos de los jugadores:
+
+- Player: The name of the football player.
+- Country: The nationality or home country of the player.
+- Height: The height of the player in centimeters.
+- Weight: The weight of the player in kilograms.
+- Age: The age of the player.
+- Club: The club to which the player is currently affiliated.
+- Ball Control: Player's skill in controlling the ball.
+- Dribbling: Player's dribbling ability.
+- Marking: Player's marking skill.
+- Slide Tackle: Player's ability to perform slide tackles.
+- Stand Tackle: Player's ability to perform standing tackles.
+- Aggression: Player's aggression level.
+- Reactions: Player's reaction time.
+- Attacking Position: Player's positioning for attacking plays.
+- Interceptions: Player's skill in intercepting passes.
+- Vision: Player's vision on the field.
+- Composure: Player's composure under pressure.
+- Crossing: Player's ability to deliver crosses.
+- Short Pass: Player's short passing accuracy.
+- Long Pass: Player's ability in long passing.
+- Acceleration: Player's acceleration on the field.
+- Stamina: Player's stamina level.
+- Strength: Player's physical strength.
+- Balance: Player's balance while playing.
+- Sprint Speed: Player's speed in sprints.
+- Agility: Player's agility in maneuvering.
+- Jumping: Player's jumping ability.
+- Heading: Player's heading skills.
+- Shot Power: Player's power in shooting.
+- Finishing: Player's finishing skills.
+- Long Shots: Player's ability to make long-range shots.
+- Curve: Player's ability to curve the ball.
+- Free Kick Accuracy: Player's accuracy in free-kick situations.
+- Penalties: Player's penalty-taking skills.
+- Volleys: Player's volleying skills.
+- Goalkeeper Positioning: Goalkeeper's positioning attribute (specific to goalkeepers).
+- Goalkeeper Diving: Goalkeeper's diving ability (specific to goalkeepers).
+- Goalkeeper Handling: Goalkeeper's ball-handling skill (specific to goalkeepers).
+- Goalkeeper Kicking: Goalkeeper's kicking ability (specific to goalkeepers).
+- Goalkeeper Reflexes: Goalkeeper's reflexes (specific to goalkeepers).
+- Value: The estimated value of the player.
+
+
+```{r}
+
+df <- df %>%
+  mutate(
+    new_value = value %>%
+      str_replace("\\.00\\s$", "000") %>%
+      str_replace_all("\\$", "") %>%
+      str_replace_all("\\.", "") %>%
+      str_trim() %>%
+      as.integer()
+  )
+
+df %>%
+  head() %>%
+  kable(format = "html") %>%
+  kable_styling(full_width = FALSE) 
+
+
+```
+
