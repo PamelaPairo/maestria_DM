@@ -147,3 +147,36 @@ ggplot(df, aes(height)) +
       geom_point()+ scale_color_gradientn(colours = terrain.colors(8))
 ```
 
+```{r}
+    ggplot(data = df, aes(x = heading, y = jumping, color = reactions)) +
+      geom_point()+ scale_color_gradientn(colours = terrain.colors(8))
+```
+
+```{r}
+    ggplot(data = df, aes(x = gk_handling, y = gk_diving, color = gk_kicking)) +
+      geom_point()+ scale_color_gradientn(colours = terrain.colors(8))
+```
+
+```{r}
+top_5 <- df %>%
+  count(country, sort = TRUE) %>% 
+  head(n=5)
+
+df_top_5_full <-df %>%
+  filter(country %in% top_5$country)
+```
+
+```{r}
+df_top_5_full %>% 
+  select(new_value, age, country, aggression, long_pass, shot_power, height, finishing, country) %>% 
+  ggpairs(aes(color = country), upper = list(continuous = wrap("cor", size = 3, hjust=0.5)), progress=FALSE) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "bottom") + 
+  theme_bw()
+```
+```{r}
+df %>% 
+  select_if(is.numeric) %>% # selección variables numéricas
+  ggcorr(., layout.exp = 5, hjust = 1, size = 3.5, nbreaks = 5, color = "grey50") + # graficamos correlacion pearson
+  labs(title='Correlograma de variables cuantitativas')
+```
+
