@@ -180,3 +180,199 @@ df %>%
   labs(title='Correlograma de variables cuantitativas')
 ```
 
+# Preparación de la base de datos
+
+Vamos a separar a los arqueros del resto de los jugadores.
+
+```{r}
+df_ <-df %>% filter(gk_positioning < 30 & gk_positioning < 30) %>% #saco arqueros
+  select(-c(value, marking, country, club, player)) %>% #saco ciertas columnas
+  select(-starts_with("gk_"))#elimino columnas que caracterizan a los arqueros
+```
+
+## Partición en train y test
+
+```{r}
+df_split <- initial_split(df_,
+                          prop = 0.8)
+
+train<- df_split %>%
+              training()
+
+test <- df_split %>%
+              testing()
+
+train_sc <- as.data.frame(scale(train))
+test_sc <- as.data.frame(scale(test))
+```
+
+
+
+```{r}
+train_sc %>% 
+  ggcorr(., layout.exp = 5, hjust = 1, size = 3.5, nbreaks = 5, color = "grey50") + # graficamos correlacion pearson
+  labs(title='Correlograma de variables cuantitativas en train')
+```
+# Regresión Lineal Múltiple
+
+```{r}
+# Modelo lineal
+modelo_lineal = train_sc %>% lm(formula = new_value ~.)
+
+#Coeficientes
+lineal_coef = modelo_lineal %>% tidy(conf.int=TRUE)
+
+#graficamos los coeficientes estimados
+lineal_coef %>% filter(!is.na(estimate)) %>% 
+  ggplot(., aes(term, estimate))+
+  geom_point(color = "forestgreen")+
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high), color = "forestgreen")+
+  geom_hline(yintercept = 0, lty = 4, color = "black") +
+  labs(title = "Coeficientes de la regresión lineal", x="", y="Estimación e Int. Confianza") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=90))
+```
+
+```{r}
+lineal_coef %>% filter(!is.na(estimate)) %>% 
+  ggplot(., aes(reorder(term, -p.value), p.value, fill=p.value))+
+  geom_bar(stat = 'identity', aes(fill=p.value))+
+  geom_hline(yintercept = 0.05) +
+  labs(title = "P-valor de los regresores", x="", y="P-valor") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=90)) + 
+  scale_fill_gradient2(high='firebrick', low = 'forestgreen', mid='yellow2',midpoint = 0.5 )
+```
+# Ridge
+
+```{r}
+# Fit Ridge model with training data
+ridge_model <- glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),  # Predictor variables
+  train$new_value,  # variable respuesta
+  standardize = T, #estandariza las variables
+  alpha = 0  # Ridge
+)
+```
+
+```{r}
+ridge_tidy <- broom::tidy(ridge_model)
+
+ridge_tidy
+```
+
+```{r}
+add_top_coef_labels_glmnet <- function(fit, s = NULL, top_n = 5,
+                                       offset_x = 0.5, cex = 0.8, col = "black",
+                                       pos = 4) {
+  # fit: objeto glmnet
+  # s: valor lambda (si NULL usa el último de fit$lambda)
+  # top_n: cuántas variables etiquetar (por valor absoluto)
+  # offset_x: desplazamiento horizontal en la escala de -log(lambda)
+  # cex, col, pos: parámetros de text()
+  
+  # elegir s (último lambda por defecto)
+  if (is.null(s)) s <- fit$lambda[length(fit$lambda)]
+  
+  # extraer coeficientes (sin intercepto)
+  coefs <- as.matrix(coef(fit, s = s))
+  if (nrow(coefs) <= 1) return(invisible(NULL))  # por si no hay predictores
+  coefs <- coefs[-1, , drop = FALSE]
+  
+  # seleccionar top_n por valor absoluto
+  vals <- abs(coefs[, 1])
+  ord <- order(vals, decreasing = TRUE)
+  top_idx <- ord[seq_len(min(top_n, length(ord)))]
+  top_coefs <- coefs[top_idx, 1, drop = FALSE]
+  labels <- rownames(top_coefs)
+  y <- as.numeric(top_coefs)
+  
+  # coordenada X en la escala del plot.glmnet (eje = -log(lambda))
+  x_desired <- -log(s) + offset_x
+  
+  # asegurar que el plot ya existe y obtener límites
+  usr <- par("usr")  # c(xmin, xmax, ymin, ymax)
+  if (is.null(usr) || length(usr) < 4) {
+    stop("No hay un plot activo. Llamá primero a plot(fit, xvar='lambda') antes de esta función.")
+  }
+  
+  # si x_desired queda fuera del plot, recolocamos en el borde derecho menos margen
+  x_min <- usr[1]; x_max <- usr[2]
+  if (x_desired > x_max) x <- x_max - 0.02 * (x_max - x_min) else if (x_desired < x_min) x <- x_min + 0.02 * (x_max - x_min) else x <- x_desired
+  
+  # si hay muchos labels que se pisan, usar offsets verticales pequeños
+  # calculamos desplazamientos verticales para evitar solapamiento simple
+  # (ordenamos por y y separamos ligeramente)
+  order_y <- order(y)
+  y_sorted <- y[order_y]
+  # simple jitter vertical proporcional al rango
+  yrng <- usr[4] - usr[3]
+  jitter_step <- 0.02 * yrng
+  y_jittered <- y_sorted + seq(-floor(length(y_sorted)/2), floor((length(y_sorted)-1)/2)) * jitter_step
+  # reordenar al orden original de top_idx
+  y_final <- numeric(length(y))
+  y_final[order_y] <- y_jittered
+  
+  # dibujar texto
+  text(rep(x, length(y_final)), y_final, labels = labels, cex = cex, col = col, pos = pos)
+  invisible(data.frame(label = labels, x = x, y = y_final))
+}
+
+
+```
+
+```{r}
+plot(ridge_model, 
+     xvar = "lambda", 
+     label=F,
+     xlim = c(-22, -11),
+     ylim= c(-2.5e05, 3.5e05))
+# Agregás etiquetas de las 5 variables más importantes
+
+add_top_coef_labels_glmnet(ridge_model, top_n = 5, offset_x = 0.2, col = "black")
+
+```
+
+## Búsqueda del lambda óptimo
+
+```{r}
+# Perform cross-validation to find the best lambda for Ridge
+cv_ridge <- cv.glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),
+  train$new_value,
+  standarize=T,
+  nfolds= 15,
+  alpha = 0  # Set alpha to 0 for Ridge
+)
+
+# Check the optimal lambda
+cv_ridge$lambda.min  # This is the lambda that minimizes the cross-validation error
+```
+
+```{r}
+plot(cv_ridge)
+```
+## Modelo final
+```{r}
+# Selección lambda óptimo
+ridge_lambda_opt = cv_ridge$lambda.min
+# Entrenamiento modelo óptimo
+ridge_opt = glmnet(as.matrix(train[, !names(train) %in% "new_value"]),  # Predictor variables
+                  train$new_value,
+                   alpha = 0, # Indicador del tipo de regularizacion
+                   standardize = TRUE,  # Estandarizamos
+                   lambda = ridge_lambda_opt)
+# Salida estandar
+ridge_opt
+```
+
+
+```{r}
+# Tidy
+ridge_opt %>% tidy() %>% mutate(estimate = round(estimate, 4))
+```
+
+# Lasso
+
+
+
