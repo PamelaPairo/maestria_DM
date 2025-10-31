@@ -221,7 +221,7 @@ train_sc %>%
 
 ```{r}
 # Modelo lineal
-modelo_lineal = train_sc %>% lm(formula = new_value ~.)
+modelo_lineal = train_sc %>% lm(formula = new_value ~ .)
 
 #Coeficientes
 lineal_coef = modelo_lineal %>% tidy(conf.int=TRUE)
@@ -276,6 +276,8 @@ Con el parámetro $\alpha$ indicamos con qué tipo de modelo deseamos trabajar:
 
 ## Ridge (L2 regularization)
 
+En este caso la penalización funciona añadiendo un término basado en la suma de los cuadrados de los coeficientes ($\sum \beta_j^2$) a la función de costo, lo que lleva la magnitud de los coeficientes hacia cero. Cuando $\lambda$ toma valores altos, aplica una penalización fuerte, resultando en coeficientes muy pequeños y siendo muy útil para mitigar la multicolinealidad al distribuir la importancia entre variables correlacionadas.
+
 $$\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \right\}$$
 
   
@@ -290,7 +292,7 @@ ridge_model <- glmnet(
 ```
 
 ```{r}
-ridge_tidy <- broom::tidy(ridge_model)
+ridge_tidy <- ridge_model%>% tidy() %>% arrange(step)
 
 ridge_tidy
 ```
@@ -355,6 +357,16 @@ add_top_coef_labels_glmnet <- function(fit, s = NULL, top_n = 5,
 
 ```
 
+A continuación se muestra el gráfico de valores de $\lambda$ vs nivel de penalización. 
+
+- En el extremo izquierdo del gráfico se representan los **valores altos de $\lambda$**, donde la penalización es máxima y por ende los coeficientes del modelo son prácticamente cero.
+
+- En el extremo derecho se hayan **los valores mas bajos de $\lambda$**. En esta zona, la penalización es mínima. El modelo se acerca a una regresión como la presentada anteriormente, y los coeficientes alcanzan sus máximos valores (no hay prácticamente penalización).
+
+En una regresión Ridge, los coeficientes no llegan a ser cero, se acercan a cero (o se encojen) cuando $\lambda$ es alto. En el gráfico se muestran las 5 variables mas importantes. Ridge no realiza una selección de variables.
+
+`reactions` y `age` son las variables más importantes y con mayor impacto en el salario de los jugadores FIFA 2024.
+
 ```{r}
 plot(ridge_model, 
      xvar = "lambda", 
@@ -377,7 +389,7 @@ cv_ridge <- cv.glmnet(
   as.matrix(train[, !names(train) %in% "new_value"]),
   train$new_value,
   standarize=T,
-  nfolds= 15,
+  nfolds= 10,
   type.measure = "mse",
   alpha = 0  # Set alpha to 0 for Ridge
 )
@@ -386,10 +398,17 @@ cv_ridge <- cv.glmnet(
 cv_ridge$lambda.min  # This is the lambda that minimizes the cross-validation error
 ```
 
+ECM vs complejidad del modelo
+
+A medida que nos movemos de izquierda a derecha (disminuye $\lambda$), el error desciende progresivamente (el modelo se ajusta mejor) hasta que alcanza una meseta.
+
+Como se puede apreciar, aparecen dos lineas verticales en el gráfico. La línea punteada de la derecha corresponde al $\lambda_{min}$, es decir el valor de $\lambda$ que da el ECM promedio en la validación cruzada. La línea punteada de la izquierda corresponde al $\lambda_{1se}$, en el cual se selecciona el modelo más simple (más penalizado, con coeficientes más pequeños) que se considera estadísticamente indistinguible del modelo con el error mínimo.
+
+
 ```{r}
 plot(cv_ridge)
 ```
-## Modelo final
+### Modelo final
 
 ```{r}
 # Selección lambda óptimo
@@ -403,14 +422,16 @@ ridge_opt = glmnet(as.matrix(train[, !names(train) %in% "new_value"]),  # Predic
 # Salida estandar
 ridge_opt
 ```
-
+El porcentaje de deviance explicado del modelo final es del 31,4%.
 
 ```{r}
 # Tidy
 ridge_opt %>% tidy() %>% mutate(estimate = round(estimate, 4))
 ```
 
-# Lasso
+## Lasso (L1 regularization)
+
+La penalización en una regresión Lasso funciona añadiendo un término basado en la suma de los valores absolutos de los coeficientes ($\sum |\beta_j|$) a la función de costo, lo que reduce la magnitud de los coeficientes y puede forzar a los menos relevantes a ser exactamente cero, realizando selección de variables. 
 
 $$\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \right\}$$
 
@@ -436,16 +457,14 @@ add_top_coef_labels_glmnet(lasso_model, top_n = 5, offset_x = 0.2, col = "black"
 ```
 
 ```{r}
-# Perform cross-validation to find the best lambda
 cv_lasso <- cv.glmnet(
   as.matrix(train[, !names(train) %in% "new_value"]),
   train$new_value,
   standarize=T,
-  nfolds = 15
+  nfolds = 10
 )
 
-# Check the optimal lambda
-cv_lasso$lambda.min  # This is the lambda that minimizes the cross-validation error
+cv_lasso$lambda.min  # valor de lambda que minimiza el ecm
 ```
 ```{r}
 plot(cv_lasso)
@@ -453,7 +472,7 @@ plot(cv_lasso)
 
 ```{r}
 # Selección lambda óptimo
-lasso_lambda_opt = cv_ridge$lambda.min
+lasso_lambda_opt = cv_lasso$lambda.min
 # Entrenamiento modelo óptimo
 lasso_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
                    y = train$new_value, #Vector de la variable a predecir
@@ -463,12 +482,16 @@ lasso_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Mat
 # Salida estandar
 lasso_opt
 ```
+El porcentaje de deviance explicado del modelo final es del 31%. La regresión Lasso selecciona 15 variables.
+
 ```{r}
 # Tidy
-ridge_opt %>% tidy() %>% mutate(estimate = round(estimate, 4))
+lasso_opt %>% tidy() %>% mutate(estimate = round(estimate, 2))
 ```
 
-# Elastic net
+## Elastic net
+
+La penalización Elastic Net combina las fortalezas de Ridge y Lasso al añadir a la función de costo una mezcla lineal de las penalizaciones $L_1$ y $L_2$, controlada por el parámetro $\alpha$. Un $\lambda$ (lambda) alto resulta en un modelo más penalizado. 
 
 ```{r}
 models <- list()
@@ -498,7 +521,7 @@ for (i in 0:20) {
     x = as.matrix(train[, !names(train) %in% "new_value"]),
     y = train$new_value,
     standardize = TRUE,
-    nfolds= 15,
+    nfolds= 10,
     alpha = a
   )
   
@@ -515,6 +538,116 @@ for (i in 0:20) {
 # Ver el data frame final
 results
 
+```
+
+### Mejor modelo
+
+```{r}
+elastic_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
+                   y = train$new_value, #Vector de la variable a predecir
+                   alpha = 0.95, 
+                   standardize = TRUE,
+                   lambda=min(results$lambda))
+# Salida estandar
+elastic_opt
+```
+
+```{r}
+# Tidy
+elastic_opt %>% tidy() %>% mutate(estimate = round(estimate, 2))
+```
+
+## Resumen
+
+```{r}
+# 1. Extraer los coeficientes del modelo Elastic Net óptimo
+# La función 'coef' devuelve una matriz 'dgCMatrix'
+elastic_coef <- coef(elastic_opt)
+
+# 2. Extraer los coeficientes de los modelos Ridge y Lasso óptimos
+# Asume que ya tienes 'ridge_opt' y 'lasso_opt' ajustados de manera similar
+ridge_coef <- coef(ridge_opt)
+lasso_coef <- coef(lasso_opt)
+```
+
+
+```{r}
+# Convertir y limpiar los coeficientes a un data.frame simple
+extract_and_clean <- function(model_coef, model_name) {
+  df <- data.frame(
+    Variable = rownames(model_coef),
+    Coeficiente = as.numeric(model_coef),
+    Modelo = model_name
+  )
+  # Quitar la columna del intercepto (Intercept) para simplificar la comparación si se desea
+  # df <- subset(df, Variable != "(Intercept)")
+  return(df)
+}
+
+# Aplicar la función de limpieza y combinación
+coef_ridge <- extract_and_clean(ridge_coef, "Ridge (α=0)")
+coef_lasso <- extract_and_clean(lasso_coef, "Lasso (α=1)")
+coef_elastic <- extract_and_clean(elastic_coef, "Elastic Net (α=0.95)")
+
+# Combinar todas las tablas en una sola
+tabla_final <- merge(coef_ridge[, c(1, 2)], coef_lasso[, c(1, 2)], by = "Variable", all = TRUE, suffixes = c(".Ridge", ".Lasso"))
+tabla_final <- merge(tabla_final, coef_elastic[, c(1, 2)], by = "Variable", all = TRUE)
+names(tabla_final)[4] <- "Coeficiente.ElasticNet"
+
+# Opcional: reemplazar NAs (si hubiera) con 0 para Lasso (aunque con tu ajuste no debería haber NAs)
+# tabla_final[is.na(tabla_final)] <- 0
+```
+
+```{r}
+tabla_final
+```
+
+# Test
+
+```{r}
+x_test <- as.matrix(test[, !names(test) %in% "new_value"])
+y_test <- test$new_value
+
+# === Ridge (alpha=0) ===
+pred_ridge <- predict(ridge_opt, x_test)
+mse_ridge <- mean((y_test - pred_ridge)^2)          # ECM
+rmse_ridge <- sqrt(mse_ridge)                       # RSME
+mae_ridge <- mean(abs(y_test - pred_ridge))         # MAE
+dev_ridge <- ridge_opt$dev.ratio                    # devianza explicada
+
+# === Lasso (alpha=1) ===
+pred_lasso <- predict(lasso_opt, x_test)
+mse_lasso <- mean((y_test - pred_lasso)^2)
+rmse_lasso <- sqrt(mse_lasso)
+mae_lasso <- mean(abs(y_test - pred_lasso))
+dev_lasso <- lasso_opt$dev.ratio
+
+# === Elastic Net (alpha=0.95) ===
+pred_elastic <- predict(elastic_opt, x_test)
+mse_elastic <- mean((y_test - pred_elastic)^2)
+rmse_elastic <- sqrt(mse_elastic)
+mae_elastic <- mean(abs(y_test - pred_elastic))
+dev_elastic <- elastic_opt$dev.ratio
+
+# === Tabla resumen ===
+results <- data.frame(
+  Modelo = c("Ridge", "Lasso", "Elastic Net"),
+  ECM_Test = c(mse_ridge, mse_lasso, mse_elastic),
+  RSME_Test = c(rmse_ridge, rmse_lasso, rmse_elastic),
+  MAE_Test = c(mae_ridge, mae_lasso, mae_elastic),
+  Devianza_Explicada = c(dev_ridge, dev_lasso, dev_elastic)
+)
+
+print(results)
+
+
+
+```
+
+
+```{r}
+plot(y_test, pred_lasso)
+abline(0, 1)
 
 ```
 
