@@ -73,6 +73,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="regularizacion_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -85,6 +114,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#presentación-del-caso-de-estudio" id="toc-presentación-del-caso-de-estudio" class="nav-link active" data-scroll-target="#presentación-del-caso-de-estudio">Presentación del caso de estudio</a></li>
+  <li><a href="#análisis-exploratorio" id="toc-análisis-exploratorio" class="nav-link" data-scroll-target="#análisis-exploratorio">Análisis exploratorio</a></li>
+  <li><a href="#preparación-de-la-base-de-datos" id="toc-preparación-de-la-base-de-datos" class="nav-link" data-scroll-target="#preparación-de-la-base-de-datos">Preparación de la base de datos</a>
+  <ul class="collapse">
+  <li><a href="#partición-en-train-y-test" id="toc-partición-en-train-y-test" class="nav-link" data-scroll-target="#partición-en-train-y-test">Partición en train y test</a></li>
+  </ul></li>
+  <li><a href="#regresión-lineal-múltiple" id="toc-regresión-lineal-múltiple" class="nav-link" data-scroll-target="#regresión-lineal-múltiple">Regresión Lineal Múltiple</a></li>
+  <li><a href="#regularización" id="toc-regularización" class="nav-link" data-scroll-target="#regularización">Regularización</a>
+  <ul class="collapse">
+  <li><a href="#ridge-l2-regularization" id="toc-ridge-l2-regularization" class="nav-link" data-scroll-target="#ridge-l2-regularization">Ridge (L2 regularization)</a></li>
+  <li><a href="#búsqueda-del-lambda-óptimo" id="toc-búsqueda-del-lambda-óptimo" class="nav-link" data-scroll-target="#búsqueda-del-lambda-óptimo">Búsqueda del lambda óptimo</a></li>
+  <li><a href="#modelo-final" id="toc-modelo-final" class="nav-link" data-scroll-target="#modelo-final">Modelo final</a></li>
+  </ul></li>
+  <li><a href="#lasso" id="toc-lasso" class="nav-link" data-scroll-target="#lasso">Lasso</a></li>
+  <li><a href="#elastic-net" id="toc-elastic-net" class="nav-link" data-scroll-target="#elastic-net">Elastic net</a></li>
   </ul>
 </nav>
 </div>
@@ -138,7 +181,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="presentación-del-caso-de-estudio" class="level1">
 <h1>Presentación del caso de estudio</h1>
 <p>En esta clase vamos a trabajar con la base de datos de los jugadores de FIFA 2024 MEN, la cual fue extraída de <a href="https://www.kaggle.com/datasets/rehandl23/fifa-24-player-stats-dataset/data">Kaggle</a>.</p>
-<p>El <strong>objetivo de la clase</strong> es predecir el precio de los jugadores utilizando diferentes modelos de regresión y regularización.</p>
+<p>El <strong>objetivo de la clase</strong> es predecir el precio de los jugadores de FIFA 2024 utilizando diferentes modelos de regresión y regularización.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -271,6 +314,7 @@ $ value          &lt;chr&gt; "$1.400.000", "$975.00 ", "$1.100.000", "$650.00 ",
 <li>Goalkeeper Reflexes: Goalkeeper’s reflexes (specific to goalkeepers).</li>
 <li>Value: The estimated value of the player.</li>
 </ul>
+<p>Modificamos la variable <code>value</code>para que tenga el tipo de dato que le corresponde y agregamos un cero a los valores que terminan <code>.00</code>.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -608,6 +652,10 @@ $ value          &lt;chr&gt; "$1.400.000", "$975.00 ", "$1.100.000", "$650.00 ",
 
 </div>
 </div>
+</section>
+<section id="análisis-exploratorio" class="level1">
+<h1>Análisis exploratorio</h1>
+<p>A continuación se realizan algunos gráficos de análisis exploratorio con el fin de analizar la relación entre algunas variables y el comportamiento del precio de los jugadores.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -676,6 +724,607 @@ $ value          &lt;chr&gt; "$1.400.000", "$975.00 ", "$1.100.000", "$650.00 ",
 <p><img src="regularizacion_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> heading, <span class="at">y =</span> jumping, <span class="at">color =</span> reactions)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">scale_color_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">8</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> gk_handling, <span class="at">y =</span> gk_diving, <span class="at">color =</span> gk_kicking)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">scale_color_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">8</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>top_5 <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(country, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">5</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>df_top_5_full <span class="ot">&lt;-</span>df <span class="sc">%&gt;%</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> top_5<span class="sc">$</span>country)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_top_5_full <span class="sc">%&gt;%</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(new_value, age, country, aggression, long_pass, shot_power, height, finishing, country) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggpairs</span>(<span class="fu">aes</span>(<span class="at">color =</span> country), <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"cor"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">hjust=</span><span class="fl">0.5</span>)), <span class="at">progress=</span><span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>), <span class="at">legend.position =</span> <span class="st">"bottom"</span>) <span class="sc">+</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">%&gt;%</span> <span class="co"># selección variables numéricas</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggcorr</span>(., <span class="at">layout.exp =</span> <span class="dv">5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">nbreaks =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span> <span class="co"># graficamos correlacion pearson</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Correlograma de variables cuantitativas'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="preparación-de-la-base-de-datos" class="level1">
+<h1>Preparación de la base de datos</h1>
+<p>Vamos a separar a los arqueros del resto de los jugadores.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_ <span class="ot">&lt;-</span>df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(gk_positioning <span class="sc">&lt;</span> <span class="dv">30</span> <span class="sc">&amp;</span> gk_positioning <span class="sc">&lt;</span> <span class="dv">30</span>) <span class="sc">%&gt;%</span> <span class="co">#saco arqueros</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(value, marking, country, club, player)) <span class="sc">%&gt;%</span> <span class="co">#saco ciertas columnas</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">"gk_"</span>))<span class="co">#elimino columnas que caracterizan a los arqueros</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="partición-en-train-y-test" class="level2">
+<h2 class="anchored" data-anchor-id="partición-en-train-y-test">Partición en train y test</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df_,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>train<span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>train_sc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">scale</span>(train))</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>test_sc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">scale</span>(test))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>train_sc <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggcorr</span>(., <span class="at">layout.exp =</span> <span class="dv">5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">nbreaks =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span> <span class="co"># graficamos correlacion pearson</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Correlograma de variables cuantitativas en train'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="regresión-lineal-múltiple" class="level1">
+<h1>Regresión Lineal Múltiple</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modelo lineal</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>modelo_lineal <span class="ot">=</span> train_sc <span class="sc">%&gt;%</span> <span class="fu">lm</span>(<span class="at">formula =</span> new_value <span class="sc">~</span>.)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Coeficientes</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="ot">=</span> modelo_lineal <span class="sc">%&gt;%</span> <span class="fu">tidy</span>(<span class="at">conf.int=</span><span class="cn">TRUE</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">#graficamos los coeficientes estimados</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(estimate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(term, estimate))<span class="sc">+</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"forestgreen"</span>)<span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), <span class="at">color =</span> <span class="st">"forestgreen"</span>)<span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Coeficientes de la regresión lineal"</span>, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"Estimación e Int. Confianza"</span>) <span class="sc">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Graficamos los p-valores de mayor a menor para evaluar la significatividad individual de los coeficientes estimados.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(estimate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(<span class="fu">reorder</span>(term, <span class="sc">-</span>p.value), p.value, <span class="at">fill=</span>p.value))<span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="fu">aes</span>(<span class="at">fill=</span>p.value))<span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"P-valor de los regresores"</span>, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"P-valor"</span>) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>)) <span class="sc">+</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">high=</span><span class="st">'firebrick'</span>, <span class="at">low =</span> <span class="st">'forestgreen'</span>, <span class="at">mid=</span><span class="st">'yellow2'</span>,<span class="at">midpoint =</span> <span class="fl">0.5</span> )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Evaluamos la multicolinealidad de las regresoras.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span> (modelo_lineal)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       height        weight           age  ball_control     dribbling 
+     3.706737      2.859991      1.730275      7.955621      7.222670 
+ slide_tackle  stand_tackle    aggression     reactions  att_position 
+    19.164518     20.855528      2.564884      3.661640      6.130713 
+interceptions        vision     composure      crossing    short_pass 
+    10.776083      5.478018      3.958109      3.902192      8.095459 
+    long_pass  acceleration       stamina      strength       balance 
+     5.757645      6.285201      1.833637      3.924871      3.642285 
+ sprint_speed       agility       jumping       heading    shot_power 
+     4.366600      4.508666      1.673276      3.131547      4.690486 
+    finishing    long_shots         curve        fk_acc     penalties 
+     8.778075      7.571247      5.211349      4.219688      3.497804 
+      volleys 
+     5.045861 </code></pre>
+</div>
+</div>
+</section>
+<section id="regularización" class="level1">
+<h1>Regularización</h1>
+<p>La libreria <code>glmnet</code> nos permite trabajar con modelos ridge, lasso y elastic net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el <a href="https://glmnet.stanford.edu/articles/glmnet.html">este link</a> mas información sobre <code>glmnet</code>.</p>
+<p>Fórmula:</p>
+<p><span class="math inline">\(ECM + \lambda{\left[\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right]}\)</span></p>
+<ul>
+<li><span class="math inline">\(\lambda\)</span> regula la importancia de la penalización.</li>
+<li><span class="math inline">\(\alpha\)</span> controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.</li>
+</ul>
+<p>Con el parámetro <span class="math inline">\(\alpha\)</span> indicamos con qué tipo de modelo deseamos trabajar:</p>
+<ul>
+<li><p>Ridge: <span class="math inline">\(\alpha=0\)</span></p></li>
+<li><p>Lasso: <span class="math inline">\(\alpha=1\)</span></p></li>
+<li><p>Elastic Net: <span class="math inline">\(0&lt;\alpha&lt;1\)</span></p></li>
+</ul>
+<section id="ridge-l2-regularization" class="level2">
+<h2 class="anchored" data-anchor-id="ridge-l2-regularization">Ridge (L2 regularization)</h2>
+<p><span class="math display">\[\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \right\}\]</span></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo ridge </span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>ridge_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># predictoras</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># variable respuesta</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T, <span class="co">#estandariza las variables</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Ridge</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>ridge_tidy <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">tidy</span>(ridge_model)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>ridge_tidy</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3,200 × 5
+   term         step estimate      lambda dev.ratio
+   &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+ 1 (Intercept)     1 2704678. 4182932583.  4.62e-36
+ 2 (Intercept)     2 2043681. 3811332381.  9.59e- 3
+ 3 (Intercept)     3 1980636. 3472744117.  1.05e- 2
+ 4 (Intercept)     4 1911720. 3164235101.  1.15e- 2
+ 5 (Intercept)     5 1836418. 2883133175.  1.25e- 2
+ 6 (Intercept)     6 1754173. 2627003570.  1.37e- 2
+ 7 (Intercept)     7 1664383. 2393627814.  1.50e- 2
+ 8 (Intercept)     8 1566407. 2180984516.  1.64e- 2
+ 9 (Intercept)     9 1459554. 1987231862.  1.78e- 2
+10 (Intercept)    10 1343089. 1810691661.  1.95e- 2
+# ℹ 3,190 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>add_top_coef_labels_glmnet <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, <span class="at">s =</span> <span class="cn">NULL</span>, <span class="at">top_n =</span> <span class="dv">5</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">offset_x =</span> <span class="fl">0.5</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> <span class="st">"black"</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">pos =</span> <span class="dv">4</span>) {</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># fit: objeto glmnet</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># s: valor lambda (si NULL usa el último de fit$lambda)</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># top_n: cuántas variables etiquetar (por valor absoluto)</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># offset_x: desplazamiento horizontal en la escala de -log(lambda)</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># cex, col, pos: parámetros de text()</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># elegir s (último lambda por defecto)</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(s)) s <span class="ot">&lt;-</span> fit<span class="sc">$</span>lambda[<span class="fu">length</span>(fit<span class="sc">$</span>lambda)]</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># extraer coeficientes (sin intercepto)</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  coefs <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">coef</span>(fit, <span class="at">s =</span> s))</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(coefs) <span class="sc">&lt;=</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="fu">invisible</span>(<span class="cn">NULL</span>))  <span class="co"># por si no hay predictores</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  coefs <span class="ot">&lt;-</span> coefs[<span class="sc">-</span><span class="dv">1</span>, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># seleccionar top_n por valor absoluto</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>  vals <span class="ot">&lt;-</span> <span class="fu">abs</span>(coefs[, <span class="dv">1</span>])</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>  ord <span class="ot">&lt;-</span> <span class="fu">order</span>(vals, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>  top_idx <span class="ot">&lt;-</span> ord[<span class="fu">seq_len</span>(<span class="fu">min</span>(top_n, <span class="fu">length</span>(ord)))]</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>  top_coefs <span class="ot">&lt;-</span> coefs[top_idx, <span class="dv">1</span>, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>  labels <span class="ot">&lt;-</span> <span class="fu">rownames</span>(top_coefs)</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(top_coefs)</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># coordenada X en la escala del plot.glmnet (eje = -log(lambda))</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>  x_desired <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log</span>(s) <span class="sc">+</span> offset_x</span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># asegurar que el plot ya existe y obtener límites</span></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>  usr <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="st">"usr"</span>)  <span class="co"># c(xmin, xmax, ymin, ymax)</span></span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(usr) <span class="sc">||</span> <span class="fu">length</span>(usr) <span class="sc">&lt;</span> <span class="dv">4</span>) {</span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"No hay un plot activo. Llamá primero a plot(fit, xvar='lambda') antes de esta función."</span>)</span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># si x_desired queda fuera del plot, recolocamos en el borde derecho menos margen</span></span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>  x_min <span class="ot">&lt;-</span> usr[<span class="dv">1</span>]; x_max <span class="ot">&lt;-</span> usr[<span class="dv">2</span>]</span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (x_desired <span class="sc">&gt;</span> x_max) x <span class="ot">&lt;-</span> x_max <span class="sc">-</span> <span class="fl">0.02</span> <span class="sc">*</span> (x_max <span class="sc">-</span> x_min) <span class="cf">else</span> <span class="cf">if</span> (x_desired <span class="sc">&lt;</span> x_min) x <span class="ot">&lt;-</span> x_min <span class="sc">+</span> <span class="fl">0.02</span> <span class="sc">*</span> (x_max <span class="sc">-</span> x_min) <span class="cf">else</span> x <span class="ot">&lt;-</span> x_desired</span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># si hay muchos labels que se pisan, usar offsets verticales pequeños</span></span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># calculamos desplazamientos verticales para evitar solapamiento simple</span></span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>  <span class="co"># (ordenamos por y y separamos ligeramente)</span></span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>  order_y <span class="ot">&lt;-</span> <span class="fu">order</span>(y)</span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>  y_sorted <span class="ot">&lt;-</span> y[order_y]</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># simple jitter vertical proporcional al rango</span></span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>  yrng <span class="ot">&lt;-</span> usr[<span class="dv">4</span>] <span class="sc">-</span> usr[<span class="dv">3</span>]</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>  jitter_step <span class="ot">&lt;-</span> <span class="fl">0.02</span> <span class="sc">*</span> yrng</span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>  y_jittered <span class="ot">&lt;-</span> y_sorted <span class="sc">+</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fu">floor</span>(<span class="fu">length</span>(y_sorted)<span class="sc">/</span><span class="dv">2</span>), <span class="fu">floor</span>((<span class="fu">length</span>(y_sorted)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">/</span><span class="dv">2</span>)) <span class="sc">*</span> jitter_step</span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reordenar al orden original de top_idx</span></span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a>  y_final <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(y))</span>
+<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>  y_final[order_y] <span class="ot">&lt;-</span> y_jittered</span>
+<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a>  <span class="co"># dibujar texto</span></span>
+<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(<span class="fu">rep</span>(x, <span class="fu">length</span>(y_final)), y_final, <span class="at">labels =</span> labels, <span class="at">cex =</span> cex, <span class="at">col =</span> col, <span class="at">pos =</span> pos)</span>
+<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">data.frame</span>(<span class="at">label =</span> labels, <span class="at">x =</span> x, <span class="at">y =</span> y_final))</span>
+<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ridge_model, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xvar =</span> <span class="st">"lambda"</span>, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">label=</span>F,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">22</span>, <span class="sc">-</span><span class="dv">11</span>),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5e05</span>, <span class="fl">3.5e05</span>))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregás etiquetas de las 5 variables más importantes</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="fu">add_top_coef_labels_glmnet</span>(ridge_model, <span class="at">top_n =</span> <span class="dv">5</span>, <span class="at">offset_x =</span> <span class="fl">0.2</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="búsqueda-del-lambda-óptimo" class="level2">
+<h2 class="anchored" data-anchor-id="búsqueda-del-lambda-óptimo">Búsqueda del lambda óptimo</h2>
+<p>A partir de realizar validación cruzada se encuentra el lambda que minimiza el ECM.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross-validation to find the best lambda for Ridge</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>cv_ridge <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds=</span> <span class="dv">15</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">type.measure =</span> <span class="st">"mse"</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Set alpha to 0 for Ridge</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the optimal lambda</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>cv_ridge<span class="sc">$</span>lambda.min  <span class="co"># This is the lambda that minimizes the cross-validation error</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 418293.3</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_ridge)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="modelo-final" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-final">Modelo final</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>ridge_lambda_opt <span class="ot">=</span> cv_ridge<span class="sc">$</span>lambda.min</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                  train<span class="sc">$</span>new_value,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">0</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> ridge_lambda_opt)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>ridge_opt</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:  glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]),      y = train$new_value, alpha = 0, lambda = ridge_lambda_opt,      standardize = TRUE) 
+
+  Df  %Dev Lambda
+1 31 30.26 418300</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">4</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 5
+   term          step   estimate  lambda dev.ratio
+   &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+ 1 (Intercept)      1 -41837208. 418293.     0.303
+ 2 height           1     51311. 418293.     0.303
+ 3 weight           1     -1728. 418293.     0.303
+ 4 age              1   -222401. 418293.     0.303
+ 5 ball_control     1     51273. 418293.     0.303
+ 6 dribbling        1    -16994. 418293.     0.303
+ 7 slide_tackle     1      1011. 418293.     0.303
+ 8 stand_tackle     1     19708. 418293.     0.303
+ 9 aggression       1     18411. 418293.     0.303
+10 reactions        1    316049. 418293.     0.303
+# ℹ 22 more rows</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="lasso" class="level1">
+<h1>Lasso</h1>
+<p><span class="math display">\[\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \right\}\]</span></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>lasso_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># Response variable</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">1</span>  <span class="co"># lasso</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lasso_model, </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xvar =</span> <span class="st">"lambda"</span>, </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">label=</span>F,</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="dv">6</span>),</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3e05</span>, <span class="fl">4e05</span>))</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregás etiquetas de las 5 variables más importantes</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="fu">add_top_coef_labels_glmnet</span>(lasso_model, <span class="at">top_n =</span> <span class="dv">5</span>, <span class="at">offset_x =</span> <span class="fl">0.2</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross-validation to find the best lambda</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>cv_lasso <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds =</span> <span class="dv">15</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the optimal lambda</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>cv_lasso<span class="sc">$</span>lambda.min  <span class="co"># This is the lambda that minimizes the cross-validation error</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10854.81</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_lasso)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regularizacion_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>lasso_lambda_opt <span class="ot">=</span> cv_ridge<span class="sc">$</span>lambda.min</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>lasso_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="co">#Vector de la variable a predecir</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">1</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> lasso_lambda_opt)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>lasso_opt</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:  glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]),      y = train$new_value, alpha = 1, lambda = lasso_lambda_opt,      standardize = TRUE) 
+
+  Df  %Dev Lambda
+1  7 28.43 418300</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">4</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 5
+   term          step   estimate  lambda dev.ratio
+   &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+ 1 (Intercept)      1 -41837208. 418293.     0.303
+ 2 height           1     51311. 418293.     0.303
+ 3 weight           1     -1728. 418293.     0.303
+ 4 age              1   -222401. 418293.     0.303
+ 5 ball_control     1     51273. 418293.     0.303
+ 6 dribbling        1    -16994. 418293.     0.303
+ 7 slide_tackle     1      1011. 418293.     0.303
+ 8 stand_tackle     1     19708. 418293.     0.303
+ 9 aggression       1     18411. 418293.     0.303
+10 reactions        1    316049. 418293.     0.303
+# ℹ 22 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="elastic-net" class="level1">
+<h1>Elastic net</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, i<span class="sc">/</span><span class="dv">20</span>)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cv.glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="at">standarize=</span>T, <span class="at">alpha=</span>i<span class="sc">/</span><span class="dv">20</span>)</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista para guardar los modelos</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector para almacenar los resultados</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">alpha =</span> <span class="fu">numeric</span>(), <span class="at">lambda =</span> <span class="fu">numeric</span>())</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> i <span class="sc">/</span> <span class="dv">20</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, a)</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ajuste del modelo con cv.glmnet</span></span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> train<span class="sc">$</span>new_value,</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">standardize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">nfolds=</span> <span class="dv">15</span>,</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> a</span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Guardar el alpha y el MSE mínimo</span></span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>    results,</span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">alpha =</span> a,</span>
+<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">lambda =</span> models[[name]]<span class="sc">$</span>lambda.min  <span class="co"># cvm contiene el MSE promedio por lambda</span></span>
+<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-30"><a href="#cb47-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver el data frame final</span></span>
+<span id="cb47-31"><a href="#cb47-31" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   alpha    lambda
+1   0.00 418293.26
+2   0.05 164225.33
+3   0.10 108548.11
+4   0.15  79420.95
+5   0.20  71747.11
+6   0.25  69135.72
+7   0.30  47831.41
+8   0.35  37356.17
+9   0.40  32686.65
+10  0.45  21978.89
+11  0.50  28698.84
+12  0.55  17982.73
+13  0.60  16484.17
+14  0.65  18327.91
+15  0.70  14129.29
+16  0.75  13187.33
+17  0.80  19685.59
+18  0.85  15381.95
+19  0.90  14527.40
+20  0.95  10411.05
+21  1.00  10854.81</code></pre>
 </div>
 </div>
 <!-- -->
@@ -1155,153 +1804,524 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Regularización"</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela Eugenia Pairo"</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: flatly</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=TRUE, message=FALSE, warning=FALSE}</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = FALSE, message = FALSE)</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="in"># Cargamos las librerías que vamos a utilizar</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidymodels)</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="in">library(GGally)</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="in">library(cowplot)</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="in">library(glmnet)</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="in">library(RColorBrewer)</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="in">library(knitr)</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="in">library(kableExtra)</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="in">set.seed(15)</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="fu"># Presentación del caso de estudio</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>En esta clase vamos a trabajar con la base de datos de los jugadores de FIFA 2024 MEN, la cual fue extraída de <span class="co">[</span><span class="ot">Kaggle</span><span class="co">](https://www.kaggle.com/datasets/rehandl23/fifa-24-player-stats-dataset/data)</span>.</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>El **objetivo de la clase** es predecir el precio de los jugadores utilizando diferentes modelos de regresión y regularización.</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"player_stats.csv"</span>)</span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(df))<span class="co"># chequeamos si hay datos faltantes</span></span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(df))<span class="co">#chequeamos duplicados</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>Atributos de los jugadores:</span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Player: The name of the football player.</span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Country: The nationality or home country of the player.</span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Height: The height of the player in centimeters.</span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Weight: The weight of the player in kilograms.</span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Age: The age of the player.</span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Club: The club to which the player is currently affiliated.</span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Ball Control: Player's skill in controlling the ball.</span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Dribbling: Player's dribbling ability.</span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Marking: Player's marking skill.</span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Slide Tackle: Player's ability to perform slide tackles.</span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Stand Tackle: Player's ability to perform standing tackles.</span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Aggression: Player's aggression level.</span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Reactions: Player's reaction time.</span>
-<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Attacking Position: Player's positioning for attacking plays.</span>
-<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Interceptions: Player's skill in intercepting passes.</span>
-<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Vision: Player's vision on the field.</span>
-<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Composure: Player's composure under pressure.</span>
-<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Crossing: Player's ability to deliver crosses.</span>
-<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Short Pass: Player's short passing accuracy.</span>
-<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Long Pass: Player's ability in long passing.</span>
-<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Acceleration: Player's acceleration on the field.</span>
-<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Stamina: Player's stamina level.</span>
-<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Strength: Player's physical strength.</span>
-<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Balance: Player's balance while playing.</span>
-<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sprint Speed: Player's speed in sprints.</span>
-<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Agility: Player's agility in maneuvering.</span>
-<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Jumping: Player's jumping ability.</span>
-<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Heading: Player's heading skills.</span>
-<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Shot Power: Player's power in shooting.</span>
-<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Finishing: Player's finishing skills.</span>
-<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Long Shots: Player's ability to make long-range shots.</span>
-<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Curve: Player's ability to curve the ball.</span>
-<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Free Kick Accuracy: Player's accuracy in free-kick situations.</span>
-<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Penalties: Player's penalty-taking skills.</span>
-<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Volleys: Player's volleying skills.</span>
-<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Positioning: Goalkeeper's positioning attribute (specific to goalkeepers).</span>
-<span id="cb13-93"><a href="#cb13-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Diving: Goalkeeper's diving ability (specific to goalkeepers).</span>
-<span id="cb13-94"><a href="#cb13-94" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Handling: Goalkeeper's ball-handling skill (specific to goalkeepers).</span>
-<span id="cb13-95"><a href="#cb13-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Kicking: Goalkeeper's kicking ability (specific to goalkeepers).</span>
-<span id="cb13-96"><a href="#cb13-96" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Reflexes: Goalkeeper's reflexes (specific to goalkeepers).</span>
-<span id="cb13-97"><a href="#cb13-97" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Value: The estimated value of the player.</span>
-<span id="cb13-98"><a href="#cb13-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-99"><a href="#cb13-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-102"><a href="#cb13-102" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-103"><a href="#cb13-103" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
-<span id="cb13-104"><a href="#cb13-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb13-105"><a href="#cb13-105" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_value =</span> value <span class="sc">%&gt;%</span></span>
-<span id="cb13-106"><a href="#cb13-106" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">.00</span><span class="sc">\\</span><span class="st">s$"</span>, <span class="st">"000"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace_all</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">$"</span>, <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-108"><a href="#cb13-108" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace_all</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-109"><a href="#cb13-109" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_trim</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb13-110"><a href="#cb13-110" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.integer</span>()</span>
-<span id="cb13-111"><a href="#cb13-111" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb13-112"><a href="#cb13-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-113"><a href="#cb13-113" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
-<span id="cb13-114"><a href="#cb13-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb13-115"><a href="#cb13-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">"html"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-116"><a href="#cb13-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>) </span>
-<span id="cb13-117"><a href="#cb13-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-118"><a href="#cb13-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-119"><a href="#cb13-119" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-120"><a href="#cb13-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-121"><a href="#cb13-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-124"><a href="#cb13-124" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-125"><a href="#cb13-125" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">y =</span> new_value)) <span class="sc">+</span></span>
-<span id="cb13-126"><a href="#cb13-126" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span>
-<span id="cb13-127"><a href="#cb13-127" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-128"><a href="#cb13-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-129"><a href="#cb13-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-132"><a href="#cb13-132" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-133"><a href="#cb13-133" aria-hidden="true" tabindex="-1"></a><span class="co">#paises con mas jugadores</span></span>
-<span id="cb13-134"><a href="#cb13-134" aria-hidden="true" tabindex="-1"></a>top_10 <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
-<span id="cb13-135"><a href="#cb13-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(country, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-136"><a href="#cb13-136" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">10</span>)</span>
-<span id="cb13-137"><a href="#cb13-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-138"><a href="#cb13-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-139"><a href="#cb13-139" aria-hidden="true" tabindex="-1"></a><span class="co">#barplot</span></span>
-<span id="cb13-140"><a href="#cb13-140" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_10, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(country, n), <span class="at">y =</span> n)) <span class="sc">+</span></span>
-<span id="cb13-141"><a href="#cb13-141" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FDB462"</span>) <span class="sc">+</span> </span>
-<span id="cb13-142"><a href="#cb13-142" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb13-143"><a href="#cb13-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb13-144"><a href="#cb13-144" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"País"</span>,</span>
-<span id="cb13-145"><a href="#cb13-145" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Cantidad de jugadores"</span>,</span>
-<span id="cb13-146"><a href="#cb13-146" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Top 10 países con mas jugadores"</span></span>
-<span id="cb13-147"><a href="#cb13-147" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb13-148"><a href="#cb13-148" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb13-149"><a href="#cb13-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-150"><a href="#cb13-150" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-153"><a href="#cb13-153" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-154"><a href="#cb13-154" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(height)) <span class="sc">+</span></span>
-<span id="cb13-155"><a href="#cb13-155" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_histogram</span>(<span class="at">fill=</span><span class="st">"#FDB462"</span>, <span class="at">colour=</span><span class="st">"black"</span>)</span>
-<span id="cb13-156"><a href="#cb13-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-157"><a href="#cb13-157" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb13-160"><a href="#cb13-160" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb13-161"><a href="#cb13-161" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> aggression, <span class="at">y =</span> finishing, <span class="at">color =</span> shot_power)) <span class="sc">+</span></span>
-<span id="cb13-162"><a href="#cb13-162" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">scale_color_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">8</span>))</span>
-<span id="cb13-163"><a href="#cb13-163" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb49" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Regularización"</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela Eugenia Pairo"</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: flatly</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=TRUE, message=FALSE, warning=FALSE}</span></span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = FALSE, message = FALSE)</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="in"># Cargamos las librerías que vamos a utilizar</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidymodels)</span></span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a><span class="in">library(GGally)</span></span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a><span class="in">library(cowplot)</span></span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a><span class="in">library(glmnet)</span></span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a><span class="in">library(RColorBrewer)</span></span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a><span class="in">library(knitr)</span></span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a><span class="in">library(kableExtra)</span></span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a><span class="in">set.seed(15)</span></span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-29"><a href="#cb49-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-30"><a href="#cb49-30" aria-hidden="true" tabindex="-1"></a><span class="fu"># Presentación del caso de estudio</span></span>
+<span id="cb49-31"><a href="#cb49-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-32"><a href="#cb49-32" aria-hidden="true" tabindex="-1"></a>En esta clase vamos a trabajar con la base de datos de los jugadores de FIFA 2024 MEN, la cual fue extraída de <span class="co">[</span><span class="ot">Kaggle</span><span class="co">](https://www.kaggle.com/datasets/rehandl23/fifa-24-player-stats-dataset/data)</span>.</span>
+<span id="cb49-33"><a href="#cb49-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-34"><a href="#cb49-34" aria-hidden="true" tabindex="-1"></a>El **objetivo de la clase** es predecir el precio de los jugadores de FIFA 2024 utilizando diferentes modelos de regresión y regularización.</span>
+<span id="cb49-35"><a href="#cb49-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-38"><a href="#cb49-38" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-39"><a href="#cb49-39" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"player_stats.csv"</span>)</span>
+<span id="cb49-40"><a href="#cb49-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-41"><a href="#cb49-41" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(df))<span class="co"># chequeamos si hay datos faltantes</span></span>
+<span id="cb49-42"><a href="#cb49-42" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-45"><a href="#cb49-45" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-46"><a href="#cb49-46" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(df))<span class="co">#chequeamos duplicados</span></span>
+<span id="cb49-47"><a href="#cb49-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-48"><a href="#cb49-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-51"><a href="#cb49-51" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-52"><a href="#cb49-52" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df)</span>
+<span id="cb49-53"><a href="#cb49-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-54"><a href="#cb49-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-55"><a href="#cb49-55" aria-hidden="true" tabindex="-1"></a>Atributos de los jugadores:</span>
+<span id="cb49-56"><a href="#cb49-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-57"><a href="#cb49-57" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Player: The name of the football player.</span>
+<span id="cb49-58"><a href="#cb49-58" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Country: The nationality or home country of the player.</span>
+<span id="cb49-59"><a href="#cb49-59" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Height: The height of the player in centimeters.</span>
+<span id="cb49-60"><a href="#cb49-60" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Weight: The weight of the player in kilograms.</span>
+<span id="cb49-61"><a href="#cb49-61" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Age: The age of the player.</span>
+<span id="cb49-62"><a href="#cb49-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Club: The club to which the player is currently affiliated.</span>
+<span id="cb49-63"><a href="#cb49-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Ball Control: Player's skill in controlling the ball.</span>
+<span id="cb49-64"><a href="#cb49-64" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Dribbling: Player's dribbling ability.</span>
+<span id="cb49-65"><a href="#cb49-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Marking: Player's marking skill.</span>
+<span id="cb49-66"><a href="#cb49-66" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Slide Tackle: Player's ability to perform slide tackles.</span>
+<span id="cb49-67"><a href="#cb49-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Stand Tackle: Player's ability to perform standing tackles.</span>
+<span id="cb49-68"><a href="#cb49-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Aggression: Player's aggression level.</span>
+<span id="cb49-69"><a href="#cb49-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Reactions: Player's reaction time.</span>
+<span id="cb49-70"><a href="#cb49-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Attacking Position: Player's positioning for attacking plays.</span>
+<span id="cb49-71"><a href="#cb49-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Interceptions: Player's skill in intercepting passes.</span>
+<span id="cb49-72"><a href="#cb49-72" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Vision: Player's vision on the field.</span>
+<span id="cb49-73"><a href="#cb49-73" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Composure: Player's composure under pressure.</span>
+<span id="cb49-74"><a href="#cb49-74" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Crossing: Player's ability to deliver crosses.</span>
+<span id="cb49-75"><a href="#cb49-75" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Short Pass: Player's short passing accuracy.</span>
+<span id="cb49-76"><a href="#cb49-76" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Long Pass: Player's ability in long passing.</span>
+<span id="cb49-77"><a href="#cb49-77" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Acceleration: Player's acceleration on the field.</span>
+<span id="cb49-78"><a href="#cb49-78" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Stamina: Player's stamina level.</span>
+<span id="cb49-79"><a href="#cb49-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Strength: Player's physical strength.</span>
+<span id="cb49-80"><a href="#cb49-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Balance: Player's balance while playing.</span>
+<span id="cb49-81"><a href="#cb49-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sprint Speed: Player's speed in sprints.</span>
+<span id="cb49-82"><a href="#cb49-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Agility: Player's agility in maneuvering.</span>
+<span id="cb49-83"><a href="#cb49-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Jumping: Player's jumping ability.</span>
+<span id="cb49-84"><a href="#cb49-84" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Heading: Player's heading skills.</span>
+<span id="cb49-85"><a href="#cb49-85" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Shot Power: Player's power in shooting.</span>
+<span id="cb49-86"><a href="#cb49-86" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Finishing: Player's finishing skills.</span>
+<span id="cb49-87"><a href="#cb49-87" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Long Shots: Player's ability to make long-range shots.</span>
+<span id="cb49-88"><a href="#cb49-88" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Curve: Player's ability to curve the ball.</span>
+<span id="cb49-89"><a href="#cb49-89" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Free Kick Accuracy: Player's accuracy in free-kick situations.</span>
+<span id="cb49-90"><a href="#cb49-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Penalties: Player's penalty-taking skills.</span>
+<span id="cb49-91"><a href="#cb49-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Volleys: Player's volleying skills.</span>
+<span id="cb49-92"><a href="#cb49-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Positioning: Goalkeeper's positioning attribute (specific to goalkeepers).</span>
+<span id="cb49-93"><a href="#cb49-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Diving: Goalkeeper's diving ability (specific to goalkeepers).</span>
+<span id="cb49-94"><a href="#cb49-94" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Handling: Goalkeeper's ball-handling skill (specific to goalkeepers).</span>
+<span id="cb49-95"><a href="#cb49-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Kicking: Goalkeeper's kicking ability (specific to goalkeepers).</span>
+<span id="cb49-96"><a href="#cb49-96" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Goalkeeper Reflexes: Goalkeeper's reflexes (specific to goalkeepers).</span>
+<span id="cb49-97"><a href="#cb49-97" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Value: The estimated value of the player.</span>
+<span id="cb49-98"><a href="#cb49-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-99"><a href="#cb49-99" aria-hidden="true" tabindex="-1"></a>Modificamos la variable <span class="in">`value`</span>para que tenga el tipo de dato que le corresponde y agregamos un cero a los valores que terminan <span class="in">`.00 `</span>.</span>
+<span id="cb49-100"><a href="#cb49-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-103"><a href="#cb49-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-104"><a href="#cb49-104" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb49-105"><a href="#cb49-105" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb49-106"><a href="#cb49-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">new_value =</span> value <span class="sc">%&gt;%</span></span>
+<span id="cb49-107"><a href="#cb49-107" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">.00</span><span class="sc">\\</span><span class="st">s$"</span>, <span class="st">"000"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb49-108"><a href="#cb49-108" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace_all</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">$"</span>, <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb49-109"><a href="#cb49-109" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace_all</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb49-110"><a href="#cb49-110" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_trim</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb49-111"><a href="#cb49-111" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.integer</span>()</span>
+<span id="cb49-112"><a href="#cb49-112" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb49-113"><a href="#cb49-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-114"><a href="#cb49-114" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb49-115"><a href="#cb49-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb49-116"><a href="#cb49-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">"html"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb49-117"><a href="#cb49-117" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb49-118"><a href="#cb49-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-119"><a href="#cb49-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-120"><a href="#cb49-120" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-121"><a href="#cb49-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-122"><a href="#cb49-122" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis exploratorio</span></span>
+<span id="cb49-123"><a href="#cb49-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-124"><a href="#cb49-124" aria-hidden="true" tabindex="-1"></a>A continuación se realizan algunos gráficos de análisis exploratorio con el fin de analizar la relación entre algunas variables y el comportamiento del precio de los jugadores.</span>
+<span id="cb49-125"><a href="#cb49-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-128"><a href="#cb49-128" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-129"><a href="#cb49-129" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">y =</span> new_value)) <span class="sc">+</span></span>
+<span id="cb49-130"><a href="#cb49-130" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span>
+<span id="cb49-131"><a href="#cb49-131" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-132"><a href="#cb49-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-133"><a href="#cb49-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-136"><a href="#cb49-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-137"><a href="#cb49-137" aria-hidden="true" tabindex="-1"></a><span class="co">#paises con mas jugadores</span></span>
+<span id="cb49-138"><a href="#cb49-138" aria-hidden="true" tabindex="-1"></a>top_10 <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb49-139"><a href="#cb49-139" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(country, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-140"><a href="#cb49-140" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">10</span>)</span>
+<span id="cb49-141"><a href="#cb49-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-142"><a href="#cb49-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-143"><a href="#cb49-143" aria-hidden="true" tabindex="-1"></a><span class="co">#barplot</span></span>
+<span id="cb49-144"><a href="#cb49-144" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_10, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(country, n), <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb49-145"><a href="#cb49-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"#FDB462"</span>) <span class="sc">+</span> </span>
+<span id="cb49-146"><a href="#cb49-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb49-147"><a href="#cb49-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb49-148"><a href="#cb49-148" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"País"</span>,</span>
+<span id="cb49-149"><a href="#cb49-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Cantidad de jugadores"</span>,</span>
+<span id="cb49-150"><a href="#cb49-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Top 10 países con mas jugadores"</span></span>
+<span id="cb49-151"><a href="#cb49-151" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb49-152"><a href="#cb49-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb49-153"><a href="#cb49-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-154"><a href="#cb49-154" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-157"><a href="#cb49-157" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-158"><a href="#cb49-158" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(height)) <span class="sc">+</span></span>
+<span id="cb49-159"><a href="#cb49-159" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_histogram</span>(<span class="at">fill=</span><span class="st">"#FDB462"</span>, <span class="at">colour=</span><span class="st">"black"</span>)</span>
+<span id="cb49-160"><a href="#cb49-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-161"><a href="#cb49-161" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-164"><a href="#cb49-164" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-165"><a href="#cb49-165" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> aggression, <span class="at">y =</span> finishing, <span class="at">color =</span> shot_power)) <span class="sc">+</span></span>
+<span id="cb49-166"><a href="#cb49-166" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">scale_color_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">8</span>))</span>
+<span id="cb49-167"><a href="#cb49-167" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-168"><a href="#cb49-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-171"><a href="#cb49-171" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-172"><a href="#cb49-172" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> heading, <span class="at">y =</span> jumping, <span class="at">color =</span> reactions)) <span class="sc">+</span></span>
+<span id="cb49-173"><a href="#cb49-173" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">scale_color_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">8</span>))</span>
+<span id="cb49-174"><a href="#cb49-174" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-175"><a href="#cb49-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-178"><a href="#cb49-178" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-179"><a href="#cb49-179" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> gk_handling, <span class="at">y =</span> gk_diving, <span class="at">color =</span> gk_kicking)) <span class="sc">+</span></span>
+<span id="cb49-180"><a href="#cb49-180" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">scale_color_gradientn</span>(<span class="at">colours =</span> <span class="fu">terrain.colors</span>(<span class="dv">8</span>))</span>
+<span id="cb49-181"><a href="#cb49-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-182"><a href="#cb49-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-185"><a href="#cb49-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-186"><a href="#cb49-186" aria-hidden="true" tabindex="-1"></a>top_5 <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb49-187"><a href="#cb49-187" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(country, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-188"><a href="#cb49-188" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">5</span>)</span>
+<span id="cb49-189"><a href="#cb49-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-190"><a href="#cb49-190" aria-hidden="true" tabindex="-1"></a>df_top_5_full <span class="ot">&lt;-</span>df <span class="sc">%&gt;%</span></span>
+<span id="cb49-191"><a href="#cb49-191" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> top_5<span class="sc">$</span>country)</span>
+<span id="cb49-192"><a href="#cb49-192" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-193"><a href="#cb49-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-196"><a href="#cb49-196" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-197"><a href="#cb49-197" aria-hidden="true" tabindex="-1"></a>df_top_5_full <span class="sc">%&gt;%</span> </span>
+<span id="cb49-198"><a href="#cb49-198" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(new_value, age, country, aggression, long_pass, shot_power, height, finishing, country) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-199"><a href="#cb49-199" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggpairs</span>(<span class="fu">aes</span>(<span class="at">color =</span> country), <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="fu">wrap</span>(<span class="st">"cor"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">hjust=</span><span class="fl">0.5</span>)), <span class="at">progress=</span><span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb49-200"><a href="#cb49-200" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>), <span class="at">legend.position =</span> <span class="st">"bottom"</span>) <span class="sc">+</span> </span>
+<span id="cb49-201"><a href="#cb49-201" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb49-202"><a href="#cb49-202" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-205"><a href="#cb49-205" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-206"><a href="#cb49-206" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb49-207"><a href="#cb49-207" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric) <span class="sc">%&gt;%</span> <span class="co"># selección variables numéricas</span></span>
+<span id="cb49-208"><a href="#cb49-208" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggcorr</span>(., <span class="at">layout.exp =</span> <span class="dv">5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">nbreaks =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span> <span class="co"># graficamos correlacion pearson</span></span>
+<span id="cb49-209"><a href="#cb49-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Correlograma de variables cuantitativas'</span>)</span>
+<span id="cb49-210"><a href="#cb49-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-211"><a href="#cb49-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-212"><a href="#cb49-212" aria-hidden="true" tabindex="-1"></a><span class="fu"># Preparación de la base de datos</span></span>
+<span id="cb49-213"><a href="#cb49-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-214"><a href="#cb49-214" aria-hidden="true" tabindex="-1"></a>Vamos a separar a los arqueros del resto de los jugadores.</span>
+<span id="cb49-215"><a href="#cb49-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-218"><a href="#cb49-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-219"><a href="#cb49-219" aria-hidden="true" tabindex="-1"></a>df_ <span class="ot">&lt;-</span>df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(gk_positioning <span class="sc">&lt;</span> <span class="dv">30</span> <span class="sc">&amp;</span> gk_positioning <span class="sc">&lt;</span> <span class="dv">30</span>) <span class="sc">%&gt;%</span> <span class="co">#saco arqueros</span></span>
+<span id="cb49-220"><a href="#cb49-220" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(value, marking, country, club, player)) <span class="sc">%&gt;%</span> <span class="co">#saco ciertas columnas</span></span>
+<span id="cb49-221"><a href="#cb49-221" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">"gk_"</span>))<span class="co">#elimino columnas que caracterizan a los arqueros</span></span>
+<span id="cb49-222"><a href="#cb49-222" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-223"><a href="#cb49-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-224"><a href="#cb49-224" aria-hidden="true" tabindex="-1"></a><span class="fu">## Partición en train y test</span></span>
+<span id="cb49-225"><a href="#cb49-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-228"><a href="#cb49-228" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-229"><a href="#cb49-229" aria-hidden="true" tabindex="-1"></a>df_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(df_,</span>
+<span id="cb49-230"><a href="#cb49-230" aria-hidden="true" tabindex="-1"></a>                          <span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb49-231"><a href="#cb49-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-232"><a href="#cb49-232" aria-hidden="true" tabindex="-1"></a>train<span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb49-233"><a href="#cb49-233" aria-hidden="true" tabindex="-1"></a>              <span class="fu">training</span>()</span>
+<span id="cb49-234"><a href="#cb49-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-235"><a href="#cb49-235" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> df_split <span class="sc">%&gt;%</span></span>
+<span id="cb49-236"><a href="#cb49-236" aria-hidden="true" tabindex="-1"></a>              <span class="fu">testing</span>()</span>
+<span id="cb49-237"><a href="#cb49-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-238"><a href="#cb49-238" aria-hidden="true" tabindex="-1"></a>train_sc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">scale</span>(train))</span>
+<span id="cb49-239"><a href="#cb49-239" aria-hidden="true" tabindex="-1"></a>test_sc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">scale</span>(test))</span>
+<span id="cb49-240"><a href="#cb49-240" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-241"><a href="#cb49-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-242"><a href="#cb49-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-243"><a href="#cb49-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-246"><a href="#cb49-246" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-247"><a href="#cb49-247" aria-hidden="true" tabindex="-1"></a>train_sc <span class="sc">%&gt;%</span> </span>
+<span id="cb49-248"><a href="#cb49-248" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggcorr</span>(., <span class="at">layout.exp =</span> <span class="dv">5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">nbreaks =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span> <span class="co"># graficamos correlacion pearson</span></span>
+<span id="cb49-249"><a href="#cb49-249" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Correlograma de variables cuantitativas en train'</span>)</span>
+<span id="cb49-250"><a href="#cb49-250" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-251"><a href="#cb49-251" aria-hidden="true" tabindex="-1"></a><span class="fu"># Regresión Lineal Múltiple</span></span>
+<span id="cb49-252"><a href="#cb49-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-255"><a href="#cb49-255" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-256"><a href="#cb49-256" aria-hidden="true" tabindex="-1"></a><span class="co"># Modelo lineal</span></span>
+<span id="cb49-257"><a href="#cb49-257" aria-hidden="true" tabindex="-1"></a>modelo_lineal <span class="ot">=</span> train_sc <span class="sc">%&gt;%</span> <span class="fu">lm</span>(<span class="at">formula =</span> new_value <span class="sc">~</span>.)</span>
+<span id="cb49-258"><a href="#cb49-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-259"><a href="#cb49-259" aria-hidden="true" tabindex="-1"></a><span class="co">#Coeficientes</span></span>
+<span id="cb49-260"><a href="#cb49-260" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="ot">=</span> modelo_lineal <span class="sc">%&gt;%</span> <span class="fu">tidy</span>(<span class="at">conf.int=</span><span class="cn">TRUE</span>)</span>
+<span id="cb49-261"><a href="#cb49-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-262"><a href="#cb49-262" aria-hidden="true" tabindex="-1"></a><span class="co">#graficamos los coeficientes estimados</span></span>
+<span id="cb49-263"><a href="#cb49-263" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(estimate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-264"><a href="#cb49-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(term, estimate))<span class="sc">+</span></span>
+<span id="cb49-265"><a href="#cb49-265" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"forestgreen"</span>)<span class="sc">+</span></span>
+<span id="cb49-266"><a href="#cb49-266" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), <span class="at">color =</span> <span class="st">"forestgreen"</span>)<span class="sc">+</span></span>
+<span id="cb49-267"><a href="#cb49-267" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb49-268"><a href="#cb49-268" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Coeficientes de la regresión lineal"</span>, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"Estimación e Int. Confianza"</span>) <span class="sc">+</span></span>
+<span id="cb49-269"><a href="#cb49-269" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb49-270"><a href="#cb49-270" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>))</span>
+<span id="cb49-271"><a href="#cb49-271" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-272"><a href="#cb49-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-273"><a href="#cb49-273" aria-hidden="true" tabindex="-1"></a>Graficamos los p-valores de mayor a menor para evaluar la significatividad individual de los coeficientes estimados.</span>
+<span id="cb49-274"><a href="#cb49-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-277"><a href="#cb49-277" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-278"><a href="#cb49-278" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(estimate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-279"><a href="#cb49-279" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(<span class="fu">reorder</span>(term, <span class="sc">-</span>p.value), p.value, <span class="at">fill=</span>p.value))<span class="sc">+</span></span>
+<span id="cb49-280"><a href="#cb49-280" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="fu">aes</span>(<span class="at">fill=</span>p.value))<span class="sc">+</span></span>
+<span id="cb49-281"><a href="#cb49-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
+<span id="cb49-282"><a href="#cb49-282" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"P-valor de los regresores"</span>, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"P-valor"</span>) <span class="sc">+</span></span>
+<span id="cb49-283"><a href="#cb49-283" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb49-284"><a href="#cb49-284" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>)) <span class="sc">+</span> </span>
+<span id="cb49-285"><a href="#cb49-285" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">high=</span><span class="st">'firebrick'</span>, <span class="at">low =</span> <span class="st">'forestgreen'</span>, <span class="at">mid=</span><span class="st">'yellow2'</span>,<span class="at">midpoint =</span> <span class="fl">0.5</span> )</span>
+<span id="cb49-286"><a href="#cb49-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-287"><a href="#cb49-287" aria-hidden="true" tabindex="-1"></a>Evaluamos la multicolinealidad de las regresoras.</span>
+<span id="cb49-288"><a href="#cb49-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-291"><a href="#cb49-291" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-292"><a href="#cb49-292" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span> (modelo_lineal)</span>
+<span id="cb49-293"><a href="#cb49-293" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-294"><a href="#cb49-294" aria-hidden="true" tabindex="-1"></a><span class="fu"># Regularización</span></span>
+<span id="cb49-295"><a href="#cb49-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-296"><a href="#cb49-296" aria-hidden="true" tabindex="-1"></a>La libreria <span class="in">`glmnet`</span> nos permite trabajar con modelos ridge, lasso y elastic net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el <span class="co">[</span><span class="ot">este link</span><span class="co">](https://glmnet.stanford.edu/articles/glmnet.html)</span> mas información sobre <span class="in">`glmnet`</span>. </span>
+<span id="cb49-297"><a href="#cb49-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-298"><a href="#cb49-298" aria-hidden="true" tabindex="-1"></a>Fórmula:</span>
+<span id="cb49-299"><a href="#cb49-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-300"><a href="#cb49-300" aria-hidden="true" tabindex="-1"></a>$ECM + \lambda{\left<span class="co">[</span><span class="ot">\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right</span><span class="co">]</span>}$</span>
+<span id="cb49-301"><a href="#cb49-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-302"><a href="#cb49-302" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\lambda$ regula la importancia de la penalización.</span>
+<span id="cb49-303"><a href="#cb49-303" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\alpha$ controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.</span>
+<span id="cb49-304"><a href="#cb49-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-305"><a href="#cb49-305" aria-hidden="true" tabindex="-1"></a>Con el parámetro $\alpha$ indicamos con qué tipo de modelo deseamos trabajar:</span>
+<span id="cb49-306"><a href="#cb49-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-307"><a href="#cb49-307" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Ridge:  $\alpha=0$</span>
+<span id="cb49-308"><a href="#cb49-308" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-309"><a href="#cb49-309" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Lasso:  $\alpha=1$</span>
+<span id="cb49-310"><a href="#cb49-310" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-311"><a href="#cb49-311" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Elastic Net:  $0&lt;\alpha&lt;1$</span>
+<span id="cb49-312"><a href="#cb49-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-313"><a href="#cb49-313" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ridge (L2 regularization)</span></span>
+<span id="cb49-314"><a href="#cb49-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-315"><a href="#cb49-315" aria-hidden="true" tabindex="-1"></a>$$\min_{\beta_0, \beta} \left<span class="sc">\{</span> \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \right<span class="sc">\}</span>$$</span>
+<span id="cb49-316"><a href="#cb49-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-317"><a href="#cb49-317" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-320"><a href="#cb49-320" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-321"><a href="#cb49-321" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo ridge </span></span>
+<span id="cb49-322"><a href="#cb49-322" aria-hidden="true" tabindex="-1"></a>ridge_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb49-323"><a href="#cb49-323" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># predictoras</span></span>
+<span id="cb49-324"><a href="#cb49-324" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># variable respuesta</span></span>
+<span id="cb49-325"><a href="#cb49-325" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T, <span class="co">#estandariza las variables</span></span>
+<span id="cb49-326"><a href="#cb49-326" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Ridge</span></span>
+<span id="cb49-327"><a href="#cb49-327" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-328"><a href="#cb49-328" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-329"><a href="#cb49-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-332"><a href="#cb49-332" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-333"><a href="#cb49-333" aria-hidden="true" tabindex="-1"></a>ridge_tidy <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">tidy</span>(ridge_model)</span>
+<span id="cb49-334"><a href="#cb49-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-335"><a href="#cb49-335" aria-hidden="true" tabindex="-1"></a>ridge_tidy</span>
+<span id="cb49-336"><a href="#cb49-336" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-337"><a href="#cb49-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-340"><a href="#cb49-340" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-341"><a href="#cb49-341" aria-hidden="true" tabindex="-1"></a>add_top_coef_labels_glmnet <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, <span class="at">s =</span> <span class="cn">NULL</span>, <span class="at">top_n =</span> <span class="dv">5</span>,</span>
+<span id="cb49-342"><a href="#cb49-342" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">offset_x =</span> <span class="fl">0.5</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> <span class="st">"black"</span>,</span>
+<span id="cb49-343"><a href="#cb49-343" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">pos =</span> <span class="dv">4</span>) {</span>
+<span id="cb49-344"><a href="#cb49-344" aria-hidden="true" tabindex="-1"></a>  <span class="co"># fit: objeto glmnet</span></span>
+<span id="cb49-345"><a href="#cb49-345" aria-hidden="true" tabindex="-1"></a>  <span class="co"># s: valor lambda (si NULL usa el último de fit$lambda)</span></span>
+<span id="cb49-346"><a href="#cb49-346" aria-hidden="true" tabindex="-1"></a>  <span class="co"># top_n: cuántas variables etiquetar (por valor absoluto)</span></span>
+<span id="cb49-347"><a href="#cb49-347" aria-hidden="true" tabindex="-1"></a>  <span class="co"># offset_x: desplazamiento horizontal en la escala de -log(lambda)</span></span>
+<span id="cb49-348"><a href="#cb49-348" aria-hidden="true" tabindex="-1"></a>  <span class="co"># cex, col, pos: parámetros de text()</span></span>
+<span id="cb49-349"><a href="#cb49-349" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-350"><a href="#cb49-350" aria-hidden="true" tabindex="-1"></a>  <span class="co"># elegir s (último lambda por defecto)</span></span>
+<span id="cb49-351"><a href="#cb49-351" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(s)) s <span class="ot">&lt;-</span> fit<span class="sc">$</span>lambda[<span class="fu">length</span>(fit<span class="sc">$</span>lambda)]</span>
+<span id="cb49-352"><a href="#cb49-352" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-353"><a href="#cb49-353" aria-hidden="true" tabindex="-1"></a>  <span class="co"># extraer coeficientes (sin intercepto)</span></span>
+<span id="cb49-354"><a href="#cb49-354" aria-hidden="true" tabindex="-1"></a>  coefs <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">coef</span>(fit, <span class="at">s =</span> s))</span>
+<span id="cb49-355"><a href="#cb49-355" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(coefs) <span class="sc">&lt;=</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="fu">invisible</span>(<span class="cn">NULL</span>))  <span class="co"># por si no hay predictores</span></span>
+<span id="cb49-356"><a href="#cb49-356" aria-hidden="true" tabindex="-1"></a>  coefs <span class="ot">&lt;-</span> coefs[<span class="sc">-</span><span class="dv">1</span>, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb49-357"><a href="#cb49-357" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-358"><a href="#cb49-358" aria-hidden="true" tabindex="-1"></a>  <span class="co"># seleccionar top_n por valor absoluto</span></span>
+<span id="cb49-359"><a href="#cb49-359" aria-hidden="true" tabindex="-1"></a>  vals <span class="ot">&lt;-</span> <span class="fu">abs</span>(coefs[, <span class="dv">1</span>])</span>
+<span id="cb49-360"><a href="#cb49-360" aria-hidden="true" tabindex="-1"></a>  ord <span class="ot">&lt;-</span> <span class="fu">order</span>(vals, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb49-361"><a href="#cb49-361" aria-hidden="true" tabindex="-1"></a>  top_idx <span class="ot">&lt;-</span> ord[<span class="fu">seq_len</span>(<span class="fu">min</span>(top_n, <span class="fu">length</span>(ord)))]</span>
+<span id="cb49-362"><a href="#cb49-362" aria-hidden="true" tabindex="-1"></a>  top_coefs <span class="ot">&lt;-</span> coefs[top_idx, <span class="dv">1</span>, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb49-363"><a href="#cb49-363" aria-hidden="true" tabindex="-1"></a>  labels <span class="ot">&lt;-</span> <span class="fu">rownames</span>(top_coefs)</span>
+<span id="cb49-364"><a href="#cb49-364" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(top_coefs)</span>
+<span id="cb49-365"><a href="#cb49-365" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-366"><a href="#cb49-366" aria-hidden="true" tabindex="-1"></a>  <span class="co"># coordenada X en la escala del plot.glmnet (eje = -log(lambda))</span></span>
+<span id="cb49-367"><a href="#cb49-367" aria-hidden="true" tabindex="-1"></a>  x_desired <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log</span>(s) <span class="sc">+</span> offset_x</span>
+<span id="cb49-368"><a href="#cb49-368" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-369"><a href="#cb49-369" aria-hidden="true" tabindex="-1"></a>  <span class="co"># asegurar que el plot ya existe y obtener límites</span></span>
+<span id="cb49-370"><a href="#cb49-370" aria-hidden="true" tabindex="-1"></a>  usr <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="st">"usr"</span>)  <span class="co"># c(xmin, xmax, ymin, ymax)</span></span>
+<span id="cb49-371"><a href="#cb49-371" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(usr) <span class="sc">||</span> <span class="fu">length</span>(usr) <span class="sc">&lt;</span> <span class="dv">4</span>) {</span>
+<span id="cb49-372"><a href="#cb49-372" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"No hay un plot activo. Llamá primero a plot(fit, xvar='lambda') antes de esta función."</span>)</span>
+<span id="cb49-373"><a href="#cb49-373" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb49-374"><a href="#cb49-374" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-375"><a href="#cb49-375" aria-hidden="true" tabindex="-1"></a>  <span class="co"># si x_desired queda fuera del plot, recolocamos en el borde derecho menos margen</span></span>
+<span id="cb49-376"><a href="#cb49-376" aria-hidden="true" tabindex="-1"></a>  x_min <span class="ot">&lt;-</span> usr[<span class="dv">1</span>]; x_max <span class="ot">&lt;-</span> usr[<span class="dv">2</span>]</span>
+<span id="cb49-377"><a href="#cb49-377" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (x_desired <span class="sc">&gt;</span> x_max) x <span class="ot">&lt;-</span> x_max <span class="sc">-</span> <span class="fl">0.02</span> <span class="sc">*</span> (x_max <span class="sc">-</span> x_min) <span class="cf">else</span> <span class="cf">if</span> (x_desired <span class="sc">&lt;</span> x_min) x <span class="ot">&lt;-</span> x_min <span class="sc">+</span> <span class="fl">0.02</span> <span class="sc">*</span> (x_max <span class="sc">-</span> x_min) <span class="cf">else</span> x <span class="ot">&lt;-</span> x_desired</span>
+<span id="cb49-378"><a href="#cb49-378" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-379"><a href="#cb49-379" aria-hidden="true" tabindex="-1"></a>  <span class="co"># si hay muchos labels que se pisan, usar offsets verticales pequeños</span></span>
+<span id="cb49-380"><a href="#cb49-380" aria-hidden="true" tabindex="-1"></a>  <span class="co"># calculamos desplazamientos verticales para evitar solapamiento simple</span></span>
+<span id="cb49-381"><a href="#cb49-381" aria-hidden="true" tabindex="-1"></a>  <span class="co"># (ordenamos por y y separamos ligeramente)</span></span>
+<span id="cb49-382"><a href="#cb49-382" aria-hidden="true" tabindex="-1"></a>  order_y <span class="ot">&lt;-</span> <span class="fu">order</span>(y)</span>
+<span id="cb49-383"><a href="#cb49-383" aria-hidden="true" tabindex="-1"></a>  y_sorted <span class="ot">&lt;-</span> y[order_y]</span>
+<span id="cb49-384"><a href="#cb49-384" aria-hidden="true" tabindex="-1"></a>  <span class="co"># simple jitter vertical proporcional al rango</span></span>
+<span id="cb49-385"><a href="#cb49-385" aria-hidden="true" tabindex="-1"></a>  yrng <span class="ot">&lt;-</span> usr[<span class="dv">4</span>] <span class="sc">-</span> usr[<span class="dv">3</span>]</span>
+<span id="cb49-386"><a href="#cb49-386" aria-hidden="true" tabindex="-1"></a>  jitter_step <span class="ot">&lt;-</span> <span class="fl">0.02</span> <span class="sc">*</span> yrng</span>
+<span id="cb49-387"><a href="#cb49-387" aria-hidden="true" tabindex="-1"></a>  y_jittered <span class="ot">&lt;-</span> y_sorted <span class="sc">+</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fu">floor</span>(<span class="fu">length</span>(y_sorted)<span class="sc">/</span><span class="dv">2</span>), <span class="fu">floor</span>((<span class="fu">length</span>(y_sorted)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">/</span><span class="dv">2</span>)) <span class="sc">*</span> jitter_step</span>
+<span id="cb49-388"><a href="#cb49-388" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reordenar al orden original de top_idx</span></span>
+<span id="cb49-389"><a href="#cb49-389" aria-hidden="true" tabindex="-1"></a>  y_final <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(y))</span>
+<span id="cb49-390"><a href="#cb49-390" aria-hidden="true" tabindex="-1"></a>  y_final[order_y] <span class="ot">&lt;-</span> y_jittered</span>
+<span id="cb49-391"><a href="#cb49-391" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-392"><a href="#cb49-392" aria-hidden="true" tabindex="-1"></a>  <span class="co"># dibujar texto</span></span>
+<span id="cb49-393"><a href="#cb49-393" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(<span class="fu">rep</span>(x, <span class="fu">length</span>(y_final)), y_final, <span class="at">labels =</span> labels, <span class="at">cex =</span> cex, <span class="at">col =</span> col, <span class="at">pos =</span> pos)</span>
+<span id="cb49-394"><a href="#cb49-394" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">data.frame</span>(<span class="at">label =</span> labels, <span class="at">x =</span> x, <span class="at">y =</span> y_final))</span>
+<span id="cb49-395"><a href="#cb49-395" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-396"><a href="#cb49-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-397"><a href="#cb49-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-398"><a href="#cb49-398" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-399"><a href="#cb49-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-402"><a href="#cb49-402" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-403"><a href="#cb49-403" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ridge_model, </span>
+<span id="cb49-404"><a href="#cb49-404" aria-hidden="true" tabindex="-1"></a>     <span class="at">xvar =</span> <span class="st">"lambda"</span>, </span>
+<span id="cb49-405"><a href="#cb49-405" aria-hidden="true" tabindex="-1"></a>     <span class="at">label=</span>F,</span>
+<span id="cb49-406"><a href="#cb49-406" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">22</span>, <span class="sc">-</span><span class="dv">11</span>),</span>
+<span id="cb49-407"><a href="#cb49-407" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.5e05</span>, <span class="fl">3.5e05</span>))</span>
+<span id="cb49-408"><a href="#cb49-408" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregás etiquetas de las 5 variables más importantes</span></span>
+<span id="cb49-409"><a href="#cb49-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-410"><a href="#cb49-410" aria-hidden="true" tabindex="-1"></a><span class="fu">add_top_coef_labels_glmnet</span>(ridge_model, <span class="at">top_n =</span> <span class="dv">5</span>, <span class="at">offset_x =</span> <span class="fl">0.2</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span>
+<span id="cb49-411"><a href="#cb49-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-412"><a href="#cb49-412" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-413"><a href="#cb49-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-414"><a href="#cb49-414" aria-hidden="true" tabindex="-1"></a><span class="fu">## Búsqueda del lambda óptimo</span></span>
+<span id="cb49-415"><a href="#cb49-415" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-416"><a href="#cb49-416" aria-hidden="true" tabindex="-1"></a>A partir de realizar validación cruzada se encuentra el lambda que minimiza el ECM.</span>
+<span id="cb49-417"><a href="#cb49-417" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-420"><a href="#cb49-420" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-421"><a href="#cb49-421" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross-validation to find the best lambda for Ridge</span></span>
+<span id="cb49-422"><a href="#cb49-422" aria-hidden="true" tabindex="-1"></a>cv_ridge <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb49-423"><a href="#cb49-423" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb49-424"><a href="#cb49-424" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
+<span id="cb49-425"><a href="#cb49-425" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
+<span id="cb49-426"><a href="#cb49-426" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds=</span> <span class="dv">15</span>,</span>
+<span id="cb49-427"><a href="#cb49-427" aria-hidden="true" tabindex="-1"></a>  <span class="at">type.measure =</span> <span class="st">"mse"</span>,</span>
+<span id="cb49-428"><a href="#cb49-428" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Set alpha to 0 for Ridge</span></span>
+<span id="cb49-429"><a href="#cb49-429" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-430"><a href="#cb49-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-431"><a href="#cb49-431" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the optimal lambda</span></span>
+<span id="cb49-432"><a href="#cb49-432" aria-hidden="true" tabindex="-1"></a>cv_ridge<span class="sc">$</span>lambda.min  <span class="co"># This is the lambda that minimizes the cross-validation error</span></span>
+<span id="cb49-433"><a href="#cb49-433" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-434"><a href="#cb49-434" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-437"><a href="#cb49-437" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-438"><a href="#cb49-438" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_ridge)</span>
+<span id="cb49-439"><a href="#cb49-439" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-440"><a href="#cb49-440" aria-hidden="true" tabindex="-1"></a><span class="fu">## Modelo final</span></span>
+<span id="cb49-441"><a href="#cb49-441" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-444"><a href="#cb49-444" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-445"><a href="#cb49-445" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
+<span id="cb49-446"><a href="#cb49-446" aria-hidden="true" tabindex="-1"></a>ridge_lambda_opt <span class="ot">=</span> cv_ridge<span class="sc">$</span>lambda.min</span>
+<span id="cb49-447"><a href="#cb49-447" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
+<span id="cb49-448"><a href="#cb49-448" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
+<span id="cb49-449"><a href="#cb49-449" aria-hidden="true" tabindex="-1"></a>                  train<span class="sc">$</span>new_value,</span>
+<span id="cb49-450"><a href="#cb49-450" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">0</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
+<span id="cb49-451"><a href="#cb49-451" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
+<span id="cb49-452"><a href="#cb49-452" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> ridge_lambda_opt)</span>
+<span id="cb49-453"><a href="#cb49-453" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb49-454"><a href="#cb49-454" aria-hidden="true" tabindex="-1"></a>ridge_opt</span>
+<span id="cb49-455"><a href="#cb49-455" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-456"><a href="#cb49-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-457"><a href="#cb49-457" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-460"><a href="#cb49-460" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-461"><a href="#cb49-461" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
+<span id="cb49-462"><a href="#cb49-462" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">4</span>))</span>
+<span id="cb49-463"><a href="#cb49-463" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-464"><a href="#cb49-464" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-465"><a href="#cb49-465" aria-hidden="true" tabindex="-1"></a><span class="fu"># Lasso</span></span>
+<span id="cb49-466"><a href="#cb49-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-467"><a href="#cb49-467" aria-hidden="true" tabindex="-1"></a>$$\min_{\beta_0, \beta} \left<span class="sc">\{</span> \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \right<span class="sc">\}</span>$$</span>
+<span id="cb49-468"><a href="#cb49-468" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-471"><a href="#cb49-471" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-472"><a href="#cb49-472" aria-hidden="true" tabindex="-1"></a>lasso_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb49-473"><a href="#cb49-473" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
+<span id="cb49-474"><a href="#cb49-474" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># Response variable</span></span>
+<span id="cb49-475"><a href="#cb49-475" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T,</span>
+<span id="cb49-476"><a href="#cb49-476" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">1</span>  <span class="co"># lasso</span></span>
+<span id="cb49-477"><a href="#cb49-477" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-478"><a href="#cb49-478" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-479"><a href="#cb49-479" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-482"><a href="#cb49-482" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-483"><a href="#cb49-483" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lasso_model, </span>
+<span id="cb49-484"><a href="#cb49-484" aria-hidden="true" tabindex="-1"></a>     <span class="at">xvar =</span> <span class="st">"lambda"</span>, </span>
+<span id="cb49-485"><a href="#cb49-485" aria-hidden="true" tabindex="-1"></a>     <span class="at">label=</span>F,</span>
+<span id="cb49-486"><a href="#cb49-486" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="dv">6</span>),</span>
+<span id="cb49-487"><a href="#cb49-487" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3e05</span>, <span class="fl">4e05</span>))</span>
+<span id="cb49-488"><a href="#cb49-488" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregás etiquetas de las 5 variables más importantes</span></span>
+<span id="cb49-489"><a href="#cb49-489" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-490"><a href="#cb49-490" aria-hidden="true" tabindex="-1"></a><span class="fu">add_top_coef_labels_glmnet</span>(lasso_model, <span class="at">top_n =</span> <span class="dv">5</span>, <span class="at">offset_x =</span> <span class="fl">0.2</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span>
+<span id="cb49-491"><a href="#cb49-491" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-492"><a href="#cb49-492" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-495"><a href="#cb49-495" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-496"><a href="#cb49-496" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross-validation to find the best lambda</span></span>
+<span id="cb49-497"><a href="#cb49-497" aria-hidden="true" tabindex="-1"></a>cv_lasso <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb49-498"><a href="#cb49-498" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb49-499"><a href="#cb49-499" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
+<span id="cb49-500"><a href="#cb49-500" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
+<span id="cb49-501"><a href="#cb49-501" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds =</span> <span class="dv">15</span></span>
+<span id="cb49-502"><a href="#cb49-502" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-503"><a href="#cb49-503" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-504"><a href="#cb49-504" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the optimal lambda</span></span>
+<span id="cb49-505"><a href="#cb49-505" aria-hidden="true" tabindex="-1"></a>cv_lasso<span class="sc">$</span>lambda.min  <span class="co"># This is the lambda that minimizes the cross-validation error</span></span>
+<span id="cb49-506"><a href="#cb49-506" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-509"><a href="#cb49-509" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-510"><a href="#cb49-510" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_lasso)</span>
+<span id="cb49-511"><a href="#cb49-511" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-512"><a href="#cb49-512" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-515"><a href="#cb49-515" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-516"><a href="#cb49-516" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
+<span id="cb49-517"><a href="#cb49-517" aria-hidden="true" tabindex="-1"></a>lasso_lambda_opt <span class="ot">=</span> cv_ridge<span class="sc">$</span>lambda.min</span>
+<span id="cb49-518"><a href="#cb49-518" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
+<span id="cb49-519"><a href="#cb49-519" aria-hidden="true" tabindex="-1"></a>lasso_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
+<span id="cb49-520"><a href="#cb49-520" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="co">#Vector de la variable a predecir</span></span>
+<span id="cb49-521"><a href="#cb49-521" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">1</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
+<span id="cb49-522"><a href="#cb49-522" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
+<span id="cb49-523"><a href="#cb49-523" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> lasso_lambda_opt)</span>
+<span id="cb49-524"><a href="#cb49-524" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb49-525"><a href="#cb49-525" aria-hidden="true" tabindex="-1"></a>lasso_opt</span>
+<span id="cb49-526"><a href="#cb49-526" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-529"><a href="#cb49-529" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-530"><a href="#cb49-530" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
+<span id="cb49-531"><a href="#cb49-531" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">4</span>))</span>
+<span id="cb49-532"><a href="#cb49-532" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-533"><a href="#cb49-533" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-534"><a href="#cb49-534" aria-hidden="true" tabindex="-1"></a><span class="fu"># Elastic net</span></span>
+<span id="cb49-535"><a href="#cb49-535" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-538"><a href="#cb49-538" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-539"><a href="#cb49-539" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb49-540"><a href="#cb49-540" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
+<span id="cb49-541"><a href="#cb49-541" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, i<span class="sc">/</span><span class="dv">20</span>)</span>
+<span id="cb49-542"><a href="#cb49-542" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-543"><a href="#cb49-543" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-544"><a href="#cb49-544" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span></span>
+<span id="cb49-545"><a href="#cb49-545" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cv.glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
+<span id="cb49-546"><a href="#cb49-546" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="at">standarize=</span>T, <span class="at">alpha=</span>i<span class="sc">/</span><span class="dv">20</span>)</span>
+<span id="cb49-547"><a href="#cb49-547" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-548"><a href="#cb49-548" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-549"><a href="#cb49-549" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-552"><a href="#cb49-552" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb49-553"><a href="#cb49-553" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista para guardar los modelos</span></span>
+<span id="cb49-554"><a href="#cb49-554" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb49-555"><a href="#cb49-555" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-556"><a href="#cb49-556" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector para almacenar los resultados</span></span>
+<span id="cb49-557"><a href="#cb49-557" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">alpha =</span> <span class="fu">numeric</span>(), <span class="at">lambda =</span> <span class="fu">numeric</span>())</span>
+<span id="cb49-558"><a href="#cb49-558" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-559"><a href="#cb49-559" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
+<span id="cb49-560"><a href="#cb49-560" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> i <span class="sc">/</span> <span class="dv">20</span></span>
+<span id="cb49-561"><a href="#cb49-561" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, a)</span>
+<span id="cb49-562"><a href="#cb49-562" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-563"><a href="#cb49-563" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ajuste del modelo con cv.glmnet</span></span>
+<span id="cb49-564"><a href="#cb49-564" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb49-565"><a href="#cb49-565" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb49-566"><a href="#cb49-566" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> train<span class="sc">$</span>new_value,</span>
+<span id="cb49-567"><a href="#cb49-567" aria-hidden="true" tabindex="-1"></a>    <span class="at">standardize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb49-568"><a href="#cb49-568" aria-hidden="true" tabindex="-1"></a>    <span class="at">nfolds=</span> <span class="dv">15</span>,</span>
+<span id="cb49-569"><a href="#cb49-569" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> a</span>
+<span id="cb49-570"><a href="#cb49-570" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb49-571"><a href="#cb49-571" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-572"><a href="#cb49-572" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Guardar el alpha y el MSE mínimo</span></span>
+<span id="cb49-573"><a href="#cb49-573" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb49-574"><a href="#cb49-574" aria-hidden="true" tabindex="-1"></a>    results,</span>
+<span id="cb49-575"><a href="#cb49-575" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb49-576"><a href="#cb49-576" aria-hidden="true" tabindex="-1"></a>      <span class="at">alpha =</span> a,</span>
+<span id="cb49-577"><a href="#cb49-577" aria-hidden="true" tabindex="-1"></a>      <span class="at">lambda =</span> models[[name]]<span class="sc">$</span>lambda.min  <span class="co"># cvm contiene el MSE promedio por lambda</span></span>
+<span id="cb49-578"><a href="#cb49-578" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-579"><a href="#cb49-579" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb49-580"><a href="#cb49-580" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-581"><a href="#cb49-581" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-582"><a href="#cb49-582" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver el data frame final</span></span>
+<span id="cb49-583"><a href="#cb49-583" aria-hidden="true" tabindex="-1"></a>results</span>
+<span id="cb49-584"><a href="#cb49-584" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-585"><a href="#cb49-585" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-586"><a href="#cb49-586" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb49-587"><a href="#cb49-587" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-588"><a href="#cb49-588" aria-hidden="true" tabindex="-1"></a></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

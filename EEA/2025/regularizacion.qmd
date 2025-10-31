@@ -31,7 +31,7 @@ set.seed(15)
 
 En esta clase vamos a trabajar con la base de datos de los jugadores de FIFA 2024 MEN, la cual fue extraída de [Kaggle](https://www.kaggle.com/datasets/rehandl23/fifa-24-player-stats-dataset/data).
 
-El **objetivo de la clase** es predecir el precio de los jugadores utilizando diferentes modelos de regresión y regularización.
+El **objetivo de la clase** es predecir el precio de los jugadores de FIFA 2024 utilizando diferentes modelos de regresión y regularización.
 
 ```{r}
 df <- read.csv("player_stats.csv")
@@ -90,6 +90,7 @@ Atributos de los jugadores:
 - Goalkeeper Reflexes: Goalkeeper's reflexes (specific to goalkeepers).
 - Value: The estimated value of the player.
 
+Modificamos la variable `value`para que tenga el tipo de dato que le corresponde y agregamos un cero a los valores que terminan `.00 `.
 
 ```{r}
 
@@ -111,6 +112,9 @@ df %>%
 
 ```
 
+# Análisis exploratorio
+
+A continuación se realizan algunos gráficos de análisis exploratorio con el fin de analizar la relación entre algunas variables y el comportamiento del precio de los jugadores.
 
 ```{r}
 ggplot(df, aes(y = new_value)) +
@@ -233,6 +237,8 @@ lineal_coef %>% filter(!is.na(estimate)) %>%
   theme(axis.text.x = element_text(angle=90))
 ```
 
+Graficamos los p-valores de mayor a menor para evaluar la significatividad individual de los coeficientes estimados.
+
 ```{r}
 lineal_coef %>% filter(!is.na(estimate)) %>% 
   ggplot(., aes(reorder(term, -p.value), p.value, fill=p.value))+
@@ -243,12 +249,40 @@ lineal_coef %>% filter(!is.na(estimate)) %>%
   theme(axis.text.x = element_text(angle=90)) + 
   scale_fill_gradient2(high='firebrick', low = 'forestgreen', mid='yellow2',midpoint = 0.5 )
 ```
-# Ridge
+Evaluamos la multicolinealidad de las regresoras.
 
 ```{r}
-# Fit Ridge model with training data
+
+car::vif (modelo_lineal)
+```
+# Regularización
+
+La libreria `glmnet` nos permite trabajar con modelos ridge, lasso y elastic net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el [este link](https://glmnet.stanford.edu/articles/glmnet.html) mas información sobre `glmnet`. 
+
+Fórmula:
+
+$ECM + \lambda{\left[\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right]}$
+
+* $\lambda$ regula la importancia de la penalización.
+* $\alpha$ controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.
+
+Con el parámetro $\alpha$ indicamos con qué tipo de modelo deseamos trabajar:
+
+  * Ridge:  $\alpha=0$
+  
+  * Lasso:  $\alpha=1$
+  
+  * Elastic Net:  $0<\alpha<1$
+
+## Ridge (L2 regularization)
+
+$$\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \right\}$$
+
+  
+```{r}
+# modelo ridge 
 ridge_model <- glmnet(
-  as.matrix(train[, !names(train) %in% "new_value"]),  # Predictor variables
+  as.matrix(train[, !names(train) %in% "new_value"]),  # predictoras
   train$new_value,  # variable respuesta
   standardize = T, #estandariza las variables
   alpha = 0  # Ridge
@@ -335,6 +369,8 @@ add_top_coef_labels_glmnet(ridge_model, top_n = 5, offset_x = 0.2, col = "black"
 
 ## Búsqueda del lambda óptimo
 
+A partir de realizar validación cruzada se encuentra el lambda que minimiza el ECM.
+
 ```{r}
 # Perform cross-validation to find the best lambda for Ridge
 cv_ridge <- cv.glmnet(
@@ -342,6 +378,7 @@ cv_ridge <- cv.glmnet(
   train$new_value,
   standarize=T,
   nfolds= 15,
+  type.measure = "mse",
   alpha = 0  # Set alpha to 0 for Ridge
 )
 
@@ -353,6 +390,7 @@ cv_ridge$lambda.min  # This is the lambda that minimizes the cross-validation er
 plot(cv_ridge)
 ```
 ## Modelo final
+
 ```{r}
 # Selección lambda óptimo
 ridge_lambda_opt = cv_ridge$lambda.min
@@ -373,6 +411,112 @@ ridge_opt %>% tidy() %>% mutate(estimate = round(estimate, 4))
 ```
 
 # Lasso
+
+$$\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \right\}$$
+
+```{r}
+lasso_model <- glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),  # Predictor variables
+  train$new_value,  # Response variable
+  standardize = T,
+  alpha = 1  # lasso
+)
+```
+
+```{r}
+
+plot(lasso_model, 
+     xvar = "lambda", 
+     label=F,
+     xlim = c(-15, -6),
+     ylim= c(-3e05, 4e05))
+# Agregás etiquetas de las 5 variables más importantes
+
+add_top_coef_labels_glmnet(lasso_model, top_n = 5, offset_x = 0.2, col = "black")
+```
+
+```{r}
+# Perform cross-validation to find the best lambda
+cv_lasso <- cv.glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),
+  train$new_value,
+  standarize=T,
+  nfolds = 15
+)
+
+# Check the optimal lambda
+cv_lasso$lambda.min  # This is the lambda that minimizes the cross-validation error
+```
+```{r}
+plot(cv_lasso)
+```
+
+```{r}
+# Selección lambda óptimo
+lasso_lambda_opt = cv_ridge$lambda.min
+# Entrenamiento modelo óptimo
+lasso_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
+                   y = train$new_value, #Vector de la variable a predecir
+                   alpha = 1, # Indicador del tipo de regularizacion
+                   standardize = TRUE,  # Estandarizamos
+                   lambda = lasso_lambda_opt)
+# Salida estandar
+lasso_opt
+```
+```{r}
+# Tidy
+ridge_opt %>% tidy() %>% mutate(estimate = round(estimate, 4))
+```
+
+# Elastic net
+
+```{r}
+models <- list()
+for (i in 0:20) {
+  name <- paste0("alpha", i/20)
+  
+
+  models[[name]] <-
+    cv.glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
+                   y = train$new_value, standarize=T, alpha=i/20)
+}
+```
+
+```{r}
+# Lista para guardar los modelos
+models <- list()
+
+# Vector para almacenar los resultados
+results <- data.frame(alpha = numeric(), lambda = numeric())
+
+for (i in 0:20) {
+  a <- i / 20
+  name <- paste0("alpha", a)
+  
+  # Ajuste del modelo con cv.glmnet
+  models[[name]] <- cv.glmnet(
+    x = as.matrix(train[, !names(train) %in% "new_value"]),
+    y = train$new_value,
+    standardize = TRUE,
+    nfolds= 15,
+    alpha = a
+  )
+  
+  # Guardar el alpha y el MSE mínimo
+  results <- rbind(
+    results,
+    data.frame(
+      alpha = a,
+      lambda = models[[name]]$lambda.min  # cvm contiene el MSE promedio por lambda
+    )
+  )
+}
+
+# Ver el data frame final
+results
+
+
+```
 
 
 
