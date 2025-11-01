@@ -237,7 +237,9 @@ lineal_coef %>% filter(!is.na(estimate)) %>%
   theme(axis.text.x = element_text(angle=90))
 ```
 
+
 Graficamos los p-valores de mayor a menor para evaluar la significatividad individual de los coeficientes estimados.
+
 
 ```{r}
 lineal_coef %>% filter(!is.na(estimate)) %>% 
@@ -257,7 +259,7 @@ car::vif (modelo_lineal)
 ```
 # Regularización
 
-La libreria `glmnet` nos permite trabajar con modelos ridge, lasso y elastic net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el [este link](https://glmnet.stanford.edu/articles/glmnet.html) mas información sobre `glmnet`. 
+La libreria `glmnet` nos permite trabajar con modelos Ridge, Lasso y Elastic Net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el [este link](https://glmnet.stanford.edu/articles/glmnet.html) mas información sobre `glmnet`. 
 
 Fórmula:
 
@@ -266,7 +268,6 @@ $ECM + \lambda{\left[\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right]
 * $\lambda$ regula la importancia de la penalización.
 * $\alpha$ controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.
 
-Con el parámetro $\alpha$ indicamos con qué tipo de modelo deseamos trabajar:
 
   * Ridge:  $\alpha=0$
   
@@ -293,7 +294,6 @@ ridge_model <- glmnet(
 
 ```{r}
 ridge_tidy <- ridge_model%>% tidy() %>% arrange(step)
-
 ridge_tidy
 ```
 
@@ -384,18 +384,17 @@ add_top_coef_labels_glmnet(ridge_model, top_n = 5, offset_x = 0.2, col = "black"
 A partir de realizar validación cruzada se encuentra el lambda que minimiza el ECM.
 
 ```{r}
-# Perform cross-validation to find the best lambda for Ridge
+# CV para encontrar el mejor lambda
 cv_ridge <- cv.glmnet(
   as.matrix(train[, !names(train) %in% "new_value"]),
   train$new_value,
   standarize=T,
   nfolds= 10,
   type.measure = "mse",
-  alpha = 0  # Set alpha to 0 for Ridge
+  alpha = 0  # ridge
 )
 
-# Check the optimal lambda
-cv_ridge$lambda.min  # This is the lambda that minimizes the cross-validation error
+cv_ridge$lambda.min  # este valor de lambda minimiza el ecm
 ```
 
 ECM vs complejidad del modelo
@@ -408,11 +407,13 @@ Como se puede apreciar, aparecen dos lineas verticales en el gráfico. La línea
 ```{r}
 plot(cv_ridge)
 ```
+
 ### Modelo final
 
 ```{r}
 # Selección lambda óptimo
 ridge_lambda_opt = cv_ridge$lambda.min
+
 # Entrenamiento modelo óptimo
 ridge_opt = glmnet(as.matrix(train[, !names(train) %in% "new_value"]),  # Predictor variables
                   train$new_value,
@@ -422,6 +423,7 @@ ridge_opt = glmnet(as.matrix(train[, !names(train) %in% "new_value"]),  # Predic
 # Salida estandar
 ridge_opt
 ```
+
 El porcentaje de deviance explicado del modelo final es del 31,4%.
 
 ```{r}
@@ -451,7 +453,7 @@ plot(lasso_model,
      label=F,
      xlim = c(-15, -6),
      ylim= c(-3e05, 4e05))
-# Agregás etiquetas de las 5 variables más importantes
+# se agrega etiquetas de las 5 variables más importantes
 
 add_top_coef_labels_glmnet(lasso_model, top_n = 5, offset_x = 0.2, col = "black")
 ```
@@ -466,6 +468,7 @@ cv_lasso <- cv.glmnet(
 
 cv_lasso$lambda.min  # valor de lambda que minimiza el ecm
 ```
+
 ```{r}
 plot(cv_lasso)
 ```
@@ -482,7 +485,8 @@ lasso_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Mat
 # Salida estandar
 lasso_opt
 ```
-El porcentaje de deviance explicado del modelo final es del 31%. La regresión Lasso selecciona 15 variables.
+
+El porcentaje de deviance explicado del modelo final es del 30.35%. La regresión Lasso selecciona 27 variables.
 
 ```{r}
 # Tidy
@@ -541,6 +545,7 @@ results
 ```
 
 ### Mejor modelo
+
 
 ```{r}
 elastic_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
@@ -602,7 +607,7 @@ names(tabla_final)[4] <- "Coeficiente.ElasticNet"
 tabla_final
 ```
 
-# Test
+# Evaluando en Test
 
 ```{r}
 x_test <- as.matrix(test[, !names(test) %in% "new_value"])
@@ -648,7 +653,6 @@ print(results)
 ```{r}
 plot(y_test, pred_lasso)
 abline(0, 1)
-
 ```
 
 

@@ -134,7 +134,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#resumen" id="toc-resumen" class="nav-link" data-scroll-target="#resumen">Resumen</a></li>
   </ul></li>
-  <li><a href="#test" id="toc-test" class="nav-link" data-scroll-target="#test">Test</a></li>
+  <li><a href="#evaluando-en-test" id="toc-evaluando-en-test" class="nav-link" data-scroll-target="#evaluando-en-test">Evaluando en Test</a></li>
   </ul>
 </nav>
 </div>
@@ -928,18 +928,17 @@ interceptions        vision     composure      crossing    short_pass
 </section>
 <section id="regularización" class="level1">
 <h1>Regularización</h1>
-<p>La libreria <code>glmnet</code> nos permite trabajar con modelos ridge, lasso y elastic net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el <a href="https://glmnet.stanford.edu/articles/glmnet.html">este link</a> mas información sobre <code>glmnet</code>.</p>
+<p>La libreria <code>glmnet</code> nos permite trabajar con modelos Ridge, Lasso y Elastic Net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el <a href="https://glmnet.stanford.edu/articles/glmnet.html">este link</a> mas información sobre <code>glmnet</code>.</p>
 <p>Fórmula:</p>
 <p><span class="math inline">\(ECM + \lambda{\left[\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right]}\)</span></p>
 <ul>
-<li><span class="math inline">\(\lambda\)</span> regula la importancia de la penalización.</li>
-<li><span class="math inline">\(\alpha\)</span> controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.</li>
-</ul>
-<p>Con el parámetro <span class="math inline">\(\alpha\)</span> indicamos con qué tipo de modelo deseamos trabajar:</p>
+<li><p><span class="math inline">\(\lambda\)</span> regula la importancia de la penalización.</p></li>
+<li><p><span class="math inline">\(\alpha\)</span> controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.</p>
 <ul>
 <li><p>Ridge: <span class="math inline">\(\alpha=0\)</span></p></li>
 <li><p>Lasso: <span class="math inline">\(\alpha=1\)</span></p></li>
 <li><p>Elastic Net: <span class="math inline">\(0&lt;\alpha&lt;1\)</span></p></li>
+</ul></li>
 </ul>
 <section id="ridge-l2-regularization" class="level2">
 <h2 class="anchored" data-anchor-id="ridge-l2-regularization">Ridge (L2 regularization)</h2>
@@ -961,8 +960,7 @@ interceptions        vision     composure      crossing    short_pass
 <details open="" class="code-fold">
 <summary>Código</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>ridge_tidy <span class="ot">&lt;-</span> ridge_model<span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(step)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>ridge_tidy</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>ridge_tidy</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3,200 × 5
@@ -1075,18 +1073,17 @@ interceptions        vision     composure      crossing    short_pass
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross-validation to find the best lambda for Ridge</span></span>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CV para encontrar el mejor lambda</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>cv_ridge <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
 <span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds=</span> <span class="dv">10</span>,</span>
 <span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">type.measure =</span> <span class="st">"mse"</span>,</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Set alpha to 0 for Ridge</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># ridge</span></span>
 <span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the optimal lambda</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>cv_ridge<span class="sc">$</span>lambda.min  <span class="co"># This is the lambda that minimizes the cross-validation error</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>cv_ridge<span class="sc">$</span>lambda.min  <span class="co"># este valor de lambda minimiza el ecm</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 418293.3</code></pre>
@@ -1115,14 +1112,15 @@ interceptions        vision     composure      crossing    short_pass
 <summary>Código</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>ridge_lambda_opt <span class="ot">=</span> cv_ridge<span class="sc">$</span>lambda.min</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                  train<span class="sc">$</span>new_value,</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">0</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> ridge_lambda_opt)</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>ridge_opt</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                  train<span class="sc">$</span>new_value,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">0</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> ridge_lambda_opt)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>ridge_opt</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1181,7 +1179,7 @@ Call:  glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]),      y = t
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">label=</span>F,</span>
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="dv">6</span>),</span>
 <span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3e05</span>, <span class="fl">4e05</span>))</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregás etiquetas de las 5 variables más importantes</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co"># se agrega etiquetas de las 5 variables más importantes</span></span>
 <span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="fu">add_top_coef_labels_glmnet</span>(lasso_model, <span class="at">top_n =</span> <span class="dv">5</span>, <span class="at">offset_x =</span> <span class="fl">0.2</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1244,7 +1242,7 @@ Call:  glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]),      y = t
 1 28 30.38   9012</code></pre>
 </div>
 </div>
-<p>El porcentaje de deviance explicado del modelo final es del 31%. La regresión Lasso selecciona 15 variables.</p>
+<p>El porcentaje de deviance explicado del modelo final es del 30.35%. La regresión Lasso selecciona 27 variables.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -1479,8 +1477,8 @@ Call:  glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]),      y = t
 </div>
 </section>
 </section>
-<section id="test" class="level1">
-<h1>Test</h1>
+<section id="evaluando-en-test" class="level1">
+<h1>Evaluando en Test</h1>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -2255,62 +2253,62 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb60-270"><a href="#cb60-270" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>))</span>
 <span id="cb60-271"><a href="#cb60-271" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-272"><a href="#cb60-272" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-273"><a href="#cb60-273" aria-hidden="true" tabindex="-1"></a>Graficamos los p-valores de mayor a menor para evaluar la significatividad individual de los coeficientes estimados.</span>
-<span id="cb60-274"><a href="#cb60-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-277"><a href="#cb60-277" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-278"><a href="#cb60-278" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(estimate)) <span class="sc">%&gt;%</span> </span>
-<span id="cb60-279"><a href="#cb60-279" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(<span class="fu">reorder</span>(term, <span class="sc">-</span>p.value), p.value, <span class="at">fill=</span>p.value))<span class="sc">+</span></span>
-<span id="cb60-280"><a href="#cb60-280" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="fu">aes</span>(<span class="at">fill=</span>p.value))<span class="sc">+</span></span>
-<span id="cb60-281"><a href="#cb60-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
-<span id="cb60-282"><a href="#cb60-282" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"P-valor de los regresores"</span>, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"P-valor"</span>) <span class="sc">+</span></span>
-<span id="cb60-283"><a href="#cb60-283" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb60-284"><a href="#cb60-284" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>)) <span class="sc">+</span> </span>
-<span id="cb60-285"><a href="#cb60-285" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">high=</span><span class="st">'firebrick'</span>, <span class="at">low =</span> <span class="st">'forestgreen'</span>, <span class="at">mid=</span><span class="st">'yellow2'</span>,<span class="at">midpoint =</span> <span class="fl">0.5</span> )</span>
-<span id="cb60-286"><a href="#cb60-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-287"><a href="#cb60-287" aria-hidden="true" tabindex="-1"></a>Evaluamos la multicolinealidad de las regresoras.</span>
-<span id="cb60-288"><a href="#cb60-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-291"><a href="#cb60-291" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-292"><a href="#cb60-292" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span> (modelo_lineal)</span>
-<span id="cb60-293"><a href="#cb60-293" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-294"><a href="#cb60-294" aria-hidden="true" tabindex="-1"></a><span class="fu"># Regularización</span></span>
-<span id="cb60-295"><a href="#cb60-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-296"><a href="#cb60-296" aria-hidden="true" tabindex="-1"></a>La libreria <span class="in">`glmnet`</span> nos permite trabajar con modelos ridge, lasso y elastic net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el <span class="co">[</span><span class="ot">este link</span><span class="co">](https://glmnet.stanford.edu/articles/glmnet.html)</span> mas información sobre <span class="in">`glmnet`</span>. </span>
+<span id="cb60-273"><a href="#cb60-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-274"><a href="#cb60-274" aria-hidden="true" tabindex="-1"></a>Graficamos los p-valores de mayor a menor para evaluar la significatividad individual de los coeficientes estimados.</span>
+<span id="cb60-275"><a href="#cb60-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-276"><a href="#cb60-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-279"><a href="#cb60-279" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-280"><a href="#cb60-280" aria-hidden="true" tabindex="-1"></a>lineal_coef <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(estimate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb60-281"><a href="#cb60-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(., <span class="fu">aes</span>(<span class="fu">reorder</span>(term, <span class="sc">-</span>p.value), p.value, <span class="at">fill=</span>p.value))<span class="sc">+</span></span>
+<span id="cb60-282"><a href="#cb60-282" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="fu">aes</span>(<span class="at">fill=</span>p.value))<span class="sc">+</span></span>
+<span id="cb60-283"><a href="#cb60-283" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
+<span id="cb60-284"><a href="#cb60-284" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"P-valor de los regresores"</span>, <span class="at">x=</span><span class="st">""</span>, <span class="at">y=</span><span class="st">"P-valor"</span>) <span class="sc">+</span></span>
+<span id="cb60-285"><a href="#cb60-285" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb60-286"><a href="#cb60-286" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>)) <span class="sc">+</span> </span>
+<span id="cb60-287"><a href="#cb60-287" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">high=</span><span class="st">'firebrick'</span>, <span class="at">low =</span> <span class="st">'forestgreen'</span>, <span class="at">mid=</span><span class="st">'yellow2'</span>,<span class="at">midpoint =</span> <span class="fl">0.5</span> )</span>
+<span id="cb60-288"><a href="#cb60-288" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-289"><a href="#cb60-289" aria-hidden="true" tabindex="-1"></a>Evaluamos la multicolinealidad de las regresoras.</span>
+<span id="cb60-290"><a href="#cb60-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-293"><a href="#cb60-293" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-294"><a href="#cb60-294" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span> (modelo_lineal)</span>
+<span id="cb60-295"><a href="#cb60-295" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-296"><a href="#cb60-296" aria-hidden="true" tabindex="-1"></a><span class="fu"># Regularización</span></span>
 <span id="cb60-297"><a href="#cb60-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-298"><a href="#cb60-298" aria-hidden="true" tabindex="-1"></a>Fórmula:</span>
+<span id="cb60-298"><a href="#cb60-298" aria-hidden="true" tabindex="-1"></a>La libreria <span class="in">`glmnet`</span> nos permite trabajar con modelos Ridge, Lasso y Elastic Net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el <span class="co">[</span><span class="ot">este link</span><span class="co">](https://glmnet.stanford.edu/articles/glmnet.html)</span> mas información sobre <span class="in">`glmnet`</span>. </span>
 <span id="cb60-299"><a href="#cb60-299" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-300"><a href="#cb60-300" aria-hidden="true" tabindex="-1"></a>$ECM + \lambda{\left<span class="co">[</span><span class="ot">\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right</span><span class="co">]</span>}$</span>
+<span id="cb60-300"><a href="#cb60-300" aria-hidden="true" tabindex="-1"></a>Fórmula:</span>
 <span id="cb60-301"><a href="#cb60-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-302"><a href="#cb60-302" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\lambda$ regula la importancia de la penalización.</span>
-<span id="cb60-303"><a href="#cb60-303" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\alpha$ controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.</span>
-<span id="cb60-304"><a href="#cb60-304" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-305"><a href="#cb60-305" aria-hidden="true" tabindex="-1"></a>Con el parámetro $\alpha$ indicamos con qué tipo de modelo deseamos trabajar:</span>
+<span id="cb60-302"><a href="#cb60-302" aria-hidden="true" tabindex="-1"></a>$ECM + \lambda{\left<span class="co">[</span><span class="ot">\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right</span><span class="co">]</span>}$</span>
+<span id="cb60-303"><a href="#cb60-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-304"><a href="#cb60-304" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\lambda$ regula la importancia de la penalización.</span>
+<span id="cb60-305"><a href="#cb60-305" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\alpha$ controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.</span>
 <span id="cb60-306"><a href="#cb60-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-307"><a href="#cb60-307" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Ridge:  $\alpha=0$</span>
-<span id="cb60-308"><a href="#cb60-308" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb60-309"><a href="#cb60-309" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Lasso:  $\alpha=1$</span>
-<span id="cb60-310"><a href="#cb60-310" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb60-311"><a href="#cb60-311" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Elastic Net:  $0&lt;\alpha&lt;1$</span>
-<span id="cb60-312"><a href="#cb60-312" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-313"><a href="#cb60-313" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ridge (L2 regularization)</span></span>
-<span id="cb60-314"><a href="#cb60-314" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-315"><a href="#cb60-315" aria-hidden="true" tabindex="-1"></a>En este caso la penalización funciona añadiendo un término basado en la suma de los cuadrados de los coeficientes ($\sum \beta_j^2$) a la función de costo, lo que lleva la magnitud de los coeficientes hacia cero. Cuando $\lambda$ toma valores altos, aplica una penalización fuerte, resultando en coeficientes muy pequeños y siendo muy útil para mitigar la multicolinealidad al distribuir la importancia entre variables correlacionadas.</span>
-<span id="cb60-316"><a href="#cb60-316" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-317"><a href="#cb60-317" aria-hidden="true" tabindex="-1"></a>$$\min_{\beta_0, \beta} \left<span class="sc">\{</span> \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \right<span class="sc">\}</span>$$</span>
-<span id="cb60-318"><a href="#cb60-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-319"><a href="#cb60-319" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb60-322"><a href="#cb60-322" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-323"><a href="#cb60-323" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo ridge </span></span>
-<span id="cb60-324"><a href="#cb60-324" aria-hidden="true" tabindex="-1"></a>ridge_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
-<span id="cb60-325"><a href="#cb60-325" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># predictoras</span></span>
-<span id="cb60-326"><a href="#cb60-326" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># variable respuesta</span></span>
-<span id="cb60-327"><a href="#cb60-327" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T, <span class="co">#estandariza las variables</span></span>
-<span id="cb60-328"><a href="#cb60-328" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Ridge</span></span>
-<span id="cb60-329"><a href="#cb60-329" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-330"><a href="#cb60-330" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-331"><a href="#cb60-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-334"><a href="#cb60-334" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-335"><a href="#cb60-335" aria-hidden="true" tabindex="-1"></a>ridge_tidy <span class="ot">&lt;-</span> ridge_model<span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(step)</span>
-<span id="cb60-336"><a href="#cb60-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-307"><a href="#cb60-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-308"><a href="#cb60-308" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Ridge:  $\alpha=0$</span>
+<span id="cb60-309"><a href="#cb60-309" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb60-310"><a href="#cb60-310" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Lasso:  $\alpha=1$</span>
+<span id="cb60-311"><a href="#cb60-311" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb60-312"><a href="#cb60-312" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Elastic Net:  $0&lt;\alpha&lt;1$</span>
+<span id="cb60-313"><a href="#cb60-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-314"><a href="#cb60-314" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ridge (L2 regularization)</span></span>
+<span id="cb60-315"><a href="#cb60-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-316"><a href="#cb60-316" aria-hidden="true" tabindex="-1"></a>En este caso la penalización funciona añadiendo un término basado en la suma de los cuadrados de los coeficientes ($\sum \beta_j^2$) a la función de costo, lo que lleva la magnitud de los coeficientes hacia cero. Cuando $\lambda$ toma valores altos, aplica una penalización fuerte, resultando en coeficientes muy pequeños y siendo muy útil para mitigar la multicolinealidad al distribuir la importancia entre variables correlacionadas.</span>
+<span id="cb60-317"><a href="#cb60-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-318"><a href="#cb60-318" aria-hidden="true" tabindex="-1"></a>$$\min_{\beta_0, \beta} \left<span class="sc">\{</span> \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \right<span class="sc">\}</span>$$</span>
+<span id="cb60-319"><a href="#cb60-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-320"><a href="#cb60-320" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb60-323"><a href="#cb60-323" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-324"><a href="#cb60-324" aria-hidden="true" tabindex="-1"></a><span class="co"># modelo ridge </span></span>
+<span id="cb60-325"><a href="#cb60-325" aria-hidden="true" tabindex="-1"></a>ridge_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb60-326"><a href="#cb60-326" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># predictoras</span></span>
+<span id="cb60-327"><a href="#cb60-327" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># variable respuesta</span></span>
+<span id="cb60-328"><a href="#cb60-328" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T, <span class="co">#estandariza las variables</span></span>
+<span id="cb60-329"><a href="#cb60-329" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Ridge</span></span>
+<span id="cb60-330"><a href="#cb60-330" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-331"><a href="#cb60-331" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-332"><a href="#cb60-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-335"><a href="#cb60-335" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-336"><a href="#cb60-336" aria-hidden="true" tabindex="-1"></a>ridge_tidy <span class="ot">&lt;-</span> ridge_model<span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(step)</span>
 <span id="cb60-337"><a href="#cb60-337" aria-hidden="true" tabindex="-1"></a>ridge_tidy</span>
 <span id="cb60-338"><a href="#cb60-338" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-339"><a href="#cb60-339" aria-hidden="true" tabindex="-1"></a></span>
@@ -2401,273 +2399,277 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb60-428"><a href="#cb60-428" aria-hidden="true" tabindex="-1"></a>A partir de realizar validación cruzada se encuentra el lambda que minimiza el ECM.</span>
 <span id="cb60-429"><a href="#cb60-429" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-432"><a href="#cb60-432" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-433"><a href="#cb60-433" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross-validation to find the best lambda for Ridge</span></span>
+<span id="cb60-433"><a href="#cb60-433" aria-hidden="true" tabindex="-1"></a><span class="co"># CV para encontrar el mejor lambda</span></span>
 <span id="cb60-434"><a href="#cb60-434" aria-hidden="true" tabindex="-1"></a>cv_ridge <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
 <span id="cb60-435"><a href="#cb60-435" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
 <span id="cb60-436"><a href="#cb60-436" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
 <span id="cb60-437"><a href="#cb60-437" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
 <span id="cb60-438"><a href="#cb60-438" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds=</span> <span class="dv">10</span>,</span>
 <span id="cb60-439"><a href="#cb60-439" aria-hidden="true" tabindex="-1"></a>  <span class="at">type.measure =</span> <span class="st">"mse"</span>,</span>
-<span id="cb60-440"><a href="#cb60-440" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># Set alpha to 0 for Ridge</span></span>
+<span id="cb60-440"><a href="#cb60-440" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">0</span>  <span class="co"># ridge</span></span>
 <span id="cb60-441"><a href="#cb60-441" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb60-442"><a href="#cb60-442" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-443"><a href="#cb60-443" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the optimal lambda</span></span>
-<span id="cb60-444"><a href="#cb60-444" aria-hidden="true" tabindex="-1"></a>cv_ridge<span class="sc">$</span>lambda.min  <span class="co"># This is the lambda that minimizes the cross-validation error</span></span>
-<span id="cb60-445"><a href="#cb60-445" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-446"><a href="#cb60-446" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-447"><a href="#cb60-447" aria-hidden="true" tabindex="-1"></a>ECM vs complejidad del modelo</span>
-<span id="cb60-448"><a href="#cb60-448" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-449"><a href="#cb60-449" aria-hidden="true" tabindex="-1"></a>A medida que nos movemos de izquierda a derecha (disminuye $\lambda$), el error desciende progresivamente (el modelo se ajusta mejor) hasta que alcanza una meseta.</span>
-<span id="cb60-450"><a href="#cb60-450" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-451"><a href="#cb60-451" aria-hidden="true" tabindex="-1"></a>Como se puede apreciar, aparecen dos lineas verticales en el gráfico. La línea punteada de la derecha corresponde al $\lambda_{min}$, es decir el valor de $\lambda$ que da el ECM promedio en la validación cruzada. La línea punteada de la izquierda corresponde al $\lambda_{1se}$, en el cual se selecciona el modelo más simple (más penalizado, con coeficientes más pequeños) que se considera estadísticamente indistinguible del modelo con el error mínimo.</span>
+<span id="cb60-443"><a href="#cb60-443" aria-hidden="true" tabindex="-1"></a>cv_ridge<span class="sc">$</span>lambda.min  <span class="co"># este valor de lambda minimiza el ecm</span></span>
+<span id="cb60-444"><a href="#cb60-444" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-445"><a href="#cb60-445" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-446"><a href="#cb60-446" aria-hidden="true" tabindex="-1"></a>ECM vs complejidad del modelo</span>
+<span id="cb60-447"><a href="#cb60-447" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-448"><a href="#cb60-448" aria-hidden="true" tabindex="-1"></a>A medida que nos movemos de izquierda a derecha (disminuye $\lambda$), el error desciende progresivamente (el modelo se ajusta mejor) hasta que alcanza una meseta.</span>
+<span id="cb60-449"><a href="#cb60-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-450"><a href="#cb60-450" aria-hidden="true" tabindex="-1"></a>Como se puede apreciar, aparecen dos lineas verticales en el gráfico. La línea punteada de la derecha corresponde al $\lambda_{min}$, es decir el valor de $\lambda$ que da el ECM promedio en la validación cruzada. La línea punteada de la izquierda corresponde al $\lambda_{1se}$, en el cual se selecciona el modelo más simple (más penalizado, con coeficientes más pequeños) que se considera estadísticamente indistinguible del modelo con el error mínimo.</span>
+<span id="cb60-451"><a href="#cb60-451" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-452"><a href="#cb60-452" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-453"><a href="#cb60-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-456"><a href="#cb60-456" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-457"><a href="#cb60-457" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_ridge)</span>
-<span id="cb60-458"><a href="#cb60-458" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-455"><a href="#cb60-455" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-456"><a href="#cb60-456" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_ridge)</span>
+<span id="cb60-457"><a href="#cb60-457" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-458"><a href="#cb60-458" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-459"><a href="#cb60-459" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modelo final</span></span>
 <span id="cb60-460"><a href="#cb60-460" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-463"><a href="#cb60-463" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb60-464"><a href="#cb60-464" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
 <span id="cb60-465"><a href="#cb60-465" aria-hidden="true" tabindex="-1"></a>ridge_lambda_opt <span class="ot">=</span> cv_ridge<span class="sc">$</span>lambda.min</span>
-<span id="cb60-466"><a href="#cb60-466" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
-<span id="cb60-467"><a href="#cb60-467" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
-<span id="cb60-468"><a href="#cb60-468" aria-hidden="true" tabindex="-1"></a>                  train<span class="sc">$</span>new_value,</span>
-<span id="cb60-469"><a href="#cb60-469" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">0</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
-<span id="cb60-470"><a href="#cb60-470" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
-<span id="cb60-471"><a href="#cb60-471" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> ridge_lambda_opt)</span>
-<span id="cb60-472"><a href="#cb60-472" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
-<span id="cb60-473"><a href="#cb60-473" aria-hidden="true" tabindex="-1"></a>ridge_opt</span>
-<span id="cb60-474"><a href="#cb60-474" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-475"><a href="#cb60-475" aria-hidden="true" tabindex="-1"></a>El porcentaje de deviance explicado del modelo final es del 31,4%.</span>
+<span id="cb60-466"><a href="#cb60-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-467"><a href="#cb60-467" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
+<span id="cb60-468"><a href="#cb60-468" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
+<span id="cb60-469"><a href="#cb60-469" aria-hidden="true" tabindex="-1"></a>                  train<span class="sc">$</span>new_value,</span>
+<span id="cb60-470"><a href="#cb60-470" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">0</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
+<span id="cb60-471"><a href="#cb60-471" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
+<span id="cb60-472"><a href="#cb60-472" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> ridge_lambda_opt)</span>
+<span id="cb60-473"><a href="#cb60-473" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb60-474"><a href="#cb60-474" aria-hidden="true" tabindex="-1"></a>ridge_opt</span>
+<span id="cb60-475"><a href="#cb60-475" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-476"><a href="#cb60-476" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-479"><a href="#cb60-479" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-480"><a href="#cb60-480" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
-<span id="cb60-481"><a href="#cb60-481" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">4</span>))</span>
-<span id="cb60-482"><a href="#cb60-482" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-483"><a href="#cb60-483" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-484"><a href="#cb60-484" aria-hidden="true" tabindex="-1"></a><span class="fu">## Lasso (L1 regularization)</span></span>
+<span id="cb60-477"><a href="#cb60-477" aria-hidden="true" tabindex="-1"></a>El porcentaje de deviance explicado del modelo final es del 31,4%.</span>
+<span id="cb60-478"><a href="#cb60-478" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-481"><a href="#cb60-481" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-482"><a href="#cb60-482" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
+<span id="cb60-483"><a href="#cb60-483" aria-hidden="true" tabindex="-1"></a>ridge_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">4</span>))</span>
+<span id="cb60-484"><a href="#cb60-484" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-485"><a href="#cb60-485" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-486"><a href="#cb60-486" aria-hidden="true" tabindex="-1"></a>La penalización en una regresión Lasso funciona añadiendo un término basado en la suma de los valores absolutos de los coeficientes ($\sum |\beta_j|$) a la función de costo, lo que reduce la magnitud de los coeficientes y puede forzar a los menos relevantes a ser exactamente cero, realizando selección de variables. </span>
+<span id="cb60-486"><a href="#cb60-486" aria-hidden="true" tabindex="-1"></a><span class="fu">## Lasso (L1 regularization)</span></span>
 <span id="cb60-487"><a href="#cb60-487" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-488"><a href="#cb60-488" aria-hidden="true" tabindex="-1"></a>$$\min_{\beta_0, \beta} \left<span class="sc">\{</span> \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \right<span class="sc">\}</span>$$</span>
+<span id="cb60-488"><a href="#cb60-488" aria-hidden="true" tabindex="-1"></a>La penalización en una regresión Lasso funciona añadiendo un término basado en la suma de los valores absolutos de los coeficientes ($\sum |\beta_j|$) a la función de costo, lo que reduce la magnitud de los coeficientes y puede forzar a los menos relevantes a ser exactamente cero, realizando selección de variables. </span>
 <span id="cb60-489"><a href="#cb60-489" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-492"><a href="#cb60-492" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-493"><a href="#cb60-493" aria-hidden="true" tabindex="-1"></a>lasso_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
-<span id="cb60-494"><a href="#cb60-494" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
-<span id="cb60-495"><a href="#cb60-495" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># Response variable</span></span>
-<span id="cb60-496"><a href="#cb60-496" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T,</span>
-<span id="cb60-497"><a href="#cb60-497" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">1</span>  <span class="co"># lasso</span></span>
-<span id="cb60-498"><a href="#cb60-498" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-499"><a href="#cb60-499" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-500"><a href="#cb60-500" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-503"><a href="#cb60-503" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-504"><a href="#cb60-504" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lasso_model, </span>
-<span id="cb60-505"><a href="#cb60-505" aria-hidden="true" tabindex="-1"></a>     <span class="at">xvar =</span> <span class="st">"lambda"</span>, </span>
-<span id="cb60-506"><a href="#cb60-506" aria-hidden="true" tabindex="-1"></a>     <span class="at">label=</span>F,</span>
-<span id="cb60-507"><a href="#cb60-507" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="dv">6</span>),</span>
-<span id="cb60-508"><a href="#cb60-508" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3e05</span>, <span class="fl">4e05</span>))</span>
-<span id="cb60-509"><a href="#cb60-509" aria-hidden="true" tabindex="-1"></a><span class="co"># Agregás etiquetas de las 5 variables más importantes</span></span>
-<span id="cb60-510"><a href="#cb60-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-511"><a href="#cb60-511" aria-hidden="true" tabindex="-1"></a><span class="fu">add_top_coef_labels_glmnet</span>(lasso_model, <span class="at">top_n =</span> <span class="dv">5</span>, <span class="at">offset_x =</span> <span class="fl">0.2</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span>
-<span id="cb60-512"><a href="#cb60-512" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-513"><a href="#cb60-513" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-516"><a href="#cb60-516" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-517"><a href="#cb60-517" aria-hidden="true" tabindex="-1"></a>cv_lasso <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
-<span id="cb60-518"><a href="#cb60-518" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
-<span id="cb60-519"><a href="#cb60-519" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
-<span id="cb60-520"><a href="#cb60-520" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
-<span id="cb60-521"><a href="#cb60-521" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds =</span> <span class="dv">10</span></span>
-<span id="cb60-522"><a href="#cb60-522" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-523"><a href="#cb60-523" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-524"><a href="#cb60-524" aria-hidden="true" tabindex="-1"></a>cv_lasso<span class="sc">$</span>lambda.min  <span class="co"># valor de lambda que minimiza el ecm</span></span>
-<span id="cb60-525"><a href="#cb60-525" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-528"><a href="#cb60-528" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-529"><a href="#cb60-529" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_lasso)</span>
-<span id="cb60-530"><a href="#cb60-530" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-531"><a href="#cb60-531" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-534"><a href="#cb60-534" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-535"><a href="#cb60-535" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
-<span id="cb60-536"><a href="#cb60-536" aria-hidden="true" tabindex="-1"></a>lasso_lambda_opt <span class="ot">=</span> cv_lasso<span class="sc">$</span>lambda.min</span>
-<span id="cb60-537"><a href="#cb60-537" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
-<span id="cb60-538"><a href="#cb60-538" aria-hidden="true" tabindex="-1"></a>lasso_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
-<span id="cb60-539"><a href="#cb60-539" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="co">#Vector de la variable a predecir</span></span>
-<span id="cb60-540"><a href="#cb60-540" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">1</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
-<span id="cb60-541"><a href="#cb60-541" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
-<span id="cb60-542"><a href="#cb60-542" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> lasso_lambda_opt)</span>
-<span id="cb60-543"><a href="#cb60-543" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
-<span id="cb60-544"><a href="#cb60-544" aria-hidden="true" tabindex="-1"></a>lasso_opt</span>
-<span id="cb60-545"><a href="#cb60-545" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-546"><a href="#cb60-546" aria-hidden="true" tabindex="-1"></a>El porcentaje de deviance explicado del modelo final es del 31%. La regresión Lasso selecciona 15 variables.</span>
-<span id="cb60-547"><a href="#cb60-547" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-550"><a href="#cb60-550" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-551"><a href="#cb60-551" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
-<span id="cb60-552"><a href="#cb60-552" aria-hidden="true" tabindex="-1"></a>lasso_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">2</span>))</span>
-<span id="cb60-553"><a href="#cb60-553" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-554"><a href="#cb60-554" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-555"><a href="#cb60-555" aria-hidden="true" tabindex="-1"></a><span class="fu">## Elastic net</span></span>
-<span id="cb60-556"><a href="#cb60-556" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-557"><a href="#cb60-557" aria-hidden="true" tabindex="-1"></a>La penalización Elastic Net combina las fortalezas de Ridge y Lasso al añadir a la función de costo una mezcla lineal de las penalizaciones $L_1$ y $L_2$, controlada por el parámetro $\alpha$. Un $\lambda$ (lambda) alto resulta en un modelo más penalizado. </span>
+<span id="cb60-490"><a href="#cb60-490" aria-hidden="true" tabindex="-1"></a>$$\min_{\beta_0, \beta} \left<span class="sc">\{</span> \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \right<span class="sc">\}</span>$$</span>
+<span id="cb60-491"><a href="#cb60-491" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-494"><a href="#cb60-494" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-495"><a href="#cb60-495" aria-hidden="true" tabindex="-1"></a>lasso_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(</span>
+<span id="cb60-496"><a href="#cb60-496" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),  <span class="co"># Predictor variables</span></span>
+<span id="cb60-497"><a href="#cb60-497" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,  <span class="co"># Response variable</span></span>
+<span id="cb60-498"><a href="#cb60-498" aria-hidden="true" tabindex="-1"></a>  <span class="at">standardize =</span> T,</span>
+<span id="cb60-499"><a href="#cb60-499" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="dv">1</span>  <span class="co"># lasso</span></span>
+<span id="cb60-500"><a href="#cb60-500" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-501"><a href="#cb60-501" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-502"><a href="#cb60-502" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-505"><a href="#cb60-505" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-506"><a href="#cb60-506" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lasso_model, </span>
+<span id="cb60-507"><a href="#cb60-507" aria-hidden="true" tabindex="-1"></a>     <span class="at">xvar =</span> <span class="st">"lambda"</span>, </span>
+<span id="cb60-508"><a href="#cb60-508" aria-hidden="true" tabindex="-1"></a>     <span class="at">label=</span>F,</span>
+<span id="cb60-509"><a href="#cb60-509" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="dv">6</span>),</span>
+<span id="cb60-510"><a href="#cb60-510" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3e05</span>, <span class="fl">4e05</span>))</span>
+<span id="cb60-511"><a href="#cb60-511" aria-hidden="true" tabindex="-1"></a><span class="co"># se agrega etiquetas de las 5 variables más importantes</span></span>
+<span id="cb60-512"><a href="#cb60-512" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-513"><a href="#cb60-513" aria-hidden="true" tabindex="-1"></a><span class="fu">add_top_coef_labels_glmnet</span>(lasso_model, <span class="at">top_n =</span> <span class="dv">5</span>, <span class="at">offset_x =</span> <span class="fl">0.2</span>, <span class="at">col =</span> <span class="st">"black"</span>)</span>
+<span id="cb60-514"><a href="#cb60-514" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-515"><a href="#cb60-515" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-518"><a href="#cb60-518" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-519"><a href="#cb60-519" aria-hidden="true" tabindex="-1"></a>cv_lasso <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb60-520"><a href="#cb60-520" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb60-521"><a href="#cb60-521" aria-hidden="true" tabindex="-1"></a>  train<span class="sc">$</span>new_value,</span>
+<span id="cb60-522"><a href="#cb60-522" aria-hidden="true" tabindex="-1"></a>  <span class="at">standarize=</span>T,</span>
+<span id="cb60-523"><a href="#cb60-523" aria-hidden="true" tabindex="-1"></a>  <span class="at">nfolds =</span> <span class="dv">10</span></span>
+<span id="cb60-524"><a href="#cb60-524" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-525"><a href="#cb60-525" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-526"><a href="#cb60-526" aria-hidden="true" tabindex="-1"></a>cv_lasso<span class="sc">$</span>lambda.min  <span class="co"># valor de lambda que minimiza el ecm</span></span>
+<span id="cb60-527"><a href="#cb60-527" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-528"><a href="#cb60-528" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-531"><a href="#cb60-531" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-532"><a href="#cb60-532" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv_lasso)</span>
+<span id="cb60-533"><a href="#cb60-533" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-534"><a href="#cb60-534" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-537"><a href="#cb60-537" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-538"><a href="#cb60-538" aria-hidden="true" tabindex="-1"></a><span class="co"># Selección lambda óptimo</span></span>
+<span id="cb60-539"><a href="#cb60-539" aria-hidden="true" tabindex="-1"></a>lasso_lambda_opt <span class="ot">=</span> cv_lasso<span class="sc">$</span>lambda.min</span>
+<span id="cb60-540"><a href="#cb60-540" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrenamiento modelo óptimo</span></span>
+<span id="cb60-541"><a href="#cb60-541" aria-hidden="true" tabindex="-1"></a>lasso_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
+<span id="cb60-542"><a href="#cb60-542" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="co">#Vector de la variable a predecir</span></span>
+<span id="cb60-543"><a href="#cb60-543" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="dv">1</span>, <span class="co"># Indicador del tipo de regularizacion</span></span>
+<span id="cb60-544"><a href="#cb60-544" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,  <span class="co"># Estandarizamos</span></span>
+<span id="cb60-545"><a href="#cb60-545" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda =</span> lasso_lambda_opt)</span>
+<span id="cb60-546"><a href="#cb60-546" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb60-547"><a href="#cb60-547" aria-hidden="true" tabindex="-1"></a>lasso_opt</span>
+<span id="cb60-548"><a href="#cb60-548" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-549"><a href="#cb60-549" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-550"><a href="#cb60-550" aria-hidden="true" tabindex="-1"></a>El porcentaje de deviance explicado del modelo final es del 30.35%. La regresión Lasso selecciona 27 variables.</span>
+<span id="cb60-551"><a href="#cb60-551" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-554"><a href="#cb60-554" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-555"><a href="#cb60-555" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
+<span id="cb60-556"><a href="#cb60-556" aria-hidden="true" tabindex="-1"></a>lasso_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">2</span>))</span>
+<span id="cb60-557"><a href="#cb60-557" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb60-558"><a href="#cb60-558" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-561"><a href="#cb60-561" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-562"><a href="#cb60-562" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb60-563"><a href="#cb60-563" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
-<span id="cb60-564"><a href="#cb60-564" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, i<span class="sc">/</span><span class="dv">20</span>)</span>
-<span id="cb60-565"><a href="#cb60-565" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb60-566"><a href="#cb60-566" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-567"><a href="#cb60-567" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span></span>
-<span id="cb60-568"><a href="#cb60-568" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cv.glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
-<span id="cb60-569"><a href="#cb60-569" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="at">standarize=</span>T, <span class="at">alpha=</span>i<span class="sc">/</span><span class="dv">20</span>)</span>
-<span id="cb60-570"><a href="#cb60-570" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb60-571"><a href="#cb60-571" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-572"><a href="#cb60-572" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-575"><a href="#cb60-575" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-576"><a href="#cb60-576" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista para guardar los modelos</span></span>
-<span id="cb60-577"><a href="#cb60-577" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb60-578"><a href="#cb60-578" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-579"><a href="#cb60-579" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector para almacenar los resultados</span></span>
-<span id="cb60-580"><a href="#cb60-580" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">alpha =</span> <span class="fu">numeric</span>(), <span class="at">lambda =</span> <span class="fu">numeric</span>())</span>
-<span id="cb60-581"><a href="#cb60-581" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-582"><a href="#cb60-582" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
-<span id="cb60-583"><a href="#cb60-583" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> i <span class="sc">/</span> <span class="dv">20</span></span>
-<span id="cb60-584"><a href="#cb60-584" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, a)</span>
-<span id="cb60-585"><a href="#cb60-585" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb60-586"><a href="#cb60-586" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ajuste del modelo con cv.glmnet</span></span>
-<span id="cb60-587"><a href="#cb60-587" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
-<span id="cb60-588"><a href="#cb60-588" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
-<span id="cb60-589"><a href="#cb60-589" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> train<span class="sc">$</span>new_value,</span>
-<span id="cb60-590"><a href="#cb60-590" aria-hidden="true" tabindex="-1"></a>    <span class="at">standardize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb60-591"><a href="#cb60-591" aria-hidden="true" tabindex="-1"></a>    <span class="at">nfolds=</span> <span class="dv">10</span>,</span>
-<span id="cb60-592"><a href="#cb60-592" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> a</span>
-<span id="cb60-593"><a href="#cb60-593" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb60-594"><a href="#cb60-594" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb60-595"><a href="#cb60-595" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Guardar el alpha y el MSE mínimo</span></span>
-<span id="cb60-596"><a href="#cb60-596" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
-<span id="cb60-597"><a href="#cb60-597" aria-hidden="true" tabindex="-1"></a>    results,</span>
-<span id="cb60-598"><a href="#cb60-598" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
-<span id="cb60-599"><a href="#cb60-599" aria-hidden="true" tabindex="-1"></a>      <span class="at">alpha =</span> a,</span>
-<span id="cb60-600"><a href="#cb60-600" aria-hidden="true" tabindex="-1"></a>      <span class="at">lambda =</span> models[[name]]<span class="sc">$</span>lambda.min  <span class="co"># cvm contiene el MSE promedio por lambda</span></span>
-<span id="cb60-601"><a href="#cb60-601" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb60-602"><a href="#cb60-602" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb60-603"><a href="#cb60-603" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb60-604"><a href="#cb60-604" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-605"><a href="#cb60-605" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver el data frame final</span></span>
-<span id="cb60-606"><a href="#cb60-606" aria-hidden="true" tabindex="-1"></a>results</span>
-<span id="cb60-607"><a href="#cb60-607" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-608"><a href="#cb60-608" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-609"><a href="#cb60-609" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-610"><a href="#cb60-610" aria-hidden="true" tabindex="-1"></a><span class="fu">### Mejor modelo</span></span>
+<span id="cb60-559"><a href="#cb60-559" aria-hidden="true" tabindex="-1"></a><span class="fu">## Elastic net</span></span>
+<span id="cb60-560"><a href="#cb60-560" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-561"><a href="#cb60-561" aria-hidden="true" tabindex="-1"></a>La penalización Elastic Net combina las fortalezas de Ridge y Lasso al añadir a la función de costo una mezcla lineal de las penalizaciones $L_1$ y $L_2$, controlada por el parámetro $\alpha$. Un $\lambda$ (lambda) alto resulta en un modelo más penalizado. </span>
+<span id="cb60-562"><a href="#cb60-562" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-565"><a href="#cb60-565" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-566"><a href="#cb60-566" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb60-567"><a href="#cb60-567" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
+<span id="cb60-568"><a href="#cb60-568" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, i<span class="sc">/</span><span class="dv">20</span>)</span>
+<span id="cb60-569"><a href="#cb60-569" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb60-570"><a href="#cb60-570" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-571"><a href="#cb60-571" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span></span>
+<span id="cb60-572"><a href="#cb60-572" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cv.glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
+<span id="cb60-573"><a href="#cb60-573" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="at">standarize=</span>T, <span class="at">alpha=</span>i<span class="sc">/</span><span class="dv">20</span>)</span>
+<span id="cb60-574"><a href="#cb60-574" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-575"><a href="#cb60-575" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-576"><a href="#cb60-576" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-579"><a href="#cb60-579" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-580"><a href="#cb60-580" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista para guardar los modelos</span></span>
+<span id="cb60-581"><a href="#cb60-581" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb60-582"><a href="#cb60-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-583"><a href="#cb60-583" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector para almacenar los resultados</span></span>
+<span id="cb60-584"><a href="#cb60-584" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">alpha =</span> <span class="fu">numeric</span>(), <span class="at">lambda =</span> <span class="fu">numeric</span>())</span>
+<span id="cb60-585"><a href="#cb60-585" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-586"><a href="#cb60-586" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>) {</span>
+<span id="cb60-587"><a href="#cb60-587" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> i <span class="sc">/</span> <span class="dv">20</span></span>
+<span id="cb60-588"><a href="#cb60-588" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"alpha"</span>, a)</span>
+<span id="cb60-589"><a href="#cb60-589" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb60-590"><a href="#cb60-590" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ajuste del modelo con cv.glmnet</span></span>
+<span id="cb60-591"><a href="#cb60-591" aria-hidden="true" tabindex="-1"></a>  models[[name]] <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb60-592"><a href="#cb60-592" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]),</span>
+<span id="cb60-593"><a href="#cb60-593" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> train<span class="sc">$</span>new_value,</span>
+<span id="cb60-594"><a href="#cb60-594" aria-hidden="true" tabindex="-1"></a>    <span class="at">standardize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb60-595"><a href="#cb60-595" aria-hidden="true" tabindex="-1"></a>    <span class="at">nfolds=</span> <span class="dv">10</span>,</span>
+<span id="cb60-596"><a href="#cb60-596" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> a</span>
+<span id="cb60-597"><a href="#cb60-597" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb60-598"><a href="#cb60-598" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb60-599"><a href="#cb60-599" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Guardar el alpha y el MSE mínimo</span></span>
+<span id="cb60-600"><a href="#cb60-600" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb60-601"><a href="#cb60-601" aria-hidden="true" tabindex="-1"></a>    results,</span>
+<span id="cb60-602"><a href="#cb60-602" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb60-603"><a href="#cb60-603" aria-hidden="true" tabindex="-1"></a>      <span class="at">alpha =</span> a,</span>
+<span id="cb60-604"><a href="#cb60-604" aria-hidden="true" tabindex="-1"></a>      <span class="at">lambda =</span> models[[name]]<span class="sc">$</span>lambda.min  <span class="co"># cvm contiene el MSE promedio por lambda</span></span>
+<span id="cb60-605"><a href="#cb60-605" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb60-606"><a href="#cb60-606" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb60-607"><a href="#cb60-607" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-608"><a href="#cb60-608" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-609"><a href="#cb60-609" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver el data frame final</span></span>
+<span id="cb60-610"><a href="#cb60-610" aria-hidden="true" tabindex="-1"></a>results</span>
 <span id="cb60-611"><a href="#cb60-611" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-614"><a href="#cb60-614" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-615"><a href="#cb60-615" aria-hidden="true" tabindex="-1"></a>elastic_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
-<span id="cb60-616"><a href="#cb60-616" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="co">#Vector de la variable a predecir</span></span>
-<span id="cb60-617"><a href="#cb60-617" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="fl">0.95</span>, </span>
-<span id="cb60-618"><a href="#cb60-618" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb60-619"><a href="#cb60-619" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda=</span><span class="fu">min</span>(results<span class="sc">$</span>lambda))</span>
-<span id="cb60-620"><a href="#cb60-620" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
-<span id="cb60-621"><a href="#cb60-621" aria-hidden="true" tabindex="-1"></a>elastic_opt</span>
-<span id="cb60-622"><a href="#cb60-622" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-623"><a href="#cb60-623" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-626"><a href="#cb60-626" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-627"><a href="#cb60-627" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
-<span id="cb60-628"><a href="#cb60-628" aria-hidden="true" tabindex="-1"></a>elastic_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">2</span>))</span>
-<span id="cb60-629"><a href="#cb60-629" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-630"><a href="#cb60-630" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-631"><a href="#cb60-631" aria-hidden="true" tabindex="-1"></a><span class="fu">## Resumen</span></span>
-<span id="cb60-632"><a href="#cb60-632" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-635"><a href="#cb60-635" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-636"><a href="#cb60-636" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Extraer los coeficientes del modelo Elastic Net óptimo</span></span>
-<span id="cb60-637"><a href="#cb60-637" aria-hidden="true" tabindex="-1"></a><span class="co"># La función 'coef' devuelve una matriz 'dgCMatrix'</span></span>
-<span id="cb60-638"><a href="#cb60-638" aria-hidden="true" tabindex="-1"></a>elastic_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(elastic_opt)</span>
-<span id="cb60-639"><a href="#cb60-639" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-640"><a href="#cb60-640" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Extraer los coeficientes de los modelos Ridge y Lasso óptimos</span></span>
-<span id="cb60-641"><a href="#cb60-641" aria-hidden="true" tabindex="-1"></a><span class="co"># Asume que ya tienes 'ridge_opt' y 'lasso_opt' ajustados de manera similar</span></span>
-<span id="cb60-642"><a href="#cb60-642" aria-hidden="true" tabindex="-1"></a>ridge_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(ridge_opt)</span>
-<span id="cb60-643"><a href="#cb60-643" aria-hidden="true" tabindex="-1"></a>lasso_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(lasso_opt)</span>
-<span id="cb60-644"><a href="#cb60-644" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-645"><a href="#cb60-645" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-646"><a href="#cb60-646" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-649"><a href="#cb60-649" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-650"><a href="#cb60-650" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir y limpiar los coeficientes a un data.frame simple</span></span>
-<span id="cb60-651"><a href="#cb60-651" aria-hidden="true" tabindex="-1"></a>extract_and_clean <span class="ot">&lt;-</span> <span class="cf">function</span>(model_coef, model_name) {</span>
-<span id="cb60-652"><a href="#cb60-652" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb60-653"><a href="#cb60-653" aria-hidden="true" tabindex="-1"></a>    <span class="at">Variable =</span> <span class="fu">rownames</span>(model_coef),</span>
-<span id="cb60-654"><a href="#cb60-654" aria-hidden="true" tabindex="-1"></a>    <span class="at">Coeficiente =</span> <span class="fu">as.numeric</span>(model_coef),</span>
-<span id="cb60-655"><a href="#cb60-655" aria-hidden="true" tabindex="-1"></a>    <span class="at">Modelo =</span> model_name</span>
-<span id="cb60-656"><a href="#cb60-656" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb60-657"><a href="#cb60-657" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Quitar la columna del intercepto (Intercept) para simplificar la comparación si se desea</span></span>
-<span id="cb60-658"><a href="#cb60-658" aria-hidden="true" tabindex="-1"></a>  <span class="co"># df &lt;- subset(df, Variable != "(Intercept)")</span></span>
-<span id="cb60-659"><a href="#cb60-659" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
-<span id="cb60-660"><a href="#cb60-660" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb60-661"><a href="#cb60-661" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-662"><a href="#cb60-662" aria-hidden="true" tabindex="-1"></a><span class="co"># Aplicar la función de limpieza y combinación</span></span>
-<span id="cb60-663"><a href="#cb60-663" aria-hidden="true" tabindex="-1"></a>coef_ridge <span class="ot">&lt;-</span> <span class="fu">extract_and_clean</span>(ridge_coef, <span class="st">"Ridge (α=0)"</span>)</span>
-<span id="cb60-664"><a href="#cb60-664" aria-hidden="true" tabindex="-1"></a>coef_lasso <span class="ot">&lt;-</span> <span class="fu">extract_and_clean</span>(lasso_coef, <span class="st">"Lasso (α=1)"</span>)</span>
-<span id="cb60-665"><a href="#cb60-665" aria-hidden="true" tabindex="-1"></a>coef_elastic <span class="ot">&lt;-</span> <span class="fu">extract_and_clean</span>(elastic_coef, <span class="st">"Elastic Net (α=0.95)"</span>)</span>
+<span id="cb60-612"><a href="#cb60-612" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-613"><a href="#cb60-613" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-614"><a href="#cb60-614" aria-hidden="true" tabindex="-1"></a><span class="fu">### Mejor modelo</span></span>
+<span id="cb60-615"><a href="#cb60-615" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-616"><a href="#cb60-616" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-619"><a href="#cb60-619" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-620"><a href="#cb60-620" aria-hidden="true" tabindex="-1"></a>elastic_opt <span class="ot">=</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(train[, <span class="sc">!</span><span class="fu">names</span>(train) <span class="sc">%in%</span> <span class="st">"new_value"</span>]), <span class="co"># Matriz de regresores</span></span>
+<span id="cb60-621"><a href="#cb60-621" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> train<span class="sc">$</span>new_value, <span class="co">#Vector de la variable a predecir</span></span>
+<span id="cb60-622"><a href="#cb60-622" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha =</span> <span class="fl">0.95</span>, </span>
+<span id="cb60-623"><a href="#cb60-623" aria-hidden="true" tabindex="-1"></a>                   <span class="at">standardize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb60-624"><a href="#cb60-624" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lambda=</span><span class="fu">min</span>(results<span class="sc">$</span>lambda))</span>
+<span id="cb60-625"><a href="#cb60-625" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida estandar</span></span>
+<span id="cb60-626"><a href="#cb60-626" aria-hidden="true" tabindex="-1"></a>elastic_opt</span>
+<span id="cb60-627"><a href="#cb60-627" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-628"><a href="#cb60-628" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-631"><a href="#cb60-631" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-632"><a href="#cb60-632" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy</span></span>
+<span id="cb60-633"><a href="#cb60-633" aria-hidden="true" tabindex="-1"></a>elastic_opt <span class="sc">%&gt;%</span> <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">estimate =</span> <span class="fu">round</span>(estimate, <span class="dv">2</span>))</span>
+<span id="cb60-634"><a href="#cb60-634" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-635"><a href="#cb60-635" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-636"><a href="#cb60-636" aria-hidden="true" tabindex="-1"></a><span class="fu">## Resumen</span></span>
+<span id="cb60-637"><a href="#cb60-637" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-640"><a href="#cb60-640" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-641"><a href="#cb60-641" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Extraer los coeficientes del modelo Elastic Net óptimo</span></span>
+<span id="cb60-642"><a href="#cb60-642" aria-hidden="true" tabindex="-1"></a><span class="co"># La función 'coef' devuelve una matriz 'dgCMatrix'</span></span>
+<span id="cb60-643"><a href="#cb60-643" aria-hidden="true" tabindex="-1"></a>elastic_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(elastic_opt)</span>
+<span id="cb60-644"><a href="#cb60-644" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-645"><a href="#cb60-645" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Extraer los coeficientes de los modelos Ridge y Lasso óptimos</span></span>
+<span id="cb60-646"><a href="#cb60-646" aria-hidden="true" tabindex="-1"></a><span class="co"># Asume que ya tienes 'ridge_opt' y 'lasso_opt' ajustados de manera similar</span></span>
+<span id="cb60-647"><a href="#cb60-647" aria-hidden="true" tabindex="-1"></a>ridge_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(ridge_opt)</span>
+<span id="cb60-648"><a href="#cb60-648" aria-hidden="true" tabindex="-1"></a>lasso_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(lasso_opt)</span>
+<span id="cb60-649"><a href="#cb60-649" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-650"><a href="#cb60-650" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-651"><a href="#cb60-651" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-654"><a href="#cb60-654" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-655"><a href="#cb60-655" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir y limpiar los coeficientes a un data.frame simple</span></span>
+<span id="cb60-656"><a href="#cb60-656" aria-hidden="true" tabindex="-1"></a>extract_and_clean <span class="ot">&lt;-</span> <span class="cf">function</span>(model_coef, model_name) {</span>
+<span id="cb60-657"><a href="#cb60-657" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb60-658"><a href="#cb60-658" aria-hidden="true" tabindex="-1"></a>    <span class="at">Variable =</span> <span class="fu">rownames</span>(model_coef),</span>
+<span id="cb60-659"><a href="#cb60-659" aria-hidden="true" tabindex="-1"></a>    <span class="at">Coeficiente =</span> <span class="fu">as.numeric</span>(model_coef),</span>
+<span id="cb60-660"><a href="#cb60-660" aria-hidden="true" tabindex="-1"></a>    <span class="at">Modelo =</span> model_name</span>
+<span id="cb60-661"><a href="#cb60-661" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb60-662"><a href="#cb60-662" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Quitar la columna del intercepto (Intercept) para simplificar la comparación si se desea</span></span>
+<span id="cb60-663"><a href="#cb60-663" aria-hidden="true" tabindex="-1"></a>  <span class="co"># df &lt;- subset(df, Variable != "(Intercept)")</span></span>
+<span id="cb60-664"><a href="#cb60-664" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb60-665"><a href="#cb60-665" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb60-666"><a href="#cb60-666" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-667"><a href="#cb60-667" aria-hidden="true" tabindex="-1"></a><span class="co"># Combinar todas las tablas en una sola</span></span>
-<span id="cb60-668"><a href="#cb60-668" aria-hidden="true" tabindex="-1"></a>tabla_final <span class="ot">&lt;-</span> <span class="fu">merge</span>(coef_ridge[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)], coef_lasso[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)], <span class="at">by =</span> <span class="st">"Variable"</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">suffixes =</span> <span class="fu">c</span>(<span class="st">".Ridge"</span>, <span class="st">".Lasso"</span>))</span>
-<span id="cb60-669"><a href="#cb60-669" aria-hidden="true" tabindex="-1"></a>tabla_final <span class="ot">&lt;-</span> <span class="fu">merge</span>(tabla_final, coef_elastic[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)], <span class="at">by =</span> <span class="st">"Variable"</span>, <span class="at">all =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb60-670"><a href="#cb60-670" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tabla_final)[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="st">"Coeficiente.ElasticNet"</span></span>
+<span id="cb60-667"><a href="#cb60-667" aria-hidden="true" tabindex="-1"></a><span class="co"># Aplicar la función de limpieza y combinación</span></span>
+<span id="cb60-668"><a href="#cb60-668" aria-hidden="true" tabindex="-1"></a>coef_ridge <span class="ot">&lt;-</span> <span class="fu">extract_and_clean</span>(ridge_coef, <span class="st">"Ridge (α=0)"</span>)</span>
+<span id="cb60-669"><a href="#cb60-669" aria-hidden="true" tabindex="-1"></a>coef_lasso <span class="ot">&lt;-</span> <span class="fu">extract_and_clean</span>(lasso_coef, <span class="st">"Lasso (α=1)"</span>)</span>
+<span id="cb60-670"><a href="#cb60-670" aria-hidden="true" tabindex="-1"></a>coef_elastic <span class="ot">&lt;-</span> <span class="fu">extract_and_clean</span>(elastic_coef, <span class="st">"Elastic Net (α=0.95)"</span>)</span>
 <span id="cb60-671"><a href="#cb60-671" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-672"><a href="#cb60-672" aria-hidden="true" tabindex="-1"></a><span class="co"># Opcional: reemplazar NAs (si hubiera) con 0 para Lasso (aunque con tu ajuste no debería haber NAs)</span></span>
-<span id="cb60-673"><a href="#cb60-673" aria-hidden="true" tabindex="-1"></a><span class="co"># tabla_final[is.na(tabla_final)] &lt;- 0</span></span>
-<span id="cb60-674"><a href="#cb60-674" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-675"><a href="#cb60-675" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-678"><a href="#cb60-678" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-679"><a href="#cb60-679" aria-hidden="true" tabindex="-1"></a>tabla_final</span>
-<span id="cb60-680"><a href="#cb60-680" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-681"><a href="#cb60-681" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-682"><a href="#cb60-682" aria-hidden="true" tabindex="-1"></a><span class="fu"># Test</span></span>
-<span id="cb60-683"><a href="#cb60-683" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-686"><a href="#cb60-686" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-687"><a href="#cb60-687" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(test[, <span class="sc">!</span><span class="fu">names</span>(test) <span class="sc">%in%</span> <span class="st">"new_value"</span>])</span>
-<span id="cb60-688"><a href="#cb60-688" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> test<span class="sc">$</span>new_value</span>
-<span id="cb60-689"><a href="#cb60-689" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-690"><a href="#cb60-690" aria-hidden="true" tabindex="-1"></a><span class="co"># === Ridge (alpha=0) ===</span></span>
-<span id="cb60-691"><a href="#cb60-691" aria-hidden="true" tabindex="-1"></a>pred_ridge <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_opt, x_test)</span>
-<span id="cb60-692"><a href="#cb60-692" aria-hidden="true" tabindex="-1"></a>mse_ridge <span class="ot">&lt;-</span> <span class="fu">mean</span>((y_test <span class="sc">-</span> pred_ridge)<span class="sc">^</span><span class="dv">2</span>)          <span class="co"># ECM</span></span>
-<span id="cb60-693"><a href="#cb60-693" aria-hidden="true" tabindex="-1"></a>rmse_ridge <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse_ridge)                       <span class="co"># RSME</span></span>
-<span id="cb60-694"><a href="#cb60-694" aria-hidden="true" tabindex="-1"></a>mae_ridge <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(y_test <span class="sc">-</span> pred_ridge))         <span class="co"># MAE</span></span>
-<span id="cb60-695"><a href="#cb60-695" aria-hidden="true" tabindex="-1"></a>dev_ridge <span class="ot">&lt;-</span> ridge_opt<span class="sc">$</span>dev.ratio                    <span class="co"># devianza explicada</span></span>
-<span id="cb60-696"><a href="#cb60-696" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-697"><a href="#cb60-697" aria-hidden="true" tabindex="-1"></a><span class="co"># === Lasso (alpha=1) ===</span></span>
-<span id="cb60-698"><a href="#cb60-698" aria-hidden="true" tabindex="-1"></a>pred_lasso <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso_opt, x_test)</span>
-<span id="cb60-699"><a href="#cb60-699" aria-hidden="true" tabindex="-1"></a>mse_lasso <span class="ot">&lt;-</span> <span class="fu">mean</span>((y_test <span class="sc">-</span> pred_lasso)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb60-700"><a href="#cb60-700" aria-hidden="true" tabindex="-1"></a>rmse_lasso <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse_lasso)</span>
-<span id="cb60-701"><a href="#cb60-701" aria-hidden="true" tabindex="-1"></a>mae_lasso <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(y_test <span class="sc">-</span> pred_lasso))</span>
-<span id="cb60-702"><a href="#cb60-702" aria-hidden="true" tabindex="-1"></a>dev_lasso <span class="ot">&lt;-</span> lasso_opt<span class="sc">$</span>dev.ratio</span>
-<span id="cb60-703"><a href="#cb60-703" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-704"><a href="#cb60-704" aria-hidden="true" tabindex="-1"></a><span class="co"># === Elastic Net (alpha=0.95) ===</span></span>
-<span id="cb60-705"><a href="#cb60-705" aria-hidden="true" tabindex="-1"></a>pred_elastic <span class="ot">&lt;-</span> <span class="fu">predict</span>(elastic_opt, x_test)</span>
-<span id="cb60-706"><a href="#cb60-706" aria-hidden="true" tabindex="-1"></a>mse_elastic <span class="ot">&lt;-</span> <span class="fu">mean</span>((y_test <span class="sc">-</span> pred_elastic)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb60-707"><a href="#cb60-707" aria-hidden="true" tabindex="-1"></a>rmse_elastic <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse_elastic)</span>
-<span id="cb60-708"><a href="#cb60-708" aria-hidden="true" tabindex="-1"></a>mae_elastic <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(y_test <span class="sc">-</span> pred_elastic))</span>
-<span id="cb60-709"><a href="#cb60-709" aria-hidden="true" tabindex="-1"></a>dev_elastic <span class="ot">&lt;-</span> elastic_opt<span class="sc">$</span>dev.ratio</span>
-<span id="cb60-710"><a href="#cb60-710" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-711"><a href="#cb60-711" aria-hidden="true" tabindex="-1"></a><span class="co"># === Tabla resumen ===</span></span>
-<span id="cb60-712"><a href="#cb60-712" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb60-713"><a href="#cb60-713" aria-hidden="true" tabindex="-1"></a>  <span class="at">Modelo =</span> <span class="fu">c</span>(<span class="st">"Ridge"</span>, <span class="st">"Lasso"</span>, <span class="st">"Elastic Net"</span>),</span>
-<span id="cb60-714"><a href="#cb60-714" aria-hidden="true" tabindex="-1"></a>  <span class="at">ECM_Test =</span> <span class="fu">c</span>(mse_ridge, mse_lasso, mse_elastic),</span>
-<span id="cb60-715"><a href="#cb60-715" aria-hidden="true" tabindex="-1"></a>  <span class="at">RSME_Test =</span> <span class="fu">c</span>(rmse_ridge, rmse_lasso, rmse_elastic),</span>
-<span id="cb60-716"><a href="#cb60-716" aria-hidden="true" tabindex="-1"></a>  <span class="at">MAE_Test =</span> <span class="fu">c</span>(mae_ridge, mae_lasso, mae_elastic),</span>
-<span id="cb60-717"><a href="#cb60-717" aria-hidden="true" tabindex="-1"></a>  <span class="at">Devianza_Explicada =</span> <span class="fu">c</span>(dev_ridge, dev_lasso, dev_elastic)</span>
-<span id="cb60-718"><a href="#cb60-718" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-719"><a href="#cb60-719" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-720"><a href="#cb60-720" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results)</span>
-<span id="cb60-721"><a href="#cb60-721" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-722"><a href="#cb60-722" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-723"><a href="#cb60-723" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-724"><a href="#cb60-724" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-725"><a href="#cb60-725" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-672"><a href="#cb60-672" aria-hidden="true" tabindex="-1"></a><span class="co"># Combinar todas las tablas en una sola</span></span>
+<span id="cb60-673"><a href="#cb60-673" aria-hidden="true" tabindex="-1"></a>tabla_final <span class="ot">&lt;-</span> <span class="fu">merge</span>(coef_ridge[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)], coef_lasso[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)], <span class="at">by =</span> <span class="st">"Variable"</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">suffixes =</span> <span class="fu">c</span>(<span class="st">".Ridge"</span>, <span class="st">".Lasso"</span>))</span>
+<span id="cb60-674"><a href="#cb60-674" aria-hidden="true" tabindex="-1"></a>tabla_final <span class="ot">&lt;-</span> <span class="fu">merge</span>(tabla_final, coef_elastic[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)], <span class="at">by =</span> <span class="st">"Variable"</span>, <span class="at">all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb60-675"><a href="#cb60-675" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tabla_final)[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="st">"Coeficiente.ElasticNet"</span></span>
+<span id="cb60-676"><a href="#cb60-676" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-677"><a href="#cb60-677" aria-hidden="true" tabindex="-1"></a><span class="co"># Opcional: reemplazar NAs (si hubiera) con 0 para Lasso (aunque con tu ajuste no debería haber NAs)</span></span>
+<span id="cb60-678"><a href="#cb60-678" aria-hidden="true" tabindex="-1"></a><span class="co"># tabla_final[is.na(tabla_final)] &lt;- 0</span></span>
+<span id="cb60-679"><a href="#cb60-679" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-680"><a href="#cb60-680" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-683"><a href="#cb60-683" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-684"><a href="#cb60-684" aria-hidden="true" tabindex="-1"></a>tabla_final</span>
+<span id="cb60-685"><a href="#cb60-685" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-686"><a href="#cb60-686" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-687"><a href="#cb60-687" aria-hidden="true" tabindex="-1"></a><span class="fu"># Evaluando en Test</span></span>
+<span id="cb60-688"><a href="#cb60-688" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-691"><a href="#cb60-691" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-692"><a href="#cb60-692" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(test[, <span class="sc">!</span><span class="fu">names</span>(test) <span class="sc">%in%</span> <span class="st">"new_value"</span>])</span>
+<span id="cb60-693"><a href="#cb60-693" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> test<span class="sc">$</span>new_value</span>
+<span id="cb60-694"><a href="#cb60-694" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-695"><a href="#cb60-695" aria-hidden="true" tabindex="-1"></a><span class="co"># === Ridge (alpha=0) ===</span></span>
+<span id="cb60-696"><a href="#cb60-696" aria-hidden="true" tabindex="-1"></a>pred_ridge <span class="ot">&lt;-</span> <span class="fu">predict</span>(ridge_opt, x_test)</span>
+<span id="cb60-697"><a href="#cb60-697" aria-hidden="true" tabindex="-1"></a>mse_ridge <span class="ot">&lt;-</span> <span class="fu">mean</span>((y_test <span class="sc">-</span> pred_ridge)<span class="sc">^</span><span class="dv">2</span>)          <span class="co"># ECM</span></span>
+<span id="cb60-698"><a href="#cb60-698" aria-hidden="true" tabindex="-1"></a>rmse_ridge <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse_ridge)                       <span class="co"># RSME</span></span>
+<span id="cb60-699"><a href="#cb60-699" aria-hidden="true" tabindex="-1"></a>mae_ridge <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(y_test <span class="sc">-</span> pred_ridge))         <span class="co"># MAE</span></span>
+<span id="cb60-700"><a href="#cb60-700" aria-hidden="true" tabindex="-1"></a>dev_ridge <span class="ot">&lt;-</span> ridge_opt<span class="sc">$</span>dev.ratio                    <span class="co"># devianza explicada</span></span>
+<span id="cb60-701"><a href="#cb60-701" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-702"><a href="#cb60-702" aria-hidden="true" tabindex="-1"></a><span class="co"># === Lasso (alpha=1) ===</span></span>
+<span id="cb60-703"><a href="#cb60-703" aria-hidden="true" tabindex="-1"></a>pred_lasso <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso_opt, x_test)</span>
+<span id="cb60-704"><a href="#cb60-704" aria-hidden="true" tabindex="-1"></a>mse_lasso <span class="ot">&lt;-</span> <span class="fu">mean</span>((y_test <span class="sc">-</span> pred_lasso)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb60-705"><a href="#cb60-705" aria-hidden="true" tabindex="-1"></a>rmse_lasso <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse_lasso)</span>
+<span id="cb60-706"><a href="#cb60-706" aria-hidden="true" tabindex="-1"></a>mae_lasso <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(y_test <span class="sc">-</span> pred_lasso))</span>
+<span id="cb60-707"><a href="#cb60-707" aria-hidden="true" tabindex="-1"></a>dev_lasso <span class="ot">&lt;-</span> lasso_opt<span class="sc">$</span>dev.ratio</span>
+<span id="cb60-708"><a href="#cb60-708" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-709"><a href="#cb60-709" aria-hidden="true" tabindex="-1"></a><span class="co"># === Elastic Net (alpha=0.95) ===</span></span>
+<span id="cb60-710"><a href="#cb60-710" aria-hidden="true" tabindex="-1"></a>pred_elastic <span class="ot">&lt;-</span> <span class="fu">predict</span>(elastic_opt, x_test)</span>
+<span id="cb60-711"><a href="#cb60-711" aria-hidden="true" tabindex="-1"></a>mse_elastic <span class="ot">&lt;-</span> <span class="fu">mean</span>((y_test <span class="sc">-</span> pred_elastic)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb60-712"><a href="#cb60-712" aria-hidden="true" tabindex="-1"></a>rmse_elastic <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse_elastic)</span>
+<span id="cb60-713"><a href="#cb60-713" aria-hidden="true" tabindex="-1"></a>mae_elastic <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(y_test <span class="sc">-</span> pred_elastic))</span>
+<span id="cb60-714"><a href="#cb60-714" aria-hidden="true" tabindex="-1"></a>dev_elastic <span class="ot">&lt;-</span> elastic_opt<span class="sc">$</span>dev.ratio</span>
+<span id="cb60-715"><a href="#cb60-715" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-716"><a href="#cb60-716" aria-hidden="true" tabindex="-1"></a><span class="co"># === Tabla resumen ===</span></span>
+<span id="cb60-717"><a href="#cb60-717" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb60-718"><a href="#cb60-718" aria-hidden="true" tabindex="-1"></a>  <span class="at">Modelo =</span> <span class="fu">c</span>(<span class="st">"Ridge"</span>, <span class="st">"Lasso"</span>, <span class="st">"Elastic Net"</span>),</span>
+<span id="cb60-719"><a href="#cb60-719" aria-hidden="true" tabindex="-1"></a>  <span class="at">ECM_Test =</span> <span class="fu">c</span>(mse_ridge, mse_lasso, mse_elastic),</span>
+<span id="cb60-720"><a href="#cb60-720" aria-hidden="true" tabindex="-1"></a>  <span class="at">RSME_Test =</span> <span class="fu">c</span>(rmse_ridge, rmse_lasso, rmse_elastic),</span>
+<span id="cb60-721"><a href="#cb60-721" aria-hidden="true" tabindex="-1"></a>  <span class="at">MAE_Test =</span> <span class="fu">c</span>(mae_ridge, mae_lasso, mae_elastic),</span>
+<span id="cb60-722"><a href="#cb60-722" aria-hidden="true" tabindex="-1"></a>  <span class="at">Devianza_Explicada =</span> <span class="fu">c</span>(dev_ridge, dev_lasso, dev_elastic)</span>
+<span id="cb60-723"><a href="#cb60-723" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-724"><a href="#cb60-724" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-725"><a href="#cb60-725" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results)</span>
 <span id="cb60-726"><a href="#cb60-726" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-729"><a href="#cb60-729" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb60-730"><a href="#cb60-730" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_test, pred_lasso)</span>
-<span id="cb60-731"><a href="#cb60-731" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb60-732"><a href="#cb60-732" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-733"><a href="#cb60-733" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb60-734"><a href="#cb60-734" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-735"><a href="#cb60-735" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-727"><a href="#cb60-727" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-728"><a href="#cb60-728" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-729"><a href="#cb60-729" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-730"><a href="#cb60-730" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-731"><a href="#cb60-731" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-734"><a href="#cb60-734" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb60-735"><a href="#cb60-735" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_test, pred_lasso)</span>
+<span id="cb60-736"><a href="#cb60-736" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb60-737"><a href="#cb60-737" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb60-738"><a href="#cb60-738" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-739"><a href="#cb60-739" aria-hidden="true" tabindex="-1"></a></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
