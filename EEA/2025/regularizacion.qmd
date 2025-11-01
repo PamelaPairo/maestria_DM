@@ -497,6 +497,17 @@ lasso_opt %>% tidy() %>% mutate(estimate = round(estimate, 2))
 
 La penalización Elastic Net combina las fortalezas de Ridge y Lasso al añadir a la función de costo una mezcla lineal de las penalizaciones $L_1$ y $L_2$, controlada por el parámetro $\alpha$. Un $\lambda$ (lambda) alto resulta en un modelo más penalizado. 
 
+$$
+\min_{\beta_0, \beta} \left\{
+\frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2
++ \lambda \left[
+(1 - \alpha)\frac{1}{2} \sum_{j=1}^{p} \beta_j^2
++ \alpha \sum_{j=1}^{p} |\beta_j|
+\right]
+\right\}
+$$
+
+
 ```{r}
 models <- list()
 for (i in 0:20) {
@@ -618,34 +629,27 @@ pred_ridge <- predict(ridge_opt, x_test)
 mse_ridge <- mean((y_test - pred_ridge)^2)          # ECM
 rmse_ridge <- sqrt(mse_ridge)                       # RSME
 mae_ridge <- mean(abs(y_test - pred_ridge))         # MAE
-dev_ridge <- ridge_opt$dev.ratio                    # devianza explicada
 
 # === Lasso (alpha=1) ===
 pred_lasso <- predict(lasso_opt, x_test)
 mse_lasso <- mean((y_test - pred_lasso)^2)
 rmse_lasso <- sqrt(mse_lasso)
 mae_lasso <- mean(abs(y_test - pred_lasso))
-dev_lasso <- lasso_opt$dev.ratio
 
 # === Elastic Net (alpha=0.95) ===
 pred_elastic <- predict(elastic_opt, x_test)
 mse_elastic <- mean((y_test - pred_elastic)^2)
 rmse_elastic <- sqrt(mse_elastic)
 mae_elastic <- mean(abs(y_test - pred_elastic))
-dev_elastic <- elastic_opt$dev.ratio
 
 # === Tabla resumen ===
 results <- data.frame(
   Modelo = c("Ridge", "Lasso", "Elastic Net"),
   ECM_Test = c(mse_ridge, mse_lasso, mse_elastic),
   RSME_Test = c(rmse_ridge, rmse_lasso, rmse_elastic),
-  MAE_Test = c(mae_ridge, mae_lasso, mae_elastic),
-  Devianza_Explicada = c(dev_ridge, dev_lasso, dev_elastic)
-)
+  MAE_Test = c(mae_ridge, mae_lasso, mae_elastic))
 
 print(results)
-
-
 
 ```
 
@@ -656,4 +660,4 @@ abline(0, 1)
 ```
 
 
-
+Ridge y Lasso reducen la magnitud de los coeficientes de las variables, lo cual atenúa pero no resuelve el impacto de outliers. Ridge suaviza la influencia, Lasso puede volverse inestable y seleccionar mal variables. La regularización controla varianza, no robustez; para outliers se necesitan técnicas robustas adicionales.
