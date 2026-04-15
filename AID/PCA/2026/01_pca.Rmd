@@ -607,7 +607,10 @@ ggarrange(p2,p3, nrow = 1, ncol = 2)
 
 # Ejercitación 🤔
 
-A partir de los datos obtenidos de un estudio sobre las preferencias de vinos, se realizó un PCA y a continuación se muestra el biplot del mismo. Para mas detalles del estudio ver el siguiente [link](https://sci-hub.hlgczx.com/10.1016/j.dss.2009.05.016). Interprete el biplot.
+A partir de los datos obtenidos de un estudio sobre las preferencias de vinos en Portugal, se realizó un PCA y a continuación se muestra el biplot del mismo. Para mas detalles del estudio ver el siguiente [link](https://sci-hub.hlgczx.com/10.1016/j.dss.2009.05.016). Interprete el biplot.
+
+1= vino blanco
+2= vino tinto
 
 ![](ejercicio.png)
 
@@ -616,9 +619,9 @@ La primer componente explica el 29,37% de la variabilidad total de clientes.
 Las variables que mas se asocian positivamente con la primer componente son... 
 En cambio, ... se asociaron negativamente a la primer componente. 
 
-La primer componente diferencia a los vinos tintos de los vinos blancos especialmente referido a los minerales que posee y los sulfitos.
+La primer componente diferencia a los vinos tintos de los vinos blancos especialmente referido a los minerales que posee y los sulfitos (estructura del vino)
 
-La segunda componente parece captar la variabilidad relacionada con los años en barrica (mayor acidez y alcohol).
+La segunda componente parece captar la variabilidad relacionada con los años en barrica (mayor acidez y alcohol). PC2 captura diferencias en el proceso de fermentación y perfil aromático
 
 
 
