@@ -278,6 +278,10 @@ names(pca)
 
 ## Cargas o _loadings_
 
+- Cada coeficiente mide la contribución de una dada variable a un dado componente.
+
+- Si las variables están medidas en la misma escala o los datos fueron estandarizados, representan la contribución relativa de cada variable.
+
 ```{r}
 
 round(pca$rotation,2) |> knitr::kable(format = "html") |> 
