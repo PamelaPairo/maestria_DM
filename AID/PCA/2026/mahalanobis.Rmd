@@ -1,0 +1,281 @@
+---
+title: "Distancia de Mahalanobis"
+author: "Pamela E. Pairo"
+lang: es
+format:
+  html:
+    theme:  flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+
+```
+
+Cargamos la base de datos que utilizamos para PCA.
+
+```{r}
+df <-read.csv("ifood_df.csv")
+
+```
+
+Trabajamos unicamente con una muestra.
+
+```{r}
+set.seed(11) 
+df_sample <- dplyr::distinct(df) |> #elimino datos repetidos
+           sample_n(350)
+
+df_num <- df_sample |> 
+          select(1, 5:13, 25)#selecciono columnas de interes 
+
+```
+
+
+## Distancia de Mahalanobis
+
+$D_M(X, Y) = \sqrt{(X- Y)^T \Sigma^{-1} (X - Y)}$
+
+- $X$: variable aleatoria X
+- $Y$: variable aleatoria Y
+- $\Sigma$: matriz de covarianza
+
+
+## Distancia de Mahalanobis en R
+
+La función `mahalanobis()` en R calcula el cuadrado de la distancia de Mahalanobis ($D^2$), la cual mide la separación entre un punto y el centro de una distribución multivariada, ajustándose según la correlación entre variables.
+
+## Fórmula Matemática aplicada por R
+
+La métrica devuelta por la función estándar de R es:
+
+$$D^2 = (x - \mu)^T \Sigma^{-1} (x - \mu)$$
+
+**Donde:**
+
+* **$x$**: Es el vector de una observación (una fila, es decir un cliente).
+* **$\mu$**: Es el vector de medias (centroide) de todas las variables.
+* **$\Sigma^{-1}$**: Es la inversa de la matriz de varianza-covarianza.
+* **$(x - \mu)^T$**: Es la transpuesta de la diferencia entre el individuo y el centro.
+
+---
+
+### A tener en cuenta
+
+1.  **Estandarización Automática**: A diferencia de la distancia euclídea, Mahalanobis utiliza la matriz $\Sigma^{-1}$ para normalizar las escalas de las variables.
+2.  **Descorrelación**: Al considerar la covarianza, la fórmula "elimina" la redundancia entre variables altamente correlacionadas.
+3.  **Interpretación Estadística**: El resultado $D^2$ sigue una distribución **Chi-cuadrado** ($\chi^2$) con $p$ grados de libertad (donde $p$ es el número de variables), lo que permite realizar tests de detección de *outliers*.
+
+> **Nota:** La función `mahalanobis()` en R devuelve el valor al cuadrado. Para obtener la distancia lineal, se debe aplicar la raíz cuadrada: $\sqrt{D^2}$.
+
+## Distancia de Mahalanobis Robusta
+
+Cuando existen valores atípicos en el dataset, la media ($\mu$) y la matriz de covarianza ($\Sigma$) se ven distorsionadas, lo que puede causar que los *outliers* pasen desapercibidos (efecto de enmascaramiento). 
+### Fórmula Matemática
+
+La estructura de la fórmula se mantiene, pero sustituye los estimadores clásicos por otros de **alto punto de ruptura** (usualmente *Minimum Covariance Determinant* - MCD):
+
+$$D^2_{robusta} = (x - \hat{\mu}_{MCD})^T \hat{\Sigma}_{MCD}^{-1} (x - \hat{\mu}_{MCD})$$
+
+**Donde:**
+
+* **$\hat{\mu}_{MCD}$**: Es el vector de centros calculado solo con el subconjunto de datos más "coherente" (el subconjunto que minimiza el determinante de la covarianza).
+* **$\hat{\Sigma}_{MCD}^{-1}$**: Es la inversa de la matriz de covarianza robusta, menos sensible a valores extremos.
+
+
+### ¿Por qué usar la versión Robusta?
+
+1. **Efecto Enmascaramiento**: En la distancia clásica, un outlier muy extremo "arrastra" la media hacia él, disminuyendo artificialmente su propia distancia. La versión robusta ignora esos puntos para definir el centro real.
+2. **Identificación Confiable**: Permite detectar grupos de outliers que, de otro modo, parecerían puntos normales debido a su propia influencia en la varianza global.
+
+
+```{r}
+# -------------------------
+# 1. Datos simulados
+# -------------------------
+set.seed(123)
+
+n <- 100
+x <- cbind(
+  rnorm(n, mean = 0, sd = 1),
+  rnorm(n, mean = 0, sd = 1)
+)
+
+# Agrego outliers
+outliers <- rbind(c(5, 5), c(6, 6), c(5, 6))
+x <- rbind(x, outliers)
+
+# -------------------------
+# 2. Mahalanobis clásica
+# -------------------------
+center_classic <- colMeans(x)
+cov_classic <- cov(x)
+
+# -------------------------
+# 3. Mahalanobis robusta (MCD)
+# -------------------------
+cov_rob <- MASS::cov.rob(x, method = "mcd")
+
+center_rob <- cov_rob$center
+cov_robust <- cov_rob$cov
+
+# -------------------------
+# 4. Función para dibujar elipse
+# -------------------------
+ellipse_points <- function(center, cov, level = 0.975, npoints = 100) {
+  theta <- seq(0, 2*pi, length.out = npoints)
+  circle <- cbind(cos(theta), sin(theta))
+  
+  # radio basado en chi-cuadrado
+  radius <- sqrt(qchisq(level, df = 2))
+  
+  # descomposición
+  eig <- eigen(cov)
+  shape <- eig$vectors %*% diag(sqrt(eig$values)) * radius
+  
+  ellipse <- t(center + t(circle %*% shape))
+  return(ellipse)
+}
+
+ell_classic <- ellipse_points(center_classic, cov_classic)
+ell_robust  <- ellipse_points(center_rob, cov_robust)
+
+# -------------------------
+# 5. Gráfico
+# -------------------------
+plot(x, pch = 19, col = "gray30",
+     main = "Mahalanobis clásica vs robusta",
+     xlab = "X1", ylab = "X2",
+     xlim = c(-5, 6), 
+     ylim = c(-5, 6))
+
+# outliers en rojo
+points(outliers, col = "red", pch = 19, cex = 1.3)
+
+# elipse clásica
+lines(ell_classic, col = "blue", lwd = 2)
+
+# elipse robusta
+lines(ell_robust, col = "darkgreen", lwd = 2)
+
+# centros
+points(center_classic[1], center_classic[2], col = "blue", pch = 4, cex = 2, lwd = 2)
+points(center_rob[1], center_rob[2], col = "darkgreen", pch = 4, cex = 2, lwd = 2)
+
+legend("topleft",
+       legend = c("Datos", "Outliers", "Elipse clásica", "Elipse robusta"),
+       col = c("gray30", "red", "blue", "darkgreen"),
+       pch = c(19, 19, NA, NA),
+       lty = c(NA, NA, 1, 1),
+       lwd = c(NA, NA, 2, 2))
+```
+
+
+## Calculos en R
+
+Creamos una función que calcula la distancia de Mahalanobis clásica y su versión robusta. Para identificar los posibles outliers se aplica un test estadístico. La distancia de Mahalanobis al cuadrado sigue una chi-cuadrado con tantos grados de libertad como variables del dataset.
+
+```{r}
+
+detectar_outliers_mahalanobis <- function(df, alpha = 0.01) {
+  
+  df %>%
+    # nos quedamos con columnas numéricas para el cálculo
+    {
+      df_original <- .
+      df_num <- select_if(df, is.numeric)
+      
+      p <- ncol(df_num)
+      
+      # -------------------------
+      # Mahalanobis clásica
+      # -------------------------
+      center_classic <- colMeans(df_num, na.rm = TRUE)
+      cov_classic <- cov(df_num, use = "complete.obs")
+      
+      dist_classic <- mahalanobis(df_num, center_classic, cov_classic)
+      
+      # -------------------------
+      # Mahalanobis robusta (MCD)
+      # -------------------------
+      cov_rob <- robustbase::covMcd(df_num)
+      
+      dist_rob <- mahalanobis(df_num, cov_rob$center, cov_rob$cov)
+      
+      # -------------------------
+      # Umbral
+      # -------------------------
+      threshold <- qchisq(1 - alpha, df = p)
+      
+      # -------------------------
+      # Bind de resultados
+      # -------------------------
+      df_original %>%
+        mutate(
+          dist_mahalanobis = dist_classic,
+          dist_mahalanobis_rob = dist_rob,
+          outlier_classic = dist_mahalanobis > threshold,
+          outlier_robust = dist_mahalanobis_rob > threshold
+        )
+    }
+}
+```
+
+```{r}
+df_out <- df_num |> 
+  detectar_outliers_mahalanobis()
+
+```
+
+```{r}
+df_out %>%
+  summarise(
+    n_total = n(),
+    outliers_classic = sum(outlier_classic, na.rm = TRUE),
+    outliers_robust = sum(outlier_robust, na.rm = TRUE),
+    prop_classic = mean(outlier_classic, na.rm = TRUE),
+    prop_robust = mean(outlier_robust, na.rm = TRUE)
+  )
+```
+
+```{r}
+df_out %>%
+  count(outlier_classic, outlier_robust)
+```
+
+
+
+```{r}
+library(kableExtra)
+
+df_out %>% 
+  filter(outlier_robust & !outlier_classic) %>%
+  arrange(desc(dist_mahalanobis_rob)) %>%
+  dplyr::select(-outlier_classic, -outlier_robust) %>%
+  head(10) %>%
+  knitr::kable(
+    caption = "Outliers detectados solo por Mahalanobis robusta"
+  )
+```
+
+
+```{r}
+df_out %>% 
+  filter(outlier_classic) %>%
+  arrange(desc(dist_mahalanobis_rob)) %>%
+  dplyr::select(-outlier_classic, -outlier_robust) %>%
+  head(10) %>%
+  knitr::kable(
+    caption = "Outliers detectados solo por Mahalanobis clasico"
+  )
+```
+
+
+
