@@ -109,17 +109,19 @@ window.Quarto = {
     <h2 id="toc-title">Tabla de contenidos</h2>
    
   <ul>
-  <li><a href="#distancia-de-mahalanobis" id="toc-distancia-de-mahalanobis" class="nav-link active" data-scroll-target="#distancia-de-mahalanobis">Distancia de Mahalanobis</a></li>
+  <li><a href="#fórmula" id="toc-fórmula" class="nav-link active" data-scroll-target="#fórmula">Fórmula</a></li>
   <li><a href="#distancia-de-mahalanobis-en-r" id="toc-distancia-de-mahalanobis-en-r" class="nav-link" data-scroll-target="#distancia-de-mahalanobis-en-r">Distancia de Mahalanobis en R</a></li>
-  <li><a href="#fórmula-matemática-aplicada-por-r" id="toc-fórmula-matemática-aplicada-por-r" class="nav-link" data-scroll-target="#fórmula-matemática-aplicada-por-r">Fórmula Matemática aplicada por R</a>
+  <li><a href="#fórmula-matemática-aplicada-por-r" id="toc-fórmula-matemática-aplicada-por-r" class="nav-link" data-scroll-target="#fórmula-matemática-aplicada-por-r">Fórmula matemática aplicada por R</a>
   <ul class="collapse">
   <li><a href="#a-tener-en-cuenta" id="toc-a-tener-en-cuenta" class="nav-link" data-scroll-target="#a-tener-en-cuenta">A tener en cuenta</a></li>
   </ul></li>
   <li><a href="#distancia-de-mahalanobis-robusta" id="toc-distancia-de-mahalanobis-robusta" class="nav-link" data-scroll-target="#distancia-de-mahalanobis-robusta">Distancia de Mahalanobis Robusta</a>
   <ul class="collapse">
+  <li><a href="#fórmula-matemática" id="toc-fórmula-matemática" class="nav-link" data-scroll-target="#fórmula-matemática">Fórmula Matemática</a></li>
   <li><a href="#por-qué-usar-la-versión-robusta" id="toc-por-qué-usar-la-versión-robusta" class="nav-link" data-scroll-target="#por-qué-usar-la-versión-robusta">¿Por qué usar la versión Robusta?</a></li>
   </ul></li>
   <li><a href="#calculos-en-r" id="toc-calculos-en-r" class="nav-link" data-scroll-target="#calculos-en-r">Calculos en R</a></li>
+  <li><a href="#por-qué-se-observan-tantos-outliers-con-el-método-robusto" id="toc-por-qué-se-observan-tantos-outliers-con-el-método-robusto" class="nav-link" data-scroll-target="#por-qué-se-observan-tantos-outliers-con-el-método-robusto">¿Por qué se observan tantos outliers con el método robusto</a></li>
   </ul>
 </nav>
 </div>
@@ -164,15 +166,13 @@ window.Quarto = {
 <details open="" class="code-fold">
 <summary>Código</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>) </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_sample <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">distinct</span>(df) <span class="sc">|&gt;</span> <span class="co">#elimino datos repetidos</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">sample_n</span>(<span class="dv">350</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_num <span class="ot">&lt;-</span> df_sample <span class="sc">|&gt;</span> </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(<span class="dv">1</span>, <span class="dv">5</span><span class="sc">:</span><span class="dv">13</span>, <span class="dv">25</span>)<span class="co">#selecciono columnas de interes </span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_num <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">distinct</span>(df) <span class="sc">|&gt;</span> <span class="co">#elimino datos repetidos</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">sample_n</span>(<span class="dv">350</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>           dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span><span class="sc">:</span><span class="dv">13</span>, <span class="dv">25</span>))<span class="co">#selecciono columnas de interes </span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="distancia-de-mahalanobis" class="level2">
-<h2 class="anchored" data-anchor-id="distancia-de-mahalanobis">Distancia de Mahalanobis</h2>
+<section id="fórmula" class="level2">
+<h2 class="anchored" data-anchor-id="fórmula">Fórmula</h2>
 <p><span class="math inline">\(D_M(X, Y) = \sqrt{(X- Y)^T \Sigma^{-1} (X - Y)}\)</span></p>
 <ul>
 <li><span class="math inline">\(X\)</span>: variable aleatoria X</li>
@@ -185,7 +185,7 @@ window.Quarto = {
 <p>La función <code>mahalanobis()</code> en R calcula el cuadrado de la distancia de Mahalanobis (<span class="math inline">\(D^2\)</span>), la cual mide la separación entre un punto y el centro de una distribución multivariada, ajustándose según la correlación entre variables.</p>
 </section>
 <section id="fórmula-matemática-aplicada-por-r" class="level2">
-<h2 class="anchored" data-anchor-id="fórmula-matemática-aplicada-por-r">Fórmula Matemática aplicada por R</h2>
+<h2 class="anchored" data-anchor-id="fórmula-matemática-aplicada-por-r">Fórmula matemática aplicada por R</h2>
 <p>La métrica devuelta por la función estándar de R es:</p>
 <p><span class="math display">\[D^2 = (x - \mu)^T \Sigma^{-1} (x - \mu)\]</span></p>
 <p><strong>Donde:</strong></p>
@@ -210,7 +210,9 @@ window.Quarto = {
 </section>
 <section id="distancia-de-mahalanobis-robusta" class="level2">
 <h2 class="anchored" data-anchor-id="distancia-de-mahalanobis-robusta">Distancia de Mahalanobis Robusta</h2>
-<p>Cuando existen valores atípicos en el dataset, la media (<span class="math inline">\(\mu\)</span>) y la matriz de covarianza (<span class="math inline">\(\Sigma\)</span>) se ven distorsionadas, lo que puede causar que los <em>outliers</em> pasen desapercibidos (efecto de enmascaramiento). ### Fórmula Matemática</p>
+<p>Cuando existen valores atípicos en el dataset, la media (<span class="math inline">\(\mu\)</span>) y la matriz de covarianza (<span class="math inline">\(\Sigma\)</span>) se ven distorsionadas, lo que puede causar que los <em>outliers</em> pasen desapercibidos (efecto de enmascaramiento).</p>
+<section id="fórmula-matemática" class="level3">
+<h3 class="anchored" data-anchor-id="fórmula-matemática">Fórmula Matemática</h3>
 <p>La estructura de la fórmula se mantiene, pero sustituye los estimadores clásicos por otros de <strong>alto punto de ruptura</strong> (usualmente <em>Minimum Covariance Determinant</em> - MCD):</p>
 <p><span class="math display">\[D^2_{robusta} = (x - \hat{\mu}_{MCD})^T \hat{\Sigma}_{MCD}^{-1} (x - \hat{\mu}_{MCD})\]</span></p>
 <p><strong>Donde:</strong></p>
@@ -218,6 +220,7 @@ window.Quarto = {
 <li><strong><span class="math inline">\(\hat{\mu}_{MCD}\)</span></strong>: Es el vector de centros calculado solo con el subconjunto de datos más “coherente” (el subconjunto que minimiza el determinante de la covarianza).</li>
 <li><strong><span class="math inline">\(\hat{\Sigma}_{MCD}^{-1}\)</span></strong>: Es la inversa de la matriz de covarianza robusta, menos sensible a valores extremos.</li>
 </ul>
+</section>
 <section id="por-qué-usar-la-versión-robusta" class="level3">
 <h3 class="anchored" data-anchor-id="por-qué-usar-la-versión-robusta">¿Por qué usar la versión Robusta?</h3>
 <ol type="1">
@@ -225,87 +228,6 @@ window.Quarto = {
 <li><strong>Identificación Confiable</strong>: Permite detectar grupos de outliers que, de otro modo, parecerían puntos normales debido a su propia influencia en la varianza global.</li>
 </ol>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Código</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Datos simulados</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Agrego outliers</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>outliers <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>), <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>), <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">6</span>))</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rbind</span>(x, outliers)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Mahalanobis clásica</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>center_classic <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(x)</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>cov_classic <span class="ot">&lt;-</span> <span class="fu">cov</span>(x)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Mahalanobis robusta (MCD)</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>cov_rob <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">cov.rob</span>(x, <span class="at">method =</span> <span class="st">"mcd"</span>)</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>center_rob <span class="ot">&lt;-</span> cov_rob<span class="sc">$</span>center</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>cov_robust <span class="ot">&lt;-</span> cov_rob<span class="sc">$</span>cov</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Función para dibujar elipse</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>ellipse_points <span class="ot">&lt;-</span> <span class="cf">function</span>(center, cov, <span class="at">level =</span> <span class="fl">0.975</span>, <span class="at">npoints =</span> <span class="dv">100</span>) {</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="sc">*</span>pi, <span class="at">length.out =</span> npoints)</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  circle <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">cos</span>(theta), <span class="fu">sin</span>(theta))</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># radio basado en chi-cuadrado</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">qchisq</span>(level, <span class="at">df =</span> <span class="dv">2</span>))</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># descomposición</span></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  eig <span class="ot">&lt;-</span> <span class="fu">eigen</span>(cov)</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  shape <span class="ot">&lt;-</span> eig<span class="sc">$</span>vectors <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="fu">sqrt</span>(eig<span class="sc">$</span>values)) <span class="sc">*</span> radius</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>  ellipse <span class="ot">&lt;-</span> <span class="fu">t</span>(center <span class="sc">+</span> <span class="fu">t</span>(circle <span class="sc">%*%</span> shape))</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(ellipse)</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>ell_classic <span class="ot">&lt;-</span> <span class="fu">ellipse_points</span>(center_classic, cov_classic)</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>ell_robust  <span class="ot">&lt;-</span> <span class="fu">ellipse_points</span>(center_rob, cov_robust)</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Gráfico</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"gray30"</span>,</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Mahalanobis clásica vs robusta"</span>,</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"X1"</span>, <span class="at">ylab =</span> <span class="st">"X2"</span>,</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">6</span>), </span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">6</span>))</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co"># outliers en rojo</span></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(outliers, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">1.3</span>)</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="co"># elipse clásica</span></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(ell_classic, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="co"># elipse robusta</span></span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(ell_robust, <span class="at">col =</span> <span class="st">"darkgreen"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="co"># centros</span></span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(center_classic[<span class="dv">1</span>], center_classic[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">pch =</span> <span class="dv">4</span>, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(center_rob[<span class="dv">1</span>], center_rob[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">"darkgreen"</span>, <span class="at">pch =</span> <span class="dv">4</span>, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Datos"</span>, <span class="st">"Outliers"</span>, <span class="st">"Elipse clásica"</span>, <span class="st">"Elipse robusta"</span>),</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"gray30"</span>, <span class="st">"red"</span>, <span class="st">"blue"</span>, <span class="st">"darkgreen"</span>),</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">19</span>, <span class="dv">19</span>, <span class="cn">NA</span>, <span class="cn">NA</span>),</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -318,74 +240,92 @@ window.Quarto = {
 </section>
 <section id="calculos-en-r" class="level2">
 <h2 class="anchored" data-anchor-id="calculos-en-r">Calculos en R</h2>
-<p>Creamos una función que calcula la distancia de Mahalanobis clásica y su versión robusta. Para identificar los posibles outliers se aplica un test estadístico. La distancia de Mahalanobis al cuadrado sigue una chi-cuadrado con tantos grados de libertad como variables del dataset.</p>
+<p>Creamos una función que calcula la distancia de Mahalanobis clásica y su versión robusta. Para identificar los posibles outliers se aplica un test estadístico. Recordemos que la distancia de Mahalanobis al cuadrado sigue una chi-cuadrado con tantos grados de libertad como variables del dataset.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>detectar_outliers_mahalanobis <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># nos quedamos con columnas numéricas para el cálculo</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      df_original <span class="ot">&lt;-</span> .</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      df_num <span class="ot">&lt;-</span> <span class="fu">select_if</span>(df, is.numeric)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(df_num)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis clásica</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      center_classic <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(df_num, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      cov_classic <span class="ot">&lt;-</span> <span class="fu">cov</span>(df_num, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      dist_classic <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, center_classic, cov_classic)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis robusta (MCD)</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>      cov_rob <span class="ot">&lt;-</span> robustbase<span class="sc">::</span><span class="fu">covMcd</span>(df_num)</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      dist_rob <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, cov_rob<span class="sc">$</span>center, cov_rob<span class="sc">$</span>cov)</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Umbral</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>      threshold <span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span> <span class="sc">-</span> alpha, <span class="at">df =</span> p)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Bind de resultados</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>      df_original <span class="sc">%&gt;%</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis =</span> dist_classic,</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis_rob =</span> dist_rob,</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_classic =</span> dist_mahalanobis <span class="sc">&gt;</span> threshold,</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_robust =</span> dist_mahalanobis_rob <span class="sc">&gt;</span> threshold</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>detectar_outliers_mahalanobis <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">alpha =</span> <span class="fl">0.01</span>) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># nos quedamos con columnas numéricas para el cálculo</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      df_original <span class="ot">&lt;-</span> .</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      df_num <span class="ot">&lt;-</span> <span class="fu">select_if</span>(df, is.numeric)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(df_num)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis clásica</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      center_classic <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(df_num, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>      cov_classic <span class="ot">&lt;-</span> <span class="fu">cov</span>(df_num, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>      dist_classic <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, center_classic, cov_classic)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis robusta (MCD)</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      cov_rob <span class="ot">&lt;-</span> robustbase<span class="sc">::</span><span class="fu">covMcd</span>(df_num, </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">alpha=</span> <span class="fl">0.75</span>)<span class="co"># controla qué fracción del dataset se usa       para estimar Σ. Si se sube alpha se usan más datos. El default es 0.5. </span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>      dist_rob <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, cov_rob<span class="sc">$</span>center, cov_rob<span class="sc">$</span>cov)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Umbral</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>      threshold <span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span> <span class="sc">-</span> alpha, <span class="at">df =</span> p)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Bind de resultados</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>      df_original <span class="sc">%&gt;%</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis =</span> dist_classic,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis_rob =</span> dist_rob,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_classic =</span> dist_mahalanobis <span class="sc">&gt;</span> threshold,</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_robust =</span> dist_mahalanobis_rob <span class="sc">&gt;</span> threshold</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="ot">&lt;-</span> df_num <span class="sc">|&gt;</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">detectar_outliers_mahalanobis</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="ot">&lt;-</span> df_num <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">detectar_outliers_mahalanobis</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_robust <span class="sc">&amp;</span> <span class="sc">!</span>outlier_classic) <span class="sc">%&gt;%</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis robusta"</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_total =</span> <span class="fu">n</span>(),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">outliers_classic =</span> <span class="fu">sum</span>(outlier_classic, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">outliers_robust =</span> <span class="fu">sum</span>(outlier_robust, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_classic =</span> <span class="fu">mean</span>(outlier_classic, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_robust =</span> <span class="fu">mean</span>(outlier_robust, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  n_total outliers_classic outliers_robust prop_classic prop_robust
+1     350               38             140    0.1085714         0.4</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Código</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_robust <span class="sc">&amp;</span> <span class="sc">!</span>outlier_classic) <span class="sc">%&gt;%</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis robusta"</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -424,6 +364,36 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: right;">78789</td>
+<td style="text-align: right;">667</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">850</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">22.88068</td>
+<td style="text-align: right;">512.7117</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">83512</td>
+<td style="text-align: right;">1060</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">835</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">20.18860</td>
+<td style="text-align: right;">465.2063</td>
+</tr>
+<tr class="odd">
 <td style="text-align: right;">75345</td>
 <td style="text-align: right;">918</td>
 <td style="text-align: right;">57</td>
@@ -436,22 +406,52 @@ window.Quarto = {
 <td style="text-align: right;">8</td>
 <td style="text-align: right;">50</td>
 <td style="text-align: right;">17.05057</td>
-<td style="text-align: right;">2544.824</td>
+<td style="text-align: right;">427.6317</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">79930</td>
-<td style="text-align: right;">792</td>
-<td style="text-align: right;">86</td>
-<td style="text-align: right;">740</td>
-<td style="text-align: right;">67</td>
-<td style="text-align: right;">51</td>
-<td style="text-align: right;">17</td>
+<td style="text-align: right;">66636</td>
+<td style="text-align: right;">291</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">689</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">48</td>
-<td style="text-align: right;">14.18627</td>
-<td style="text-align: right;">1967.833</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">19.62602</td>
+<td style="text-align: right;">423.9974</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">90687</td>
+<td style="text-align: right;">982</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">672</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">24.52823</td>
+<td style="text-align: right;">345.5018</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">79689</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">640</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">22.77789</td>
+<td style="text-align: right;">344.7375</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">90765</td>
@@ -466,112 +466,52 @@ window.Quarto = {
 <td style="text-align: right;">6</td>
 <td style="text-align: right;">50</td>
 <td style="text-align: right;">15.45844</td>
-<td style="text-align: right;">1882.608</td>
+<td style="text-align: right;">341.3057</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">88420</td>
-<td style="text-align: right;">957</td>
-<td style="text-align: right;">153</td>
-<td style="text-align: right;">612</td>
-<td style="text-align: right;">99</td>
-<td style="text-align: right;">95</td>
-<td style="text-align: right;">153</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">31</td>
-<td style="text-align: right;">19.54342</td>
-<td style="text-align: right;">1634.577</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">66636</td>
-<td style="text-align: right;">291</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">689</td>
-<td style="text-align: right;">84</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: right;">79930</td>
+<td style="text-align: right;">792</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">740</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">17</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">63</td>
-<td style="text-align: right;">19.62602</td>
-<td style="text-align: right;">1560.117</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">76542</td>
-<td style="text-align: right;">794</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: right;">573</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">29</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">64</td>
-<td style="text-align: right;">17.52892</td>
-<td style="text-align: right;">1294.317</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">94472</td>
-<td style="text-align: right;">1017</td>
-<td style="text-align: right;">33</td>
-<td style="text-align: right;">417</td>
-<td style="text-align: right;">108</td>
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">16</td>
-<td style="text-align: right;">1</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">62</td>
-<td style="text-align: right;">14.16395</td>
-<td style="text-align: right;">1230.371</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">74214</td>
-<td style="text-align: right;">863</td>
-<td style="text-align: right;">83</td>
-<td style="text-align: right;">547</td>
-<td style="text-align: right;">86</td>
-<td style="text-align: right;">99</td>
-<td style="text-align: right;">33</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">30</td>
-<td style="text-align: right;">19.53697</td>
-<td style="text-align: right;">1209.788</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">81044</td>
-<td style="text-align: right;">450</td>
-<td style="text-align: right;">26</td>
-<td style="text-align: right;">535</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: right;">98</td>
-<td style="text-align: right;">26</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: right;">15.12174</td>
-<td style="text-align: right;">1114.538</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">68281</td>
-<td style="text-align: right;">995</td>
-<td style="text-align: right;">112</td>
-<td style="text-align: right;">417</td>
-<td style="text-align: right;">42</td>
 <td style="text-align: right;">48</td>
-<td style="text-align: right;">41</td>
+<td style="text-align: right;">14.18627</td>
+<td style="text-align: right;">330.8480</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">92910</td>
+<td style="text-align: right;">551</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">792</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">103</td>
+<td style="text-align: right;">33</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: right;">62</td>
-<td style="text-align: right;">19.26593</td>
-<td style="text-align: right;">1097.926</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">20.48380</td>
+<td style="text-align: right;">273.5769</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">80685</td>
+<td style="text-align: right;">241</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">604</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">22.07966</td>
+<td style="text-align: right;">262.2489</td>
 </tr>
 </tbody>
 </table>
@@ -580,14 +520,14 @@ window.Quarto = {
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_classic) <span class="sc">%&gt;%</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis clasico"</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_classic) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis clasico"</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -638,67 +578,7 @@ window.Quarto = {
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">75</td>
 <td style="text-align: right;">143.15548</td>
-<td style="text-align: right;">4431.478</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">82332</td>
-<td style="text-align: right;">830</td>
-<td style="text-align: right;">59</td>
-<td style="text-align: right;">968</td>
-<td style="text-align: right;">51</td>
-<td style="text-align: right;">79</td>
-<td style="text-align: right;">19</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">59</td>
-<td style="text-align: right;">31.74230</td>
-<td style="text-align: right;">3591.226</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">77632</td>
-<td style="text-align: right;">1200</td>
-<td style="text-align: right;">105</td>
-<td style="text-align: right;">758</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">42</td>
-<td style="text-align: right;">147</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">73</td>
-<td style="text-align: right;">40.17409</td>
-<td style="text-align: right;">3210.423</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">78789</td>
-<td style="text-align: right;">667</td>
-<td style="text-align: right;">50</td>
-<td style="text-align: right;">850</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: right;">83</td>
-<td style="text-align: right;">83</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">40</td>
-<td style="text-align: right;">22.88068</td>
-<td style="text-align: right;">2774.011</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">83512</td>
-<td style="text-align: right;">1060</td>
-<td style="text-align: right;">61</td>
-<td style="text-align: right;">835</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">101</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">34</td>
-<td style="text-align: right;">20.18860</td>
-<td style="text-align: right;">2751.151</td>
+<td style="text-align: right;">1429.6282</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">69209</td>
@@ -713,9 +593,24 @@ window.Quarto = {
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">48</td>
 <td style="text-align: right;">35.74805</td>
-<td style="text-align: right;">2723.943</td>
+<td style="text-align: right;">691.4897</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">82332</td>
+<td style="text-align: right;">830</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">968</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">31.74230</td>
+<td style="text-align: right;">677.4588</td>
+</tr>
+<tr class="even">
 <td style="text-align: right;">72159</td>
 <td style="text-align: right;">322</td>
 <td style="text-align: right;">53</td>
@@ -728,24 +623,54 @@ window.Quarto = {
 <td style="text-align: right;">6</td>
 <td style="text-align: right;">42</td>
 <td style="text-align: right;">28.51416</td>
-<td style="text-align: right;">2539.629</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">92163</td>
-<td style="text-align: right;">817</td>
-<td style="text-align: right;">183</td>
-<td style="text-align: right;">797</td>
-<td style="text-align: right;">106</td>
-<td style="text-align: right;">163</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: right;">32.90746</td>
-<td style="text-align: right;">2347.113</td>
+<td style="text-align: right;">628.2311</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">70932</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">193</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">53.57821</td>
+<td style="text-align: right;">602.0968</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">64857</td>
+<td style="text-align: right;">556</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">717</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">33.63807</td>
+<td style="text-align: right;">595.6937</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">77632</td>
+<td style="text-align: right;">1200</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">758</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">40.17409</td>
+<td style="text-align: right;">565.5157</td>
+</tr>
+<tr class="even">
 <td style="text-align: right;">69930</td>
 <td style="text-align: right;">252</td>
 <td style="text-align: right;">98</td>
@@ -758,27 +683,53 @@ window.Quarto = {
 <td style="text-align: right;">5</td>
 <td style="text-align: right;">49</td>
 <td style="text-align: right;">31.74626</td>
-<td style="text-align: right;">2053.013</td>
+<td style="text-align: right;">488.5233</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">78931</td>
+<td style="text-align: right;">331</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">152</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">39.68102</td>
+<td style="text-align: right;">435.9053</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">90687</td>
-<td style="text-align: right;">982</td>
-<td style="text-align: right;">17</td>
-<td style="text-align: right;">672</td>
+<td style="text-align: right;">77583</td>
+<td style="text-align: right;">372</td>
 <td style="text-align: right;">23</td>
-<td style="text-align: right;">34</td>
-<td style="text-align: right;">51</td>
+<td style="text-align: right;">384</td>
+<td style="text-align: right;">250</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">108</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">37</td>
-<td style="text-align: right;">24.52823</td>
-<td style="text-align: right;">2006.125</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">31.34788</td>
+<td style="text-align: right;">400.6886</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+</section>
+<section id="por-qué-se-observan-tantos-outliers-con-el-método-robusto" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-se-observan-tantos-outliers-con-el-método-robusto">¿Por qué se observan tantos outliers con el método robusto</h2>
+<ul>
+<li><p><strong>Multimodalidad (Varios Grupos):</strong> El algoritmo MCD busca la “nube” de datos más densa y única. Si el dataset tiene subgrupos (ej. “éxito” vs.&nbsp;“fracaso”), el modelo se anclará en uno y marcará a los demás grupos enteros como outliers, aunque sean datos correctos.</p></li>
+<li><p><strong>Parámetro <span class="math inline">\(\alpha\)</span> muy estricto:</strong> Un <span class="math inline">\(\alpha = 0.5\)</span> en la función <code>covMcd</code> obliga al algoritmo a calcular el centro usando solo la mitad de los datos. Esto lo hace sensible a la variabilidad natural del dataset.</p></li>
+<li><p><strong>Supuesto de Normalidad:</strong> El método asume que el núcleo de los datos sigue una distribución normal multivariada.</p></li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Conclusión:</strong> Una gran cantidad de outliers suele indicar que el dataset no es una sola población uniforme, sino que existen múltiples grupos o distribuciones que no son normales.</p>
+</blockquote>
 <!-- -->
 
 </section>
@@ -1256,267 +1207,290 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Ejecutar el código</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb8" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Distancia de Mahalanobis"</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela E. Pairo"</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme:  flatly</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(echo = TRUE)</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(message = FALSE)</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = FALSE)</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>Cargamos la base de datos que utilizamos para PCA.</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">"ifood_df.csv"</span>)</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>Trabajamos unicamente con una muestra.</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>) </span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>df_sample <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">distinct</span>(df) <span class="sc">|&gt;</span> <span class="co">#elimino datos repetidos</span></span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>           <span class="fu">sample_n</span>(<span class="dv">350</span>)</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>df_num <span class="ot">&lt;-</span> df_sample <span class="sc">|&gt;</span> </span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(<span class="dv">1</span>, <span class="dv">5</span><span class="sc">:</span><span class="dv">13</span>, <span class="dv">25</span>)<span class="co">#selecciono columnas de interes </span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="fu">## Distancia de Mahalanobis</span></span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>$D_M(X, Y) = \sqrt{(X- Y)^T \Sigma^{-1} (X - Y)}$</span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$X$: variable aleatoria X</span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$Y$: variable aleatoria Y</span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\Sigma$: matriz de covarianza</span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## Distancia de Mahalanobis en R</span></span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>La función <span class="in">`mahalanobis()`</span> en R calcula el cuadrado de la distancia de Mahalanobis ($D^2$), la cual mide la separación entre un punto y el centro de una distribución multivariada, ajustándose según la correlación entre variables.</span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fórmula Matemática aplicada por R</span></span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>La métrica devuelta por la función estándar de R es:</span>
-<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>$$D^2 = (x - \mu)^T \Sigma^{-1} (x - \mu)$$</span>
-<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>**Donde:**</span>
-<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$x$**: Es el vector de una observación (una fila, es decir un cliente).</span>
-<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\mu$**: Es el vector de medias (centroide) de todas las variables.</span>
-<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\Sigma^{-1}$**: Es la inversa de la matriz de varianza-covarianza.</span>
-<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$(x - \mu)^T$**: Es la transpuesta de la diferencia entre el individuo y el centro.</span>
-<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a><span class="fu">### A tener en cuenta</span></span>
-<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Estandarización Automática**: A diferencia de la distancia euclídea, Mahalanobis utiliza la matriz $\Sigma^{-1}$ para normalizar las escalas de las variables.</span>
-<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Descorrelación**: Al considerar la covarianza, la fórmula "elimina" la redundancia entre variables altamente correlacionadas.</span>
-<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Interpretación Estadística**: El resultado $D^2$ sigue una distribución **Chi-cuadrado** ($\chi^2$) con $p$ grados de libertad (donde $p$ es el número de variables), lo que permite realizar tests de detección de *outliers*.</span>
-<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Nota:** La función </span><span class="in">`mahalanobis()`</span><span class="at"> en R devuelve el valor al cuadrado. Para obtener la distancia lineal, se debe aplicar la raíz cuadrada: $\sqrt{D^2}$.</span></span>
-<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a><span class="fu">## Distancia de Mahalanobis Robusta</span></span>
-<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>Cuando existen valores atípicos en el dataset, la media ($\mu$) y la matriz de covarianza ($\Sigma$) se ven distorsionadas, lo que puede causar que los *outliers* pasen desapercibidos (efecto de enmascaramiento). </span>
-<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a><span class="fu">### Fórmula Matemática</span></span>
-<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a>La estructura de la fórmula se mantiene, pero sustituye los estimadores clásicos por otros de **alto punto de ruptura** (usualmente *Minimum Covariance Determinant* - MCD):</span>
-<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a>$$D^2_{robusta} = (x - \hat{\mu}_{MCD})^T \hat{\Sigma}_{MCD}^{-1} (x - \hat{\mu}_{MCD})$$</span>
-<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a>**Donde:**</span>
-<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\hat{\mu}_{MCD}$**: Es el vector de centros calculado solo con el subconjunto de datos más "coherente" (el subconjunto que minimiza el determinante de la covarianza).</span>
-<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\hat{\Sigma}_{MCD}^{-1}$**: Es la inversa de la matriz de covarianza robusta, menos sensible a valores extremos.</span>
-<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a><span class="fu">### ¿Por qué usar la versión Robusta?</span></span>
-<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Efecto Enmascaramiento**: En la distancia clásica, un outlier muy extremo "arrastra" la media hacia él, disminuyendo artificialmente su propia distancia. La versión robusta ignora esos puntos para definir el centro real.</span>
-<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Identificación Confiable**: Permite detectar grupos de outliers que, de otro modo, parecerían puntos normales debido a su propia influencia en la varianza global.</span>
-<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Datos simulados</span></span>
-<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
-<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>),</span>
-<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a><span class="co"># Agrego outliers</span></span>
-<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a>outliers <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>), <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>), <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">6</span>))</span>
-<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rbind</span>(x, outliers)</span>
-<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Mahalanobis clásica</span></span>
-<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a>center_classic <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(x)</span>
-<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a>cov_classic <span class="ot">&lt;-</span> <span class="fu">cov</span>(x)</span>
-<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-128"><a href="#cb8-128" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Mahalanobis robusta (MCD)</span></span>
-<span id="cb8-129"><a href="#cb8-129" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a>cov_rob <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">cov.rob</span>(x, <span class="at">method =</span> <span class="st">"mcd"</span>)</span>
-<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a>center_rob <span class="ot">&lt;-</span> cov_rob<span class="sc">$</span>center</span>
-<span id="cb8-133"><a href="#cb8-133" aria-hidden="true" tabindex="-1"></a>cov_robust <span class="ot">&lt;-</span> cov_rob<span class="sc">$</span>cov</span>
-<span id="cb8-134"><a href="#cb8-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-135"><a href="#cb8-135" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-136"><a href="#cb8-136" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Función para dibujar elipse</span></span>
-<span id="cb8-137"><a href="#cb8-137" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-138"><a href="#cb8-138" aria-hidden="true" tabindex="-1"></a>ellipse_points <span class="ot">&lt;-</span> <span class="cf">function</span>(center, cov, <span class="at">level =</span> <span class="fl">0.975</span>, <span class="at">npoints =</span> <span class="dv">100</span>) {</span>
-<span id="cb8-139"><a href="#cb8-139" aria-hidden="true" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="sc">*</span>pi, <span class="at">length.out =</span> npoints)</span>
-<span id="cb8-140"><a href="#cb8-140" aria-hidden="true" tabindex="-1"></a>  circle <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">cos</span>(theta), <span class="fu">sin</span>(theta))</span>
-<span id="cb8-141"><a href="#cb8-141" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-142"><a href="#cb8-142" aria-hidden="true" tabindex="-1"></a>  <span class="co"># radio basado en chi-cuadrado</span></span>
-<span id="cb8-143"><a href="#cb8-143" aria-hidden="true" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">qchisq</span>(level, <span class="at">df =</span> <span class="dv">2</span>))</span>
-<span id="cb8-144"><a href="#cb8-144" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-145"><a href="#cb8-145" aria-hidden="true" tabindex="-1"></a>  <span class="co"># descomposición</span></span>
-<span id="cb8-146"><a href="#cb8-146" aria-hidden="true" tabindex="-1"></a>  eig <span class="ot">&lt;-</span> <span class="fu">eigen</span>(cov)</span>
-<span id="cb8-147"><a href="#cb8-147" aria-hidden="true" tabindex="-1"></a>  shape <span class="ot">&lt;-</span> eig<span class="sc">$</span>vectors <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="fu">sqrt</span>(eig<span class="sc">$</span>values)) <span class="sc">*</span> radius</span>
-<span id="cb8-148"><a href="#cb8-148" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-149"><a href="#cb8-149" aria-hidden="true" tabindex="-1"></a>  ellipse <span class="ot">&lt;-</span> <span class="fu">t</span>(center <span class="sc">+</span> <span class="fu">t</span>(circle <span class="sc">%*%</span> shape))</span>
-<span id="cb8-150"><a href="#cb8-150" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(ellipse)</span>
-<span id="cb8-151"><a href="#cb8-151" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-152"><a href="#cb8-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-153"><a href="#cb8-153" aria-hidden="true" tabindex="-1"></a>ell_classic <span class="ot">&lt;-</span> <span class="fu">ellipse_points</span>(center_classic, cov_classic)</span>
-<span id="cb8-154"><a href="#cb8-154" aria-hidden="true" tabindex="-1"></a>ell_robust  <span class="ot">&lt;-</span> <span class="fu">ellipse_points</span>(center_rob, cov_robust)</span>
-<span id="cb8-155"><a href="#cb8-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-156"><a href="#cb8-156" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-157"><a href="#cb8-157" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Gráfico</span></span>
-<span id="cb8-158"><a href="#cb8-158" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------</span></span>
-<span id="cb8-159"><a href="#cb8-159" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"gray30"</span>,</span>
-<span id="cb8-160"><a href="#cb8-160" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Mahalanobis clásica vs robusta"</span>,</span>
-<span id="cb8-161"><a href="#cb8-161" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"X1"</span>, <span class="at">ylab =</span> <span class="st">"X2"</span>,</span>
-<span id="cb8-162"><a href="#cb8-162" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">6</span>), </span>
-<span id="cb8-163"><a href="#cb8-163" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">6</span>))</span>
-<span id="cb8-164"><a href="#cb8-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-165"><a href="#cb8-165" aria-hidden="true" tabindex="-1"></a><span class="co"># outliers en rojo</span></span>
-<span id="cb8-166"><a href="#cb8-166" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(outliers, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">1.3</span>)</span>
-<span id="cb8-167"><a href="#cb8-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-168"><a href="#cb8-168" aria-hidden="true" tabindex="-1"></a><span class="co"># elipse clásica</span></span>
-<span id="cb8-169"><a href="#cb8-169" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(ell_classic, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb8-170"><a href="#cb8-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-171"><a href="#cb8-171" aria-hidden="true" tabindex="-1"></a><span class="co"># elipse robusta</span></span>
-<span id="cb8-172"><a href="#cb8-172" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(ell_robust, <span class="at">col =</span> <span class="st">"darkgreen"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb8-173"><a href="#cb8-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-174"><a href="#cb8-174" aria-hidden="true" tabindex="-1"></a><span class="co"># centros</span></span>
-<span id="cb8-175"><a href="#cb8-175" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(center_classic[<span class="dv">1</span>], center_classic[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">pch =</span> <span class="dv">4</span>, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb8-176"><a href="#cb8-176" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(center_rob[<span class="dv">1</span>], center_rob[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">"darkgreen"</span>, <span class="at">pch =</span> <span class="dv">4</span>, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb8-177"><a href="#cb8-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-178"><a href="#cb8-178" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,</span>
-<span id="cb8-179"><a href="#cb8-179" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Datos"</span>, <span class="st">"Outliers"</span>, <span class="st">"Elipse clásica"</span>, <span class="st">"Elipse robusta"</span>),</span>
-<span id="cb8-180"><a href="#cb8-180" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"gray30"</span>, <span class="st">"red"</span>, <span class="st">"blue"</span>, <span class="st">"darkgreen"</span>),</span>
-<span id="cb8-181"><a href="#cb8-181" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">19</span>, <span class="dv">19</span>, <span class="cn">NA</span>, <span class="cn">NA</span>),</span>
-<span id="cb8-182"><a href="#cb8-182" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb8-183"><a href="#cb8-183" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb8-184"><a href="#cb8-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-185"><a href="#cb8-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-186"><a href="#cb8-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-187"><a href="#cb8-187" aria-hidden="true" tabindex="-1"></a><span class="fu">## Calculos en R</span></span>
-<span id="cb8-188"><a href="#cb8-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-189"><a href="#cb8-189" aria-hidden="true" tabindex="-1"></a>Creamos una función que calcula la distancia de Mahalanobis clásica y su versión robusta. Para identificar los posibles outliers se aplica un test estadístico. La distancia de Mahalanobis al cuadrado sigue una chi-cuadrado con tantos grados de libertad como variables del dataset.</span>
-<span id="cb8-190"><a href="#cb8-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-193"><a href="#cb8-193" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb8-194"><a href="#cb8-194" aria-hidden="true" tabindex="-1"></a>detectar_outliers_mahalanobis <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
-<span id="cb8-195"><a href="#cb8-195" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-196"><a href="#cb8-196" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
-<span id="cb8-197"><a href="#cb8-197" aria-hidden="true" tabindex="-1"></a>    <span class="co"># nos quedamos con columnas numéricas para el cálculo</span></span>
-<span id="cb8-198"><a href="#cb8-198" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb8-199"><a href="#cb8-199" aria-hidden="true" tabindex="-1"></a>      df_original <span class="ot">&lt;-</span> .</span>
-<span id="cb8-200"><a href="#cb8-200" aria-hidden="true" tabindex="-1"></a>      df_num <span class="ot">&lt;-</span> <span class="fu">select_if</span>(df, is.numeric)</span>
-<span id="cb8-201"><a href="#cb8-201" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb8-202"><a href="#cb8-202" aria-hidden="true" tabindex="-1"></a>      p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(df_num)</span>
-<span id="cb8-203"><a href="#cb8-203" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb8-204"><a href="#cb8-204" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-205"><a href="#cb8-205" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis clásica</span></span>
-<span id="cb8-206"><a href="#cb8-206" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-207"><a href="#cb8-207" aria-hidden="true" tabindex="-1"></a>      center_classic <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(df_num, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb8-208"><a href="#cb8-208" aria-hidden="true" tabindex="-1"></a>      cov_classic <span class="ot">&lt;-</span> <span class="fu">cov</span>(df_num, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
-<span id="cb8-209"><a href="#cb8-209" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb8-210"><a href="#cb8-210" aria-hidden="true" tabindex="-1"></a>      dist_classic <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, center_classic, cov_classic)</span>
-<span id="cb8-211"><a href="#cb8-211" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb8-212"><a href="#cb8-212" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-213"><a href="#cb8-213" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis robusta (MCD)</span></span>
-<span id="cb8-214"><a href="#cb8-214" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-215"><a href="#cb8-215" aria-hidden="true" tabindex="-1"></a>      cov_rob <span class="ot">&lt;-</span> robustbase<span class="sc">::</span><span class="fu">covMcd</span>(df_num)</span>
-<span id="cb8-216"><a href="#cb8-216" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb8-217"><a href="#cb8-217" aria-hidden="true" tabindex="-1"></a>      dist_rob <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, cov_rob<span class="sc">$</span>center, cov_rob<span class="sc">$</span>cov)</span>
-<span id="cb8-218"><a href="#cb8-218" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb8-219"><a href="#cb8-219" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-220"><a href="#cb8-220" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Umbral</span></span>
-<span id="cb8-221"><a href="#cb8-221" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-222"><a href="#cb8-222" aria-hidden="true" tabindex="-1"></a>      threshold <span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span> <span class="sc">-</span> alpha, <span class="at">df =</span> p)</span>
-<span id="cb8-223"><a href="#cb8-223" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb8-224"><a href="#cb8-224" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-225"><a href="#cb8-225" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Bind de resultados</span></span>
-<span id="cb8-226"><a href="#cb8-226" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
-<span id="cb8-227"><a href="#cb8-227" aria-hidden="true" tabindex="-1"></a>      df_original <span class="sc">%&gt;%</span></span>
-<span id="cb8-228"><a href="#cb8-228" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(</span>
-<span id="cb8-229"><a href="#cb8-229" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis =</span> dist_classic,</span>
-<span id="cb8-230"><a href="#cb8-230" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis_rob =</span> dist_rob,</span>
-<span id="cb8-231"><a href="#cb8-231" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_classic =</span> dist_mahalanobis <span class="sc">&gt;</span> threshold,</span>
-<span id="cb8-232"><a href="#cb8-232" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_robust =</span> dist_mahalanobis_rob <span class="sc">&gt;</span> threshold</span>
-<span id="cb8-233"><a href="#cb8-233" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb8-234"><a href="#cb8-234" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb8-235"><a href="#cb8-235" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-236"><a href="#cb8-236" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-237"><a href="#cb8-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-240"><a href="#cb8-240" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb8-241"><a href="#cb8-241" aria-hidden="true" tabindex="-1"></a>df_out <span class="ot">&lt;-</span> df_num <span class="sc">|&gt;</span> </span>
-<span id="cb8-242"><a href="#cb8-242" aria-hidden="true" tabindex="-1"></a>  <span class="fu">detectar_outliers_mahalanobis</span>()</span>
-<span id="cb8-243"><a href="#cb8-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-244"><a href="#cb8-244" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-245"><a href="#cb8-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-248"><a href="#cb8-248" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb8-249"><a href="#cb8-249" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb8-250"><a href="#cb8-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-251"><a href="#cb8-251" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
-<span id="cb8-252"><a href="#cb8-252" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_robust <span class="sc">&amp;</span> <span class="sc">!</span>outlier_classic) <span class="sc">%&gt;%</span></span>
-<span id="cb8-253"><a href="#cb8-253" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
-<span id="cb8-254"><a href="#cb8-254" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
-<span id="cb8-255"><a href="#cb8-255" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-256"><a href="#cb8-256" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb8-257"><a href="#cb8-257" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis robusta"</span></span>
-<span id="cb8-258"><a href="#cb8-258" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-259"><a href="#cb8-259" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-260"><a href="#cb8-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-261"><a href="#cb8-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-264"><a href="#cb8-264" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb8-265"><a href="#cb8-265" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
-<span id="cb8-266"><a href="#cb8-266" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_classic) <span class="sc">%&gt;%</span></span>
-<span id="cb8-267"><a href="#cb8-267" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
-<span id="cb8-268"><a href="#cb8-268" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
-<span id="cb8-269"><a href="#cb8-269" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-270"><a href="#cb8-270" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb8-271"><a href="#cb8-271" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis clasico"</span></span>
-<span id="cb8-272"><a href="#cb8-272" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-273"><a href="#cb8-273" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb8-274"><a href="#cb8-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-275"><a href="#cb8-275" aria-hidden="true" tabindex="-1"></a></span>
+<div class="sourceCode" id="cb9" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Distancia de Mahalanobis"</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Pamela E. Pairo"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="an">lang:</span><span class="co"> es</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">    theme:  flatly</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(echo = TRUE)</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(message = FALSE)</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(warning = FALSE)</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>Cargamos la base de datos que utilizamos para PCA.</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">"ifood_df.csv"</span>)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>Trabajamos unicamente con una muestra.</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>) </span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>df_num <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">distinct</span>(df) <span class="sc">|&gt;</span> <span class="co">#elimino datos repetidos</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>           <span class="fu">sample_n</span>(<span class="dv">350</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>           dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span><span class="sc">:</span><span class="dv">13</span>, <span class="dv">25</span>))<span class="co">#selecciono columnas de interes </span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fórmula</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>$D_M(X, Y) = \sqrt{(X- Y)^T \Sigma^{-1} (X - Y)}$</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$X$: variable aleatoria X</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$Y$: variable aleatoria Y</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\Sigma$: matriz de covarianza</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## Distancia de Mahalanobis en R</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>La función <span class="in">`mahalanobis()`</span> en R calcula el cuadrado de la distancia de Mahalanobis ($D^2$), la cual mide la separación entre un punto y el centro de una distribución multivariada, ajustándose según la correlación entre variables.</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fórmula matemática aplicada por R</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>La métrica devuelta por la función estándar de R es:</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>$$D^2 = (x - \mu)^T \Sigma^{-1} (x - \mu)$$</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>**Donde:**</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$x$**: Es el vector de una observación (una fila, es decir un cliente).</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\mu$**: Es el vector de medias (centroide) de todas las variables.</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\Sigma^{-1}$**: Es la inversa de la matriz de varianza-covarianza.</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$(x - \mu)^T$**: Es la transpuesta de la diferencia entre el individuo y el centro.</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a><span class="fu">### A tener en cuenta</span></span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Estandarización Automática**: A diferencia de la distancia euclídea, Mahalanobis utiliza la matriz $\Sigma^{-1}$ para normalizar las escalas de las variables.</span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Descorrelación**: Al considerar la covarianza, la fórmula "elimina" la redundancia entre variables altamente correlacionadas.</span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Interpretación Estadística**: El resultado $D^2$ sigue una distribución **Chi-cuadrado** ($\chi^2$) con $p$ grados de libertad (donde $p$ es el número de variables), lo que permite realizar tests de detección de *outliers*.</span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Nota:** La función </span><span class="in">`mahalanobis()`</span><span class="at"> en R devuelve el valor al cuadrado. Para obtener la distancia lineal, se debe aplicar la raíz cuadrada: $\sqrt{D^2}$.</span></span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a><span class="fu">## Distancia de Mahalanobis Robusta</span></span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a>Cuando existen valores atípicos en el dataset, la media ($\mu$) y la matriz de covarianza ($\Sigma$) se ven distorsionadas, lo que puede causar que los *outliers* pasen desapercibidos (efecto de enmascaramiento). </span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a><span class="fu">### Fórmula Matemática</span></span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>La estructura de la fórmula se mantiene, pero sustituye los estimadores clásicos por otros de **alto punto de ruptura** (usualmente *Minimum Covariance Determinant* - MCD):</span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a>$$D^2_{robusta} = (x - \hat{\mu}_{MCD})^T \hat{\Sigma}_{MCD}^{-1} (x - \hat{\mu}_{MCD})$$</span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a>**Donde:**</span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\hat{\mu}_{MCD}$**: Es el vector de centros calculado solo con el subconjunto de datos más "coherente" (el subconjunto que minimiza el determinante de la covarianza).</span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$\hat{\Sigma}_{MCD}^{-1}$**: Es la inversa de la matriz de covarianza robusta, menos sensible a valores extremos.</span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a><span class="fu">### ¿Por qué usar la versión Robusta?</span></span>
+<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Efecto Enmascaramiento**: En la distancia clásica, un outlier muy extremo "arrastra" la media hacia él, disminuyendo artificialmente su propia distancia. La versión robusta ignora esos puntos para definir el centro real.</span>
+<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Identificación Confiable**: Permite detectar grupos de outliers que, de otro modo, parecerían puntos normales debido a su propia influencia en la varianza global.</span>
+<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a><span class="in">```{r echo=FALSE}</span></span>
+<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a><span class="in"># 1. Datos simulados</span></span>
+<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a><span class="in">set.seed(123)</span></span>
+<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a><span class="in">n &lt;- 100</span></span>
+<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a><span class="in">x &lt;- cbind(</span></span>
+<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a><span class="in">  rnorm(n, mean = 0, sd = 1),</span></span>
+<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a><span class="in">  rnorm(n, mean = 0, sd = 1)</span></span>
+<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a><span class="in">)</span></span>
+<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a><span class="in"># Agrego outliers</span></span>
+<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a><span class="in">outliers &lt;- rbind(c(5, 5), c(6, 6), c(5, 6))</span></span>
+<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a><span class="in">x &lt;- rbind(x, outliers)</span></span>
+<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a><span class="in"># 2. Mahalanobis clásica</span></span>
+<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a><span class="in">center_classic &lt;- colMeans(x)</span></span>
+<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a><span class="in">cov_classic &lt;- cov(x)</span></span>
+<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a><span class="in"># 3. Mahalanobis robusta (MCD)</span></span>
+<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a><span class="in">cov_rob &lt;- MASS::cov.rob(x, method = "mcd")</span></span>
+<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a><span class="in">center_rob &lt;- cov_rob$center</span></span>
+<span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a><span class="in">cov_robust &lt;- cov_rob$cov</span></span>
+<span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a><span class="in"># 4. Función para dibujar elipse</span></span>
+<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a><span class="in">ellipse_points &lt;- function(center, cov, level = 0.975, npoints = 100) {</span></span>
+<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a><span class="in">  theta &lt;- seq(0, 2*pi, length.out = npoints)</span></span>
+<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a><span class="in">  circle &lt;- cbind(cos(theta), sin(theta))</span></span>
+<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a><span class="in">  # radio basado en chi-cuadrado</span></span>
+<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a><span class="in">  radius &lt;- sqrt(qchisq(level, df = 2))</span></span>
+<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a><span class="in">  # descomposición</span></span>
+<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a><span class="in">  eig &lt;- eigen(cov)</span></span>
+<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a><span class="in">  shape &lt;- eig$vectors %*% diag(sqrt(eig$values)) * radius</span></span>
+<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a><span class="in">  ellipse &lt;- t(center + t(circle %*% shape))</span></span>
+<span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a><span class="in">  return(ellipse)</span></span>
+<span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a><span class="in">}</span></span>
+<span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a><span class="in">ell_classic &lt;- ellipse_points(center_classic, cov_classic)</span></span>
+<span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a><span class="in">ell_robust  &lt;- ellipse_points(center_rob, cov_robust)</span></span>
+<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a><span class="in"># 5. Gráfico</span></span>
+<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a><span class="in"># -------------------------</span></span>
+<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a><span class="in">plot(x, pch = 19, col = "gray30",</span></span>
+<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a><span class="in">     main = "Mahalanobis clásica vs robusta",</span></span>
+<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a><span class="in">     xlab = "X1", ylab = "X2",</span></span>
+<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a><span class="in">     xlim = c(-5, 6), </span></span>
+<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a><span class="in">     ylim = c(-5, 6))</span></span>
+<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a><span class="in"># outliers en rojo</span></span>
+<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a><span class="in">points(outliers, col = "red", pch = 19, cex = 1.3)</span></span>
+<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a><span class="in"># elipse clásica</span></span>
+<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a><span class="in">lines(ell_classic, col = "blue", lwd = 2)</span></span>
+<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a><span class="in"># elipse robusta</span></span>
+<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a><span class="in">lines(ell_robust, col = "darkgreen", lwd = 2)</span></span>
+<span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a><span class="in"># centros</span></span>
+<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a><span class="in">points(center_classic[1], center_classic[2], col = "blue", pch = 4, cex = 2, lwd = 2)</span></span>
+<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a><span class="in">points(center_rob[1], center_rob[2], col = "darkgreen", pch = 4, cex = 2, lwd = 2)</span></span>
+<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a><span class="in">legend("topleft",</span></span>
+<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a><span class="in">       legend = c("Datos", "Outliers", "Elipse clásica", "Elipse robusta"),</span></span>
+<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a><span class="in">       col = c("gray30", "red", "blue", "darkgreen"),</span></span>
+<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a><span class="in">       pch = c(19, 19, NA, NA),</span></span>
+<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a><span class="in">       lty = c(NA, NA, 1, 1),</span></span>
+<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a><span class="in">       lwd = c(NA, NA, 2, 2))</span></span>
+<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a><span class="fu">## Calculos en R</span></span>
+<span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a>Creamos una función que calcula la distancia de Mahalanobis clásica y su versión robusta. Para identificar los posibles outliers se aplica un test estadístico. Recordemos que la distancia de Mahalanobis al cuadrado sigue una chi-cuadrado con tantos grados de libertad como variables del dataset.</span>
+<span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a>detectar_outliers_mahalanobis <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">alpha =</span> <span class="fl">0.01</span>) {</span>
+<span id="cb9-192"><a href="#cb9-192" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a>    <span class="co"># nos quedamos con columnas numéricas para el cálculo</span></span>
+<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a>      df_original <span class="ot">&lt;-</span> .</span>
+<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a>      df_num <span class="ot">&lt;-</span> <span class="fu">select_if</span>(df, is.numeric)</span>
+<span id="cb9-198"><a href="#cb9-198" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a>      p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(df_num)</span>
+<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-201"><a href="#cb9-201" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis clásica</span></span>
+<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a>      center_classic <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(df_num, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a>      cov_classic <span class="ot">&lt;-</span> <span class="fu">cov</span>(df_num, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
+<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a>      dist_classic <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, center_classic, cov_classic)</span>
+<span id="cb9-208"><a href="#cb9-208" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-209"><a href="#cb9-209" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Mahalanobis robusta (MCD)</span></span>
+<span id="cb9-211"><a href="#cb9-211" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a>      cov_rob <span class="ot">&lt;-</span> robustbase<span class="sc">::</span><span class="fu">covMcd</span>(df_num, </span>
+<span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">alpha=</span> <span class="fl">0.75</span>)<span class="co"># controla qué fracción del dataset se usa       para estimar Σ. Si se sube alpha se usan más datos. El default es 0.5. </span></span>
+<span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a>      dist_rob <span class="ot">&lt;-</span> <span class="fu">mahalanobis</span>(df_num, cov_rob<span class="sc">$</span>center, cov_rob<span class="sc">$</span>cov)</span>
+<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Umbral</span></span>
+<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a>      threshold <span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span> <span class="sc">-</span> alpha, <span class="at">df =</span> p)</span>
+<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Bind de resultados</span></span>
+<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>      <span class="co"># -------------------------</span></span>
+<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>      df_original <span class="sc">%&gt;%</span></span>
+<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(</span>
+<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis =</span> dist_classic,</span>
+<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>          <span class="at">dist_mahalanobis_rob =</span> dist_rob,</span>
+<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_classic =</span> dist_mahalanobis <span class="sc">&gt;</span> threshold,</span>
+<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a>          <span class="at">outlier_robust =</span> dist_mahalanobis_rob <span class="sc">&gt;</span> threshold</span>
+<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a>df_out <span class="ot">&lt;-</span> df_num <span class="sc">|&gt;</span> </span>
+<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a>  <span class="fu">detectar_outliers_mahalanobis</span>()</span>
+<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span></span>
+<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_total =</span> <span class="fu">n</span>(),</span>
+<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a>    <span class="at">outliers_classic =</span> <span class="fu">sum</span>(outlier_classic, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a>    <span class="at">outliers_robust =</span> <span class="fu">sum</span>(outlier_robust, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_classic =</span> <span class="fu">mean</span>(outlier_classic, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_robust =</span> <span class="fu">mean</span>(outlier_robust, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
+<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_robust <span class="sc">&amp;</span> <span class="sc">!</span>outlier_classic) <span class="sc">%&gt;%</span></span>
+<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
+<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis robusta"</span></span>
+<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-276"><a href="#cb9-276" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-277"><a href="#cb9-277" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span> </span>
+<span id="cb9-278"><a href="#cb9-278" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outlier_classic) <span class="sc">%&gt;%</span></span>
+<span id="cb9-279"><a href="#cb9-279" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(dist_mahalanobis_rob)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-280"><a href="#cb9-280" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>outlier_classic, <span class="sc">-</span>outlier_robust) <span class="sc">%&gt;%</span></span>
+<span id="cb9-281"><a href="#cb9-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-282"><a href="#cb9-282" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb9-283"><a href="#cb9-283" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Outliers detectados solo por Mahalanobis clasico"</span></span>
+<span id="cb9-284"><a href="#cb9-284" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-285"><a href="#cb9-285" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-286"><a href="#cb9-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-287"><a href="#cb9-287" aria-hidden="true" tabindex="-1"></a><span class="fu">## ¿Por qué se observan tantos outliers con el método robusto</span></span>
+<span id="cb9-288"><a href="#cb9-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-289"><a href="#cb9-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-290"><a href="#cb9-290" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Multimodalidad (Varios Grupos):** El algoritmo MCD busca la "nube" de datos más densa y única. Si el dataset tiene subgrupos (ej. "éxito" vs. "fracaso"), el modelo se anclará en uno y marcará a los demás grupos enteros como outliers, aunque sean datos correctos.</span>
+<span id="cb9-291"><a href="#cb9-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-292"><a href="#cb9-292" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Parámetro $\alpha$ muy estricto:** Un $\alpha = 0.5$ en la función <span class="in">`covMcd`</span> obliga al algoritmo a calcular el centro usando solo la mitad de los datos. Esto lo hace sensible a la variabilidad natural del dataset.</span>
+<span id="cb9-293"><a href="#cb9-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-294"><a href="#cb9-294" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Supuesto de Normalidad:** El método asume que el núcleo de los datos sigue una distribución normal multivariada. </span>
+<span id="cb9-295"><a href="#cb9-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-296"><a href="#cb9-296" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Conclusión:** Una gran cantidad de outliers suele indicar que el dataset no es una sola población uniforme, sino que existen múltiples grupos o distribuciones que no son normales. </span></span>
+<span id="cb9-297"><a href="#cb9-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-298"><a href="#cb9-298" aria-hidden="true" tabindex="-1"></a></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

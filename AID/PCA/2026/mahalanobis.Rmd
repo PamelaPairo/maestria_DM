@@ -30,16 +30,14 @@ Trabajamos unicamente con una muestra.
 
 ```{r}
 set.seed(11) 
-df_sample <- dplyr::distinct(df) |> #elimino datos repetidos
-           sample_n(350)
-
-df_num <- df_sample |> 
-          select(1, 5:13, 25)#selecciono columnas de interes 
+df_num <- dplyr::distinct(df) |> #elimino datos repetidos
+           sample_n(350) |> 
+           dplyr::select(c(1, 5:13, 25))#selecciono columnas de interes 
 
 ```
 
 
-## Distancia de Mahalanobis
+## Fórmula
 
 $D_M(X, Y) = \sqrt{(X- Y)^T \Sigma^{-1} (X - Y)}$
 
@@ -52,7 +50,7 @@ $D_M(X, Y) = \sqrt{(X- Y)^T \Sigma^{-1} (X - Y)}$
 
 La función `mahalanobis()` en R calcula el cuadrado de la distancia de Mahalanobis ($D^2$), la cual mide la separación entre un punto y el centro de una distribución multivariada, ajustándose según la correlación entre variables.
 
-## Fórmula Matemática aplicada por R
+## Fórmula matemática aplicada por R
 
 La métrica devuelta por la función estándar de R es:
 
@@ -78,6 +76,7 @@ $$D^2 = (x - \mu)^T \Sigma^{-1} (x - \mu)$$
 ## Distancia de Mahalanobis Robusta
 
 Cuando existen valores atípicos en el dataset, la media ($\mu$) y la matriz de covarianza ($\Sigma$) se ven distorsionadas, lo que puede causar que los *outliers* pasen desapercibidos (efecto de enmascaramiento). 
+
 ### Fórmula Matemática
 
 La estructura de la fórmula se mantiene, pero sustituye los estimadores clásicos por otros de **alto punto de ruptura** (usualmente *Minimum Covariance Determinant* - MCD):
@@ -96,7 +95,7 @@ $$D^2_{robusta} = (x - \hat{\mu}_{MCD})^T \hat{\Sigma}_{MCD}^{-1} (x - \hat{\mu}
 2. **Identificación Confiable**: Permite detectar grupos de outliers que, de otro modo, parecerían puntos normales debido a su propia influencia en la varianza global.
 
 
-```{r}
+```{r echo=FALSE}
 # -------------------------
 # 1. Datos simulados
 # -------------------------
@@ -180,7 +179,7 @@ legend("topleft",
 
 ## Calculos en R
 
-Creamos una función que calcula la distancia de Mahalanobis clásica y su versión robusta. Para identificar los posibles outliers se aplica un test estadístico. La distancia de Mahalanobis al cuadrado sigue una chi-cuadrado con tantos grados de libertad como variables del dataset.
+Creamos una función que calcula la distancia de Mahalanobis clásica y su versión robusta. Para identificar los posibles outliers se aplica un test estadístico. Recordemos que la distancia de Mahalanobis al cuadrado sigue una chi-cuadrado con tantos grados de libertad como variables del dataset.
 
 ```{r}
 
@@ -205,7 +204,8 @@ detectar_outliers_mahalanobis <- function(df, alpha = 0.01) {
       # -------------------------
       # Mahalanobis robusta (MCD)
       # -------------------------
-      cov_rob <- robustbase::covMcd(df_num)
+      cov_rob <- robustbase::covMcd(df_num, 
+                                    alpha= 0.75)# controla qué fracción del dataset se usa       para estimar Σ. Si se sube alpha se usan más datos. El default es 0.5. 
       
       dist_rob <- mahalanobis(df_num, cov_rob$center, cov_rob$cov)
       
@@ -245,12 +245,6 @@ df_out %>%
   )
 ```
 
-```{r}
-df_out %>%
-  count(outlier_classic, outlier_robust)
-```
-
-
 
 ```{r}
 library(kableExtra)
@@ -276,6 +270,17 @@ df_out %>%
     caption = "Outliers detectados solo por Mahalanobis clasico"
   )
 ```
+
+## ¿Por qué se observan tantos outliers con el método robusto
+
+
+- **Multimodalidad (Varios Grupos):** El algoritmo MCD busca la "nube" de datos más densa y única. Si el dataset tiene subgrupos (ej. "éxito" vs. "fracaso"), el modelo se anclará en uno y marcará a los demás grupos enteros como outliers, aunque sean datos correctos.
+
+- **Parámetro $\alpha$ muy estricto:** Un $\alpha = 0.5$ en la función `covMcd` obliga al algoritmo a calcular el centro usando solo la mitad de los datos. Esto lo hace sensible a la variabilidad natural del dataset.
+
+- **Supuesto de Normalidad:** El método asume que el núcleo de los datos sigue una distribución normal multivariada. 
+
+> **Conclusión:** Una gran cantidad de outliers suele indicar que el dataset no es una sola población uniforme, sino que existen múltiples grupos o distribuciones que no son normales. 
 
 
 
