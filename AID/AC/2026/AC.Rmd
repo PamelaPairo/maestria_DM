@@ -231,17 +231,17 @@ contenida en la tabla de doble entrada.
 - Está directamente relacionada con el estadístico $\chi^{2}$: $I =\frac{\chi^{2}}{n}$
 
 - Cuanto mayor sea la diferencia entre las frecuencias observadas y las
-esperadas, y por lo tanto mayor dependencia entre filas y columnas, mayor
-inercia, mayor $\chi^{2}$
+esperadas, y por lo tanto mayor dependencia entre filas y columnas, mayor inercia, mayor $\chi^{2}$
 
 - Equivale a la **varianza total** en ACP
 
+El método se basa en descomponer la inercia total en ejes en los cuales
+se representan las desviaciones en relación a lo esperado bajo independencia. Cada eje explica una fracción de inercia. La inercia equivale al autovalor.
+
 ## Biplot
 
-Busca representar las filas y las columnas de una tabla de contingencia
-como puntos en un espacio vectorial de baja dimensión (generalmente
-bidimensional), de forma que los correspondientes espacios se puedan
-superponer para obtener una representación conjunta
+Se busca representar las filas y las columnas de una tabla de contingencia como puntos en un espacio vectorial de baja dimensión (generalmente bidimensional), de forma que los correspondientes espacios se puedan superponer para obtener una representación conjunta.
+
 
 ```{r}
 # Análisis de correspondencias de filas y columnas en simultáneo
@@ -273,6 +273,8 @@ fviz_ca_row(house.ca,
 ```
 
 # Análisis de Correspondencia Múltiple
+
+El objetivo es reducir la dimensión del problema y lograr una representación que, perdiendo la menor cantidad de información posible, represente nuestra tabla de contingencias.
 
 ```{r}
 data("Titanic")
