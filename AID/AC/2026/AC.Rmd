@@ -206,23 +206,6 @@ ggplot(df_dists, aes(x = reorder(Categoria, Distancia_Chi2), y = Distancia_Chi2,
 
 ```
 
-**Construcción del AC**
-
-- El objetivo es reducir la dimensionalidad (en general 2 ejes principales):
-se pretende proyectar los puntos fila en un espacio de dimensión menor
-de manera que las filas que tengan la misma estructura estén próximas
-y las que tengan una estructura muy diferente, alejadas (ídem
-columnas)
-
-- En lugar de trabajar con la matriz S o R como en ACP, se utiliza la matriz
-de distancias chi cuadrado
-
-- Se extraen los ejes principales de manera de maximizar la asociación
-entre filas y columnas (máxima inercia)
-
-- Estos ejes son combinaciones lineales de las variables originales y son
-independientes entre sí
-
 **Inercia**
 
 - Es una medida de la falta de independencia, resume la información total
