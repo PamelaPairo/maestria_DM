@@ -533,6 +533,11 @@ Column Total |         600 |         254 |         381 |         509 |        17
 <section id="biplot" class="level2">
 <h2 class="anchored" data-anchor-id="biplot">Biplot</h2>
 <p>Se busca representar las filas y las columnas de una tabla de contingencia como puntos en un espacio vectorial de baja dimensión (generalmente bidimensional), de forma que los correspondientes espacios se puedan superponer para obtener una representación conjunta.</p>
+<ul>
+<li><p>Cuando las coordenadas de las categorías de ambas variables son grandes y del mismo signo se deduce una asociación positiva entre las columnas y las filas correspondientes (la combinación de categorías es más frecuente que la esperada por azar bajo independencia)</p></li>
+<li><p>Cuando son grandes en valor absoluto, pero de signos opuestos, las filas y columnas correspondientes tienen asociación negativa (la combinación de categorías es menos frecuente que la esperada por azar bajo independencia)</p></li>
+<li><p>Cuando están próximas a 0, la asociación entre las categorías es baja o nula</p></li>
+</ul>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -1704,173 +1709,179 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb38-241"><a href="#cb38-241" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-242"><a href="#cb38-242" aria-hidden="true" tabindex="-1"></a>Se busca representar las filas y las columnas de una tabla de contingencia como puntos en un espacio vectorial de baja dimensión (generalmente bidimensional), de forma que los correspondientes espacios se puedan superponer para obtener una representación conjunta.</span>
 <span id="cb38-243"><a href="#cb38-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-244"><a href="#cb38-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-247"><a href="#cb38-247" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-248"><a href="#cb38-248" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de correspondencias de filas y columnas en simultáneo</span></span>
-<span id="cb38-249"><a href="#cb38-249" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_biplot</span>(house.ca) <span class="sc">+</span></span>
-<span id="cb38-250"><a href="#cb38-250" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Biplot de Análisis de Correspondencia Housetasks'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span>
-<span id="cb38-251"><a href="#cb38-251" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-252"><a href="#cb38-252" aria-hidden="true" tabindex="-1"></a>Cuanto mayor la distancia al origen, mayor es la contribución a la falta de independencia</span>
-<span id="cb38-253"><a href="#cb38-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-254"><a href="#cb38-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-257"><a href="#cb38-257" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-258"><a href="#cb38-258" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(house.ca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">50</span>))<span class="sc">+</span></span>
-<span id="cb38-259"><a href="#cb38-259" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Scree plot'</span>,  <span class="at">x =</span> <span class="st">'Dimensión'</span>, <span class="at">y =</span> <span class="st">'Contribución inercia explicada'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span>
-<span id="cb38-260"><a href="#cb38-260" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-261"><a href="#cb38-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-262"><a href="#cb38-262" aria-hidden="true" tabindex="-1"></a>¿Cómo evalúo la calidad de la representación?</span>
-<span id="cb38-263"><a href="#cb38-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-264"><a href="#cb38-264" aria-hidden="true" tabindex="-1"></a>$cos^2$: Qué tan bien representado está ese punto en ese eje (calidad de representación).</span>
-<span id="cb38-265"><a href="#cb38-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-266"><a href="#cb38-266" aria-hidden="true" tabindex="-1"></a>Un valor cercano a 1 indica que el punto está perfectamente representado en ese eje (está "dentro" del plano de la diapositiva).</span>
+<span id="cb38-244"><a href="#cb38-244" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cuando las coordenadas de las categorías de ambas variables son grandes y del mismo signo se deduce una asociación positiva entre las columnas y las filas correspondientes (la combinación de categorías es más frecuente que la esperada por azar bajo independencia)</span>
+<span id="cb38-245"><a href="#cb38-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-246"><a href="#cb38-246" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cuando son grandes en valor absoluto, pero de signos opuestos, las filas y columnas correspondientes tienen asociación negativa (la combinación de categorías es menos frecuente que la esperada por azar bajo independencia)</span>
+<span id="cb38-247"><a href="#cb38-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-248"><a href="#cb38-248" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Cuando están próximas a 0, la asociación entre las categorías es baja o nula</span>
+<span id="cb38-249"><a href="#cb38-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-250"><a href="#cb38-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-253"><a href="#cb38-253" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-254"><a href="#cb38-254" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de correspondencias de filas y columnas en simultáneo</span></span>
+<span id="cb38-255"><a href="#cb38-255" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_biplot</span>(house.ca) <span class="sc">+</span></span>
+<span id="cb38-256"><a href="#cb38-256" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Biplot de Análisis de Correspondencia Housetasks'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span>
+<span id="cb38-257"><a href="#cb38-257" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-258"><a href="#cb38-258" aria-hidden="true" tabindex="-1"></a>Cuanto mayor la distancia al origen, mayor es la contribución a la falta de independencia</span>
+<span id="cb38-259"><a href="#cb38-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-260"><a href="#cb38-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-263"><a href="#cb38-263" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-264"><a href="#cb38-264" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(house.ca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">50</span>))<span class="sc">+</span></span>
+<span id="cb38-265"><a href="#cb38-265" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Scree plot'</span>,  <span class="at">x =</span> <span class="st">'Dimensión'</span>, <span class="at">y =</span> <span class="st">'Contribución inercia explicada'</span>)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey95"</span>))</span>
+<span id="cb38-266"><a href="#cb38-266" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb38-267"><a href="#cb38-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-268"><a href="#cb38-268" aria-hidden="true" tabindex="-1"></a>Un valor cercano a 0 indica que el punto no está bien representado por ese eje (está proyectado desde "muy lejos" en otra dimensión que no estamos viendo).</span>
+<span id="cb38-268"><a href="#cb38-268" aria-hidden="true" tabindex="-1"></a>¿Cómo evalúo la calidad de la representación?</span>
 <span id="cb38-269"><a href="#cb38-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-272"><a href="#cb38-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-273"><a href="#cb38-273" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_row</span>(house.ca, </span>
-<span id="cb38-274"><a href="#cb38-274" aria-hidden="true" tabindex="-1"></a>            <span class="at">repel =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb38-275"><a href="#cb38-275" aria-hidden="true" tabindex="-1"></a>            <span class="at">col.row =</span> <span class="st">"cos2"</span>, <span class="co"># color de puntos</span></span>
-<span id="cb38-276"><a href="#cb38-276" aria-hidden="true" tabindex="-1"></a>            <span class="at">label =</span> <span class="st">"all"</span>, </span>
-<span id="cb38-277"><a href="#cb38-277" aria-hidden="true" tabindex="-1"></a>            <span class="at">title =</span> <span class="st">"Perfiles fila - Análisis de Correspondencias"</span>)</span>
-<span id="cb38-278"><a href="#cb38-278" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-279"><a href="#cb38-279" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-280"><a href="#cb38-280" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis de Correspondencia Múltiple</span></span>
-<span id="cb38-281"><a href="#cb38-281" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-282"><a href="#cb38-282" aria-hidden="true" tabindex="-1"></a>El objetivo es reducir la dimensión del problema y lograr una representación que, perdiendo la menor cantidad de información posible, represente nuestra tabla de contingencias.</span>
-<span id="cb38-283"><a href="#cb38-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-286"><a href="#cb38-286" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-287"><a href="#cb38-287" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Titanic"</span>)</span>
-<span id="cb38-288"><a href="#cb38-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-289"><a href="#cb38-289" aria-hidden="true" tabindex="-1"></a><span class="co"># Paso a data frame</span></span>
-<span id="cb38-290"><a href="#cb38-290" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic)</span>
-<span id="cb38-291"><a href="#cb38-291" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-292"><a href="#cb38-292" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando la tabla de frecuencias</span></span>
-<span id="cb38-293"><a href="#cb38-293" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> titanic[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(titanic), titanic[,<span class="dv">5</span>]),<span class="sc">-</span><span class="dv">5</span>]</span>
+<span id="cb38-270"><a href="#cb38-270" aria-hidden="true" tabindex="-1"></a>$cos^2$: Qué tan bien representado está ese punto en ese eje (calidad de representación).</span>
+<span id="cb38-271"><a href="#cb38-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-272"><a href="#cb38-272" aria-hidden="true" tabindex="-1"></a>Un valor cercano a 1 indica que el punto está perfectamente representado en ese eje (está "dentro" del plano de la diapositiva).</span>
+<span id="cb38-273"><a href="#cb38-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-274"><a href="#cb38-274" aria-hidden="true" tabindex="-1"></a>Un valor cercano a 0 indica que el punto no está bien representado por ese eje (está proyectado desde "muy lejos" en otra dimensión que no estamos viendo).</span>
+<span id="cb38-275"><a href="#cb38-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-278"><a href="#cb38-278" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-279"><a href="#cb38-279" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_ca_row</span>(house.ca, </span>
+<span id="cb38-280"><a href="#cb38-280" aria-hidden="true" tabindex="-1"></a>            <span class="at">repel =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb38-281"><a href="#cb38-281" aria-hidden="true" tabindex="-1"></a>            <span class="at">col.row =</span> <span class="st">"cos2"</span>, <span class="co"># color de puntos</span></span>
+<span id="cb38-282"><a href="#cb38-282" aria-hidden="true" tabindex="-1"></a>            <span class="at">label =</span> <span class="st">"all"</span>, </span>
+<span id="cb38-283"><a href="#cb38-283" aria-hidden="true" tabindex="-1"></a>            <span class="at">title =</span> <span class="st">"Perfiles fila - Análisis de Correspondencias"</span>)</span>
+<span id="cb38-284"><a href="#cb38-284" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-285"><a href="#cb38-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-286"><a href="#cb38-286" aria-hidden="true" tabindex="-1"></a><span class="fu"># Análisis de Correspondencia Múltiple</span></span>
+<span id="cb38-287"><a href="#cb38-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-288"><a href="#cb38-288" aria-hidden="true" tabindex="-1"></a>El objetivo es reducir la dimensión del problema y lograr una representación que, perdiendo la menor cantidad de información posible, represente nuestra tabla de contingencias.</span>
+<span id="cb38-289"><a href="#cb38-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-292"><a href="#cb38-292" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-293"><a href="#cb38-293" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Titanic"</span>)</span>
 <span id="cb38-294"><a href="#cb38-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-295"><a href="#cb38-295" aria-hidden="true" tabindex="-1"></a><span class="co"># Reseteo nombre de filas</span></span>
-<span id="cb38-296"><a href="#cb38-296" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(titanic) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb38-295"><a href="#cb38-295" aria-hidden="true" tabindex="-1"></a><span class="co"># Paso a data frame</span></span>
+<span id="cb38-296"><a href="#cb38-296" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic)</span>
 <span id="cb38-297"><a href="#cb38-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-298"><a href="#cb38-298" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(titanic)</span>
-<span id="cb38-299"><a href="#cb38-299" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-298"><a href="#cb38-298" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando la tabla de frecuencias</span></span>
+<span id="cb38-299"><a href="#cb38-299" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> titanic[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(titanic), titanic[,<span class="dv">5</span>]),<span class="sc">-</span><span class="dv">5</span>]</span>
 <span id="cb38-300"><a href="#cb38-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-303"><a href="#cb38-303" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-304"><a href="#cb38-304" aria-hidden="true" tabindex="-1"></a><span class="co"># Armo matriz de Burt</span></span>
-<span id="cb38-305"><a href="#cb38-305" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(anacor)</span>
-<span id="cb38-306"><a href="#cb38-306" aria-hidden="true" tabindex="-1"></a>burt <span class="ot">&lt;-</span> <span class="fu">burtTable</span>(titanic)</span>
-<span id="cb38-307"><a href="#cb38-307" aria-hidden="true" tabindex="-1"></a>burt</span>
-<span id="cb38-308"><a href="#cb38-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-311"><a href="#cb38-311" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-312"><a href="#cb38-312" aria-hidden="true" tabindex="-1"></a><span class="co">#Grafico matriz de Burt</span></span>
-<span id="cb38-313"><a href="#cb38-313" aria-hidden="true" tabindex="-1"></a>burt2 <span class="ot">&lt;-</span> <span class="fu">as.table</span>(<span class="fu">as.matrix</span>(burt))</span>
-<span id="cb38-314"><a href="#cb38-314" aria-hidden="true" tabindex="-1"></a>gplots<span class="sc">::</span><span class="fu">balloonplot</span>((burt2), <span class="at">main=</span><span class="st">'Matriz de Burt de datos Titanic'</span>, <span class="at">label=</span>F, <span class="at">show.margins =</span> F,<span class="at">dotcolor=</span><span class="st">"pink"</span>, <span class="at">text.size=</span><span class="fl">0.7</span>,<span class="at">colsrt=</span><span class="dv">45</span>,<span class="at">colmar=</span><span class="fl">2.5</span>)</span>
-<span id="cb38-315"><a href="#cb38-315" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-316"><a href="#cb38-316" aria-hidden="true" tabindex="-1"></a><span class="fu">## MCA</span></span>
-<span id="cb38-317"><a href="#cb38-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-320"><a href="#cb38-320" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-321"><a href="#cb38-321" aria-hidden="true" tabindex="-1"></a>titanic_mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(titanic, <span class="at">graph=</span>F)</span>
-<span id="cb38-322"><a href="#cb38-322" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(titanic_mca)</span>
-<span id="cb38-323"><a href="#cb38-323" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-324"><a href="#cb38-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-327"><a href="#cb38-327" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-328"><a href="#cb38-328" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(titanic_mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-301"><a href="#cb38-301" aria-hidden="true" tabindex="-1"></a><span class="co"># Reseteo nombre de filas</span></span>
+<span id="cb38-302"><a href="#cb38-302" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(titanic) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb38-303"><a href="#cb38-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-304"><a href="#cb38-304" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(titanic)</span>
+<span id="cb38-305"><a href="#cb38-305" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-306"><a href="#cb38-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-309"><a href="#cb38-309" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-310"><a href="#cb38-310" aria-hidden="true" tabindex="-1"></a><span class="co"># Armo matriz de Burt</span></span>
+<span id="cb38-311"><a href="#cb38-311" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(anacor)</span>
+<span id="cb38-312"><a href="#cb38-312" aria-hidden="true" tabindex="-1"></a>burt <span class="ot">&lt;-</span> <span class="fu">burtTable</span>(titanic)</span>
+<span id="cb38-313"><a href="#cb38-313" aria-hidden="true" tabindex="-1"></a>burt</span>
+<span id="cb38-314"><a href="#cb38-314" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-317"><a href="#cb38-317" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-318"><a href="#cb38-318" aria-hidden="true" tabindex="-1"></a><span class="co">#Grafico matriz de Burt</span></span>
+<span id="cb38-319"><a href="#cb38-319" aria-hidden="true" tabindex="-1"></a>burt2 <span class="ot">&lt;-</span> <span class="fu">as.table</span>(<span class="fu">as.matrix</span>(burt))</span>
+<span id="cb38-320"><a href="#cb38-320" aria-hidden="true" tabindex="-1"></a>gplots<span class="sc">::</span><span class="fu">balloonplot</span>((burt2), <span class="at">main=</span><span class="st">'Matriz de Burt de datos Titanic'</span>, <span class="at">label=</span>F, <span class="at">show.margins =</span> F,<span class="at">dotcolor=</span><span class="st">"pink"</span>, <span class="at">text.size=</span><span class="fl">0.7</span>,<span class="at">colsrt=</span><span class="dv">45</span>,<span class="at">colmar=</span><span class="fl">2.5</span>)</span>
+<span id="cb38-321"><a href="#cb38-321" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-322"><a href="#cb38-322" aria-hidden="true" tabindex="-1"></a><span class="fu">## MCA</span></span>
+<span id="cb38-323"><a href="#cb38-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-326"><a href="#cb38-326" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-327"><a href="#cb38-327" aria-hidden="true" tabindex="-1"></a>titanic_mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(titanic, <span class="at">graph=</span>F)</span>
+<span id="cb38-328"><a href="#cb38-328" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(titanic_mca)</span>
 <span id="cb38-329"><a href="#cb38-329" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-332"><a href="#cb38-332" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-333"><a href="#cb38-333" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_biplot</span>(titanic_mca, </span>
-<span id="cb38-334"><a href="#cb38-334" aria-hidden="true" tabindex="-1"></a>                <span class="at">label=</span><span class="st">"var"</span>,</span>
-<span id="cb38-335"><a href="#cb38-335" aria-hidden="true" tabindex="-1"></a>                <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb38-336"><a href="#cb38-336" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.ind=</span><span class="st">'gray'</span>,</span>
-<span id="cb38-337"><a href="#cb38-337" aria-hidden="true" tabindex="-1"></a>                <span class="at">invisible=</span><span class="st">"quali"</span>)</span>
-<span id="cb38-338"><a href="#cb38-338" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-339"><a href="#cb38-339" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-342"><a href="#cb38-342" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-343"><a href="#cb38-343" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según representatividad</span></span>
-<span id="cb38-344"><a href="#cb38-344" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(titanic_mca,</span>
-<span id="cb38-345"><a href="#cb38-345" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
-<span id="cb38-346"><a href="#cb38-346" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb38-347"><a href="#cb38-347" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha.var=</span><span class="st">"cos2"</span>)</span>
-<span id="cb38-348"><a href="#cb38-348" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-349"><a href="#cb38-349" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-352"><a href="#cb38-352" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-353"><a href="#cb38-353" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 1 </span></span>
-<span id="cb38-354"><a href="#cb38-354" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
-<span id="cb38-355"><a href="#cb38-355" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
-<span id="cb38-356"><a href="#cb38-356" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span>)</span>
-<span id="cb38-357"><a href="#cb38-357" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-358"><a href="#cb38-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-361"><a href="#cb38-361" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-362"><a href="#cb38-362" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 2</span></span>
-<span id="cb38-363"><a href="#cb38-363" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
-<span id="cb38-364"><a href="#cb38-364" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
-<span id="cb38-365"><a href="#cb38-365" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">2</span>)</span>
-<span id="cb38-366"><a href="#cb38-366" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-367"><a href="#cb38-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-370"><a href="#cb38-370" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-371"><a href="#cb38-371" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensiones 1 y 2 </span></span>
-<span id="cb38-372"><a href="#cb38-372" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
-<span id="cb38-373"><a href="#cb38-373" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>,</span>
-<span id="cb38-374"><a href="#cb38-374" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span>
-<span id="cb38-375"><a href="#cb38-375" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-376"><a href="#cb38-376" aria-hidden="true" tabindex="-1"></a>Análisis de individuos</span>
-<span id="cb38-377"><a href="#cb38-377" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-380"><a href="#cb38-380" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-381"><a href="#cb38-381" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de individuos</span></span>
-<span id="cb38-382"><a href="#cb38-382" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_ind</span>(titanic_mca,</span>
-<span id="cb38-383"><a href="#cb38-383" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
-<span id="cb38-384"><a href="#cb38-384" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.ind =</span> <span class="st">"cos2"</span>, </span>
-<span id="cb38-385"><a href="#cb38-385" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),</span>
-<span id="cb38-386"><a href="#cb38-386" aria-hidden="true" tabindex="-1"></a>             <span class="at">rapel=</span><span class="cn">TRUE</span>,</span>
-<span id="cb38-387"><a href="#cb38-387" aria-hidden="true" tabindex="-1"></a><span class="co">#             select.ind = list(contrib = 400)</span></span>
-<span id="cb38-388"><a href="#cb38-388" aria-hidden="true" tabindex="-1"></a>             )</span>
-<span id="cb38-389"><a href="#cb38-389" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-390"><a href="#cb38-390" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-391"><a href="#cb38-391" aria-hidden="true" tabindex="-1"></a>Re-analisis de datos Titanic</span>
-<span id="cb38-392"><a href="#cb38-392" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-395"><a href="#cb38-395" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-396"><a href="#cb38-396" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten a 2-D, paso a dataframe y reseteo índice de filas</span></span>
-<span id="cb38-397"><a href="#cb38-397" aria-hidden="true" tabindex="-1"></a>Titanic_2D <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">structable</span>(Class<span class="sc">+</span>Survived<span class="sc">~</span>Sex<span class="sc">+</span>Age, Titanic))</span>
-<span id="cb38-398"><a href="#cb38-398" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic_2D)</span>
-<span id="cb38-399"><a href="#cb38-399" aria-hidden="true" tabindex="-1"></a>df_t2D<span class="sc">$</span>combinacion <span class="ot">&lt;-</span> <span class="fu">rownames</span>(df_t2D)</span>
-<span id="cb38-400"><a href="#cb38-400" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb38-401"><a href="#cb38-401" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando dataframe</span></span>
-<span id="cb38-402"><a href="#cb38-402" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df_t2D, <span class="at">cols=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>),<span class="at">names_to=</span><span class="st">'sobrevivió'</span>,<span class="at">values_to=</span><span class="st">'valores'</span> )</span>
-<span id="cb38-403"><a href="#cb38-403" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(df_t2D)</span>
-<span id="cb38-404"><a href="#cb38-404" aria-hidden="true" tabindex="-1"></a>df_t2D_exp <span class="ot">&lt;-</span> df_t2D[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(df_t2D), df_t2D[,<span class="dv">3</span>]),<span class="sc">-</span><span class="dv">3</span>]</span>
-<span id="cb38-405"><a href="#cb38-405" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D_exp) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb38-406"><a href="#cb38-406" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-407"><a href="#cb38-407" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-410"><a href="#cb38-410" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-411"><a href="#cb38-411" aria-hidden="true" tabindex="-1"></a>Tit2.mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(df_t2D_exp, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb38-412"><a href="#cb38-412" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Tit2.mca)</span>
-<span id="cb38-413"><a href="#cb38-413" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-414"><a href="#cb38-414" aria-hidden="true" tabindex="-1"></a>Scree plot</span>
-<span id="cb38-415"><a href="#cb38-415" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-418"><a href="#cb38-418" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-419"><a href="#cb38-419" aria-hidden="true" tabindex="-1"></a><span class="co">#scree plot</span></span>
-<span id="cb38-420"><a href="#cb38-420" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(Tit2.mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb38-421"><a href="#cb38-421" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-422"><a href="#cb38-422" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-425"><a href="#cb38-425" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-426"><a href="#cb38-426" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables</span></span>
-<span id="cb38-427"><a href="#cb38-427" aria-hidden="true" tabindex="-1"></a>colorest1 <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
-<span id="cb38-428"><a href="#cb38-428" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca,<span class="at">invisible=</span><span class="st">"quali"</span>, <span class="at">col.var=</span>colorest1)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span>
-<span id="cb38-429"><a href="#cb38-429" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-430"><a href="#cb38-430" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-433"><a href="#cb38-433" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-434"><a href="#cb38-434" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca, </span>
-<span id="cb38-435"><a href="#cb38-435" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.var=</span> <span class="st">"contrib"</span>,</span>
-<span id="cb38-436"><a href="#cb38-436" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
-<span id="cb38-437"><a href="#cb38-437" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel=</span><span class="cn">TRUE</span>, </span>
-<span id="cb38-438"><a href="#cb38-438" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>))</span>
-<span id="cb38-439"><a href="#cb38-439" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb38-440"><a href="#cb38-440" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-443"><a href="#cb38-443" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb38-444"><a href="#cb38-444" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de contribución de variables a dimensión 1</span></span>
-<span id="cb38-445"><a href="#cb38-445" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(Tit2.mca,<span class="at">choice=</span><span class="st">"var"</span>,</span>
-<span id="cb38-446"><a href="#cb38-446" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes=</span><span class="dv">1</span>, </span>
-<span id="cb38-447"><a href="#cb38-447" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span><span class="st">"royalblue"</span>,</span>
-<span id="cb38-448"><a href="#cb38-448" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span><span class="st">"black"</span>)<span class="sc">+</span> </span>
-<span id="cb38-449"><a href="#cb38-449" aria-hidden="true" tabindex="-1"></a>             <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Contribución de variables'</span>,  <span class="at">x =</span> <span class="st">'Variables'</span>, <span class="at">y =</span> <span class="st">'Contribución (%)'</span>)</span>
-<span id="cb38-450"><a href="#cb38-450" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-330"><a href="#cb38-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-333"><a href="#cb38-333" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-334"><a href="#cb38-334" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(titanic_mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-335"><a href="#cb38-335" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-338"><a href="#cb38-338" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-339"><a href="#cb38-339" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_biplot</span>(titanic_mca, </span>
+<span id="cb38-340"><a href="#cb38-340" aria-hidden="true" tabindex="-1"></a>                <span class="at">label=</span><span class="st">"var"</span>,</span>
+<span id="cb38-341"><a href="#cb38-341" aria-hidden="true" tabindex="-1"></a>                <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb38-342"><a href="#cb38-342" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.ind=</span><span class="st">'gray'</span>,</span>
+<span id="cb38-343"><a href="#cb38-343" aria-hidden="true" tabindex="-1"></a>                <span class="at">invisible=</span><span class="st">"quali"</span>)</span>
+<span id="cb38-344"><a href="#cb38-344" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-345"><a href="#cb38-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-348"><a href="#cb38-348" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-349"><a href="#cb38-349" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según representatividad</span></span>
+<span id="cb38-350"><a href="#cb38-350" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(titanic_mca,</span>
+<span id="cb38-351"><a href="#cb38-351" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb38-352"><a href="#cb38-352" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb38-353"><a href="#cb38-353" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha.var=</span><span class="st">"cos2"</span>)</span>
+<span id="cb38-354"><a href="#cb38-354" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-355"><a href="#cb38-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-358"><a href="#cb38-358" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-359"><a href="#cb38-359" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 1 </span></span>
+<span id="cb38-360"><a href="#cb38-360" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb38-361"><a href="#cb38-361" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
+<span id="cb38-362"><a href="#cb38-362" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span>)</span>
+<span id="cb38-363"><a href="#cb38-363" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-364"><a href="#cb38-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-367"><a href="#cb38-367" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-368"><a href="#cb38-368" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensión 2</span></span>
+<span id="cb38-369"><a href="#cb38-369" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb38-370"><a href="#cb38-370" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>, </span>
+<span id="cb38-371"><a href="#cb38-371" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">2</span>)</span>
+<span id="cb38-372"><a href="#cb38-372" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-373"><a href="#cb38-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-376"><a href="#cb38-376" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-377"><a href="#cb38-377" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables según contribución a dimensiones 1 y 2 </span></span>
+<span id="cb38-378"><a href="#cb38-378" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(titanic_mca, </span>
+<span id="cb38-379"><a href="#cb38-379" aria-hidden="true" tabindex="-1"></a>             <span class="at">choice =</span> <span class="st">"var"</span>,</span>
+<span id="cb38-380"><a href="#cb38-380" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span>
+<span id="cb38-381"><a href="#cb38-381" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-382"><a href="#cb38-382" aria-hidden="true" tabindex="-1"></a>Análisis de individuos</span>
+<span id="cb38-383"><a href="#cb38-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-386"><a href="#cb38-386" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-387"><a href="#cb38-387" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de individuos</span></span>
+<span id="cb38-388"><a href="#cb38-388" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_ind</span>(titanic_mca,</span>
+<span id="cb38-389"><a href="#cb38-389" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb38-390"><a href="#cb38-390" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.ind =</span> <span class="st">"cos2"</span>, </span>
+<span id="cb38-391"><a href="#cb38-391" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),</span>
+<span id="cb38-392"><a href="#cb38-392" aria-hidden="true" tabindex="-1"></a>             <span class="at">rapel=</span><span class="cn">TRUE</span>,</span>
+<span id="cb38-393"><a href="#cb38-393" aria-hidden="true" tabindex="-1"></a><span class="co">#             select.ind = list(contrib = 400)</span></span>
+<span id="cb38-394"><a href="#cb38-394" aria-hidden="true" tabindex="-1"></a>             )</span>
+<span id="cb38-395"><a href="#cb38-395" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-396"><a href="#cb38-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-397"><a href="#cb38-397" aria-hidden="true" tabindex="-1"></a>Re-analisis de datos Titanic</span>
+<span id="cb38-398"><a href="#cb38-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-401"><a href="#cb38-401" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-402"><a href="#cb38-402" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten a 2-D, paso a dataframe y reseteo índice de filas</span></span>
+<span id="cb38-403"><a href="#cb38-403" aria-hidden="true" tabindex="-1"></a>Titanic_2D <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">structable</span>(Class<span class="sc">+</span>Survived<span class="sc">~</span>Sex<span class="sc">+</span>Age, Titanic))</span>
+<span id="cb38-404"><a href="#cb38-404" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(Titanic_2D)</span>
+<span id="cb38-405"><a href="#cb38-405" aria-hidden="true" tabindex="-1"></a>df_t2D<span class="sc">$</span>combinacion <span class="ot">&lt;-</span> <span class="fu">rownames</span>(df_t2D)</span>
+<span id="cb38-406"><a href="#cb38-406" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb38-407"><a href="#cb38-407" aria-hidden="true" tabindex="-1"></a><span class="co"># Expando dataframe</span></span>
+<span id="cb38-408"><a href="#cb38-408" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(df_t2D, <span class="at">cols=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>),<span class="at">names_to=</span><span class="st">'sobrevivió'</span>,<span class="at">values_to=</span><span class="st">'valores'</span> )</span>
+<span id="cb38-409"><a href="#cb38-409" aria-hidden="true" tabindex="-1"></a>df_t2D <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(df_t2D)</span>
+<span id="cb38-410"><a href="#cb38-410" aria-hidden="true" tabindex="-1"></a>df_t2D_exp <span class="ot">&lt;-</span> df_t2D[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(df_t2D), df_t2D[,<span class="dv">3</span>]),<span class="sc">-</span><span class="dv">3</span>]</span>
+<span id="cb38-411"><a href="#cb38-411" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df_t2D_exp) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb38-412"><a href="#cb38-412" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-413"><a href="#cb38-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-416"><a href="#cb38-416" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-417"><a href="#cb38-417" aria-hidden="true" tabindex="-1"></a>Tit2.mca <span class="ot">&lt;-</span> <span class="fu">MCA</span>(df_t2D_exp, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb38-418"><a href="#cb38-418" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Tit2.mca)</span>
+<span id="cb38-419"><a href="#cb38-419" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-420"><a href="#cb38-420" aria-hidden="true" tabindex="-1"></a>Scree plot</span>
+<span id="cb38-421"><a href="#cb38-421" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-424"><a href="#cb38-424" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-425"><a href="#cb38-425" aria-hidden="true" tabindex="-1"></a><span class="co">#scree plot</span></span>
+<span id="cb38-426"><a href="#cb38-426" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(Tit2.mca, <span class="at">addlabels =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-427"><a href="#cb38-427" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-428"><a href="#cb38-428" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-431"><a href="#cb38-431" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-432"><a href="#cb38-432" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de variables</span></span>
+<span id="cb38-433"><a href="#cb38-433" aria-hidden="true" tabindex="-1"></a>colorest1 <span class="ot">&lt;-</span> <span class="fu">as.character</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb38-434"><a href="#cb38-434" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca,<span class="at">invisible=</span><span class="st">"quali"</span>, <span class="at">col.var=</span>colorest1)<span class="sc">+</span><span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">'none'</span>)</span>
+<span id="cb38-435"><a href="#cb38-435" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-436"><a href="#cb38-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-439"><a href="#cb38-439" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-440"><a href="#cb38-440" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_mca_var</span>(Tit2.mca, </span>
+<span id="cb38-441"><a href="#cb38-441" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.var=</span> <span class="st">"contrib"</span>,</span>
+<span id="cb38-442"><a href="#cb38-442" aria-hidden="true" tabindex="-1"></a>             <span class="at">invisible=</span><span class="st">"quali"</span>, </span>
+<span id="cb38-443"><a href="#cb38-443" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel=</span><span class="cn">TRUE</span>, </span>
+<span id="cb38-444"><a href="#cb38-444" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>))</span>
+<span id="cb38-445"><a href="#cb38-445" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb38-446"><a href="#cb38-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-449"><a href="#cb38-449" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb38-450"><a href="#cb38-450" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis de contribución de variables a dimensión 1</span></span>
+<span id="cb38-451"><a href="#cb38-451" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(Tit2.mca,<span class="at">choice=</span><span class="st">"var"</span>,</span>
+<span id="cb38-452"><a href="#cb38-452" aria-hidden="true" tabindex="-1"></a>             <span class="at">axes=</span><span class="dv">1</span>, </span>
+<span id="cb38-453"><a href="#cb38-453" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill=</span><span class="st">"royalblue"</span>,</span>
+<span id="cb38-454"><a href="#cb38-454" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span><span class="st">"black"</span>)<span class="sc">+</span> </span>
+<span id="cb38-455"><a href="#cb38-455" aria-hidden="true" tabindex="-1"></a>             <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Contribución de variables'</span>,  <span class="at">x =</span> <span class="st">'Variables'</span>, <span class="at">y =</span> <span class="st">'Contribución (%)'</span>)</span>
+<span id="cb38-456"><a href="#cb38-456" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copiar al portapapeles" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

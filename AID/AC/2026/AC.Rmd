@@ -225,6 +225,12 @@ se representan las desviaciones en relación a lo esperado bajo independencia. C
 
 Se busca representar las filas y las columnas de una tabla de contingencia como puntos en un espacio vectorial de baja dimensión (generalmente bidimensional), de forma que los correspondientes espacios se puedan superponer para obtener una representación conjunta.
 
+- Cuando las coordenadas de las categorías de ambas variables son grandes y del mismo signo se deduce una asociación positiva entre las columnas y las filas correspondientes (la combinación de categorías es más frecuente que la esperada por azar bajo independencia)
+
+- Cuando son grandes en valor absoluto, pero de signos opuestos, las filas y columnas correspondientes tienen asociación negativa (la combinación de categorías es menos frecuente que la esperada por azar bajo independencia)
+
+- Cuando están próximas a 0, la asociación entre las categorías es baja o nula
+
 
 ```{r}
 # Análisis de correspondencias de filas y columnas en simultáneo
