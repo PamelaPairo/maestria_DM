@@ -172,6 +172,11 @@ pred_m1
 
 Cálculo del RMSE ( _Root Mean Squared Error_ o Error Cuadrático Medio)
 
+
+$RMSE = \sqrt{\frac{\sum(\hat{y_i}-y_i)^2}{n}}$
+
+Se pudo haber optado tambien por R2aj. Otras métricas utilizadas en regresión se puede consultar [aqui](https://farshadabdulazeez.medium.com/essential-regression-evaluation-metrics-mse-rmse-mae-r%C2%B2-and-adjusted-r%C2%B2-0600daa1c03a)
+
 ```{r}
 # Evaluamos en df_test
 
@@ -241,11 +246,21 @@ plot(pre_m2, re_m2, xlab="Predichos", ylab="Residuos estandarizados",main="Grafi
 abline(0,0)
 qqPlot(e_m2)
 ```
+
 Se chequea normalidad
 
 ```{r}
 shapiro.test(resid(modelo2))
 ```
+
+Homocedasticidad
+
+```{r}
+# test de Breusch-Pagan
+
+lmtest::bptest(modelo2)
+```
+
 Vemos los resultados del modelo
 
 ```{r}
@@ -325,6 +340,17 @@ plot_ly(df, x = ~`Hours Studied`, y = ~`Previous Scores`, z = ~`Performance Inde
                       zaxis = list(title = 'Performance')),
          title = "Regresión Múltiple")
 ```
+
+## Limitaciones de la regresion lineal multiple
+
+- Cumplimiento de supuestos
+- Nos impone una relación lineal entre la variable dependiente y sus regresoras.
+
+## Alternativas a los modelos de regresion lineal múltiple
+
+- Se puede probar con regresiones robustas
+- Regresiones ridge y regresiones lasso
+- Regresiones polinómicas
 
 
 ```{r}
