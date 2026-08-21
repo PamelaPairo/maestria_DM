@@ -196,6 +196,16 @@ iris_test_rf <- bind_cols(
 
 ![](https://raw.githubusercontent.com/PamelaPairo/Taller_IA/main/clases/images/matrix.png){fig-align="center"}
 
+Recordemos que:
+
+$accuracy = \frac{TP+TN}{TP+FP+FN+TN}$
+
+$sensitivity = recall = \frac{TP}{TP+FN}$
+
+$specificity = \frac{TN}{TN+FP}$
+
+$precision = \frac{TP}{TP+FP}$
+
 **Curvas ROC**
 
 Las curvas ROC (_Receiver Operating Characteristic_) permiten evaluar la capacidad de un modelo de clasificación para discriminar entre clases considerando distintos umbrales de decisión. La curva representa la sensibilidad frente a la tasa de falsos positivos (1 - especificidad) para diferentes valores del umbral.
