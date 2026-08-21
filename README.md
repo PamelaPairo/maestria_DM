@@ -1,6 +1,6 @@
 # Materiales de clases prácticas- Maestría en Explotación de Datos y Descubrimiento del Conocimiento- FCEN-UBA
 
-Este repositorio muestra parte del material utilizado en las clases prácticas de las materias Análisis Inteligente de Datos y Aprendizaje Automático.
+Este repositorio muestra parte del material utilizado en las clases prácticas de las materias Análisis Inteligente de Datos, Enfoque Estadístico del Aprendizaje y Aprendizaje Automático.
 
 Para mas información de la Maestría visitar el siguiente link: http://datamining.dc.uba.ar/datamining/
 
