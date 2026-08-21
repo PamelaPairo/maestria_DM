@@ -14,6 +14,10 @@ Para mas información de la Maestría visitar el siguiente link: http://datamini
 
 ## Enfoque Estadístico del Aprendizaje
 
+- [Intro a Tidyverse](https://pamelapairo.github.io/maestria_DM/EEA/2026/tidyverse.html)
+
+- [Intro a Tidymodels](https://pamelapairo.github.io/maestria_DM/EEA/2026/tidymodels.html)
+
 - [Regresión Logística](https://pamelapairo.github.io/maestria_DM/EEA/2025/regLogistica.html)
 - [Regularización](https://pamelapairo.github.io/maestria_DM/EEA/2025/regularizacion.html)
 

@@ -399,3 +399,4 @@ fviz_contrib(Tit2.mca,choice="var",
              theme(axis.text.x = element_text(angle=45)) + labs(title = 'Contribución de variables',  x = 'Variables', y = 'Contribución (%)')
 ```
 
+
