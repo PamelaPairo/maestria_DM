@@ -43,20 +43,24 @@ library(tidymodels)
 
 Veamos un ejemplo con iris
 
-
 ## Preprocesamiento
 
 ### División del dataset
 
 ![](img/split_data.png){fig-align="center" width=300}
 
+```{r}
+g <- ggplot(iris, aes(Species))
+g + geom_bar()
+```
 
 con `rsample::initial_split()` creamos una división entre train y test
 
 ```{r}
 set.seed(1234)
 iris_split <- initial_split(iris, 
-                            prop = 0.7)
+                            prop = 0.6,
+                            strata = Species)#util para datos desbalanceados
 iris_split
 ```
 Cuando llamamos al objeto `iris_split` nos muestra la cantidad de elementos en train/test/total
@@ -109,11 +113,10 @@ iris_test <- iris_recipe %>%
 iris_test
 ```
 
-Dado que la receta ya fue construida con los datos de entrenamiento, no tendría sentido utilizar el mismo pipeline para recuperar estos datos. Para ello utilizamos la función `juice` directamente sobre la receta.
-
 
 ```{r warning=FALSE}
-iris_train <- juice(iris_recipe)
+iris_train <- iris_recipe %>%
+  bake(training(iris_split)) 
 
 iris_train
 ```
@@ -175,7 +178,6 @@ iris_test_svm <- bind_cols(
 ) %>%
   bind_cols(iris_test)
 
-
 # Random Forest - Train
 iris_train_rf <- bind_cols(
   predict(model_RF, iris_train, type = "class"),
@@ -214,7 +216,7 @@ AUC= área bajo la curva ROC, que también sirve para comparar modelos.
 
 ![](https://raw.githubusercontent.com/PamelaPairo/Taller_IA/main/clases/images/roc.png){fig-align="center"}
 
-Como `iris` es un problema de clasificación multiclase, las curvas ROC se construyen utilizando un enfoque one-vs-rest. De esta manera, se evalúa la capacidad del modelo para distinguir cada especie respecto de las otras dos.
+Como `iris` es un problema de clasificación multiclase, las curvas ROC se construyen utilizando un enfoque _one-vs-rest_. De esta manera, se evalúa la capacidad del modelo para distinguir cada especie respecto de las otras dos.
 
 Con la función `yardstick::metrics()` podemos medir la performance del modelo. Elige automáticamente las métricas apropiadas dado el tipo de modelo. Necesitamos aclarar cuáles son los datos predichos,_estimate_ y reales, _truth_.
 
@@ -332,6 +334,8 @@ roc_comparacion %>%
   ) +
   theme_minimal()
 ```
+¿Cuál de los dos modelos generaliza mejor a datos que no vio? Puedo comparar SVM y Random Forest en test.
+
 ```{r}
 roc_test <- roc_comparacion %>%
   filter(Conjunto == "Test")
@@ -362,7 +366,6 @@ Ahora se calcula AUC.
 
 ```{r}
 
-
 calcular_auc <- function(datos, modelo, conjunto) {
   
   datos %>%
@@ -387,10 +390,25 @@ auc_comparacion <- bind_rows(
 
 
 auc_comparacion %>%
-  select(Modelo, Conjunto, .metric, .estimator, .estimate)
+  select(Modelo, Conjunto, .metric, .estimate)
 ```
 
+Podemos ver las matrices de confusión para ambos modelos
 
+```{r}
+iris_test_svm %>%
+  conf_mat(
+    truth = Species,
+    estimate = .pred_class
+  )
+```
+```{r}
+iris_test_rf %>%
+  conf_mat(
+    truth = Species,
+    estimate = .pred_class
+  )
+```
 Se resume toda la información en una Tabla
 
 ```{r}
