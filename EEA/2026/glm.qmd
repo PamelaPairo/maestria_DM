@@ -28,17 +28,32 @@ library(caret)
 set.seed(15)
 ```
 
-# Generalidades
+# Generalidades de los GLM
 
-- Permiten modelar cualquier distribución de probabilidad de la familia exponencial para la variable respuesta.
-
-- Estimación de los parámetro por máxima verosimilitud e iteraciones.
-
-- Son modelos lineales ya que la variable respuesta es descripta a través de una función de enlace por una combinación lineal de los predictores X.
+Un GLM es un modelo lineal para la esperanza transformada de una variable respuesta que tiene una distribución de probabilidad de la familia exponencial. Esto permite limitar los valores de Y al rango esperado para la variable (por ejemplo valores mayores o iguales a 0 para conteos o entre 0 y 1 para proporciones). La estimación de los parámetros se hace por **máxima verosimilitud** e iteraciones. Son modelos lineales ya que la variable respuesta es descripta a través de una función de enlace por una combinación lineal de los predictores X.
 
 ![Imagen adaptada de la clase de GLM de Adriana Perez](glm.png){}
 
+**Los 3 componentes**
+
+- Un _componente aleatorio_ que identifica a la variable respuesta Y y sigue una de las distribuciones de la familia exponencial.
+
+- Un _componente o predictor lineal_ que identifica a un conjunto de predictoras X en una función lineal.
+
+- Una _función de enlace_, que describe cómo se relacionan el valor esperado o medio de la variable respuesta con el componente lineal. Debe restringir los valores posibles de la variable respuesta a su rango teórico.
+
 # GLM Poisson
+
+```{r}
+mieleros <- read.csv("nminer.csv")
+glimpse(mieleros)
+```
+```{r}
+ggplot(mieleros, aes(y = Minerab, x = Eucs)) +
+  geom_point(colour=2)+
+  xlab("Cant. de Eucaliptos cada 2 Ha") +     
+  ylab("Abundancia de mieleros")
+```
 
 Propongo el modelo:
 $$Y \sim Poisson(\mu) $$
@@ -48,12 +63,90 @@ $$
 $$
 o
 $$\log(\mu) = \beta_0 + \beta_1X $$
+$$E(Y_i) = Var(Y_i) = \lambda_i = \mu_i $$
+
+Modelo en la escala del predictor lineal
+
+$$log(E(Y_i)) = \beta_0 + \beta_1X_i $$
+
+Modelo en la escala de la variable respuesta
 
 
+$$E(Y_i) = \mu_i = e^{\beta_0 + \beta_1X_i} $$
 
+```{r}
+library(lme4)# glmmTMB si se quiere trabajar con modelos mixtos
 
+poisson <- glm(Minerab~ Eucs, 
+               data=mieleros,
+               family = "poisson")
+summary(poisson)
+```
+El modelo ajustado es:
 
-# Presentación del caso de estudio
+$$
+\log(\mu)=\beta_0+\beta_1 x
+$$
+
+donde:
+
+- $\mu = E[Y|X=x]$ es la cantidad esperada de mieleros,
+- $x$ es la cantidad de eucaliptos.
+
+Con las estimaciones obtenidas:
+
+$$
+\log(\mu)= -0.876 + 0.114x
+$$
+
+Interpretación de $\beta_0$:
+
+$$
+\beta_0=-0.876
+$$
+
+representa el logaritmo de la cantidad media esperada de mieleros
+cuando $x=0$, es decir, cuando no hay eucaliptos.
+
+Aplicando exponencial:
+
+$$
+\mu(0)=e^{-0.876}\approx 0.42
+$$
+
+Por lo tanto, el modelo estima aproximadamente
+0.42 mieleros cuando no hay eucaliptos.
+
+Interpretación de $\beta_1$:
+
+$$
+\beta_1=0.114
+$$
+
+Como el vínculo es logarítmico, el efecto es multiplicativo:
+
+$$
+e^{0.114}\approx 1.12
+$$
+
+Esto significa que por cada eucalipto adicional,
+la cantidad esperada de mieleros aumenta aproximadamente un 12%.
+
+## Supuestos
+
+- Independencia entre observaciones
+
+- Linealidad para las variables explicatorias cuantitativas a escala del predictor lineal.
+
+- Ausencia de **sub o sobredispersión**. La varianza de la variable es mayor o menor, respectivamente, a la que se espera según la distribucion de Poisson. Esto provoca estimaciones sesgadas de los errores estándar de los coeficientes de las variables explicatorias.
+
+```{r}
+AER::dispersiontest(poisson,
+                    alternative = "two.sided")
+```
+
+# Regresión Logística
+## Presentación del caso de estudio
 
 Vamos a trabajar con una base de datos extraída de [Kaggle](https://www.kaggle.com/code/robinreni/cardiovascular-disease-eda-detailed/notebook). Es una base de datos que consiste de 69301 registros de pacientes a los que se les registró 12 caracteristicas asociadas a una enfermedad cardiovascular.
 
@@ -89,7 +182,7 @@ sum(duplicated(df))#chequeamos duplicados
 glimpse(df)
 ```
 
-# Creación de base de datos
+## Creación de base de datos
 
 Se genera una muestra de tamaño 1000 con la que se realizaran los análisis y se analiza si hay desbalance en la variable respuesta.
 
@@ -102,7 +195,7 @@ df %>%
   summarise(cnt = n()) %>%
   mutate(freq = round(cnt / sum(cnt), 2))
 ```
-## Partición de la base de datos
+### Partición de la base de datos
 
 ```{r}
 
@@ -187,9 +280,9 @@ g
 
 
 
-# Recap de Regresión Logística
+## Recap de Regresión Logística
 
-## **Odds**
+### **Odds**
 
 Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.
 
@@ -240,7 +333,7 @@ OR < 1 asociación negativa
 
 ![Imagen adaptada de la clase de RL de Adriana Perez](rl.png){}
 
-# Regresión Logística
+## Planteamos el modelo
 
 Para evitar los problemas vistos con regresión lineal, usamos la **función logística**.
 
@@ -282,7 +375,7 @@ tidy(glm1)
 glance(glm1)
 ```
 
-## Interpretación de los coeficientes del modelo
+### Interpretación de los coeficientes del modelo
 
 Modelo estimado
 
@@ -306,7 +399,7 @@ $\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{-0.02}$
 
 El odds ratio para la variable género es 0.98, lo que indica que los varones tienen un 2 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un riesgo mayor riesgo relativo de ECV.
 
-### Devianza
+#### Devianza
 
 Es una medida de la falta de ajuste del modelo. Cuanto menor es la devianza residual, mejor se ajusta el modelo.
 
@@ -320,7 +413,7 @@ $\ Devianza Explicada = {\frac{1108.71 - 1056.63}{1108.71}}= 0.046$
 
 ```
 
-# Selección de modelos
+## Selección de modelos
 
 Se generan la combinación de todos los modelos posibles a partir de las variables `gender`, `weight`, y `cholesterol`. Antes hacemos un boxplot con `weight`, `cholesterol` y `cardio`.
 
@@ -358,7 +451,7 @@ modelos <- map(formulas, ~ glm(.x, data = train, family = binomial))
 ```
 
 
-## Evaluando los modelos en train
+### Evaluando los modelos en train
 
 Analizamos la performance de los modelos generados
 
@@ -413,7 +506,7 @@ resultados
 
 ```
 
-## Buscando el umbral
+### Buscando el umbral
 
 Hasta ahora hemos evaluado el modelo de manera general, pero el resultado final del modelo debe consistir en asignar a la persona una clase predicha. En nuestro caso debemos establecer un punto de corte según el cual vamos a separar a los pacientes con ECV de los que no tienen ECV.
 
