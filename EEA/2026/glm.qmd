@@ -52,7 +52,8 @@ glimpse(mieleros)
 ggplot(mieleros, aes(y = Minerab, x = Eucs)) +
   geom_point(colour=2)+
   xlab("Cant. de Eucaliptos cada 2 Ha") +     
-  ylab("Abundancia de mieleros")
+  ylab("Abundancia de mieleros")+
+  theme_minimal()
 ```
 
 Propongo el modelo:
@@ -73,6 +74,16 @@ Modelo en la escala de la variable respuesta
 
 
 $$E(Y_i) = \mu_i = e^{\beta_0 + \beta_1X_i} $$
+
+La funcíón `glm()` nos permite crear un modelo lineal generalizado. Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family** donde indicamos la distribución de probabilidades y la función **link** que vamos a utilizar en el modelo. 
+
+Algunos ejemplos:
+
+* *Binomial*: link=logit
+
+* *Poisson*: link=log
+
+* *Gaussiana*: link=identidad
 
 ```{r}
 library(lme4)# glmmTMB si se quiere trabajar con modelos mixtos
@@ -141,8 +152,36 @@ la cantidad esperada de mieleros aumenta aproximadamente un 12%.
 - Ausencia de **sub o sobredispersión**. La varianza de la variable es mayor o menor, respectivamente, a la que se espera según la distribucion de Poisson. Esto provoca estimaciones sesgadas de los errores estándar de los coeficientes de las variables explicatorias.
 
 ```{r}
-AER::dispersiontest(poisson,
-                    alternative = "two.sided")
+AER::dispersiontest(poisson)
+```
+Ignorar la sobredispersión hace que haya mas chances de tener falsos positivos (encontrar diferencias que no son reales). Si hay subdispersión hay mas chances de tener falsos negativos.
+
+**¿Cómo tratar la sobredispersión?**
+
+Se debe ajustar a otras distribuciones de probabilidades para la variable respuesta: Binomial Negativa, Conway-Maxwell-Poisson, Tweedie.
+
+**¿ Cómo tratar la subdispersión?**
+
+Se debe ajustar a otras distribuciones de probabilidades para la variable respuesta:  Conway-Maxwell-Poisson, Tweedie, Poisson generalizada (family="genpois")
+
+**Modelo estimado**
+
+```{r}
+ggplot(mieleros, aes(x = Eucs, y = Minerab)) +
+  geom_point(color = "red", alpha = 0.7, size = 2) + # Puntos observados
+  stat_smooth(
+    method = "glm", 
+    method.args = list(family = "poisson"), 
+    se = TRUE,              # Muestra el intervalo de confianza (cambiar a FALSE si no lo deseas)
+    color = "violet",         # Color de la curva estimada
+    size = 1
+  ) +
+  labs(
+    title = "GLM Poisson",
+    x = "Cantidad de Eucaliptos cada 2 Ha",
+    y = "Abundancia de mieleros"
+  ) +
+  theme_minimal()
 ```
 
 # Regresión Logística
@@ -150,7 +189,7 @@ AER::dispersiontest(poisson,
 
 Vamos a trabajar con una base de datos extraída de [Kaggle](https://www.kaggle.com/code/robinreni/cardiovascular-disease-eda-detailed/notebook). Es una base de datos que consiste de 69301 registros de pacientes a los que se les registró 12 caracteristicas asociadas a una enfermedad cardiovascular.
 
-El objetivo de esta clase es utilizar diferentes modelos de regresión logística para predecir la presencia o ausencia de enfermedad cardiovascular (ECV) utilizando los resultados del examen del paciente.
+Vamos a utilizar diferentes modelos de regresión logística para predecir la presencia o ausencia de enfermedad cardiovascular (ECV) utilizando los resultados del examen del paciente.
 
 **Descripción de los datos**
 
@@ -335,7 +374,6 @@ OR < 1 asociación negativa
 
 ## Planteamos el modelo
 
-Para evitar los problemas vistos con regresión lineal, usamos la **función logística**.
 
 $P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X_j}}$
 
@@ -346,22 +384,11 @@ Luego de hacer algunas operaciones, podemos llegar a la expresión:
 $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
 
 
-La funcíón `glm()` nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. 
+Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, lo especificamos en el parámetro **family**.
 
-Algunas familias son:
-
-* *Binomial*: link=logit
-
-* *Poisson*: link=log
-
-* *Gaussiana*: link=identidad
-
-Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.
-
-Realizamos un modelo de regresión logística para predecir la si el paciente tiene una ECV en función de **weight** y **gender**. 
+Realizamos un modelo de regresión logística para predecir si el paciente tiene una ECV en función de **weight** y **gender**. 
 
 $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_2 varón$
-
 
 
 ```{r}
