@@ -383,7 +383,7 @@ $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
 
 Realizamos un modelo de regresión logística para predecir si el paciente tiene una ECV en función de **weight** y **gender**. 
 
-$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_3 varón$
+$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 varón$
 
 
 ```{r}

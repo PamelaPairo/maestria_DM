@@ -650,7 +650,7 @@ $ cardio      &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 
 <p>Luego de hacer algunas operaciones, podemos llegar a la expresión:</p>
 <p><span class="math inline">\(\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j\)</span></p>
 <p>Realizamos un modelo de regresión logística para predecir si el paciente tiene una ECV en función de <strong>weight</strong> y <strong>gender</strong>.</p>
-<p><span class="math inline">\(\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_3 varón\)</span></p>
+<p><span class="math inline">\(\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 varón\)</span></p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Código</summary>
@@ -752,31 +752,31 @@ $ cardio      &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 cardio ~ gender
-&lt;environment: 0x000001f625b39bc0&gt;
+&lt;environment: 0x0000022c3d65ae78&gt;
 
 [[2]]
 cardio ~ weight
-&lt;environment: 0x000001f625ac0b20&gt;
+&lt;environment: 0x0000022c324a2d68&gt;
 
 [[3]]
 cardio ~ cholesterol
-&lt;environment: 0x000001f62bd0ac18&gt;
+&lt;environment: 0x0000022c2b91e1d0&gt;
 
 [[4]]
 cardio ~ gender + weight
-&lt;environment: 0x000001f62baaf858&gt;
+&lt;environment: 0x0000022c3fc33628&gt;
 
 [[5]]
 cardio ~ gender + cholesterol
-&lt;environment: 0x000001f62b892710&gt;
+&lt;environment: 0x0000022c3fb14518&gt;
 
 [[6]]
 cardio ~ weight + cholesterol
-&lt;environment: 0x000001f62b61b5b8&gt;
+&lt;environment: 0x0000022c3fb76318&gt;
 
 [[7]]
 cardio ~ gender + weight + cholesterol
-&lt;environment: 0x000001f62b00e8f0&gt;</code></pre>
+&lt;environment: 0x0000022c3fa495c0&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2070,7 +2070,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb51-409"><a href="#cb51-409" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-410"><a href="#cb51-410" aria-hidden="true" tabindex="-1"></a>Realizamos un modelo de regresión logística para predecir si el paciente tiene una ECV en función de **weight** y **gender**. </span>
 <span id="cb51-411"><a href="#cb51-411" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-412"><a href="#cb51-412" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_3 varón$</span>
+<span id="cb51-412"><a href="#cb51-412" aria-hidden="true" tabindex="-1"></a>$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 varón$</span>
 <span id="cb51-413"><a href="#cb51-413" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-414"><a href="#cb51-414" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-417"><a href="#cb51-417" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
