@@ -75,7 +75,7 @@ Modelo en la escala de la variable respuesta
 
 $$E(Y_i) = \mu_i = e^{\beta_0 + \beta_1X_i} $$
 
-La funcíón `glm()` nos permite crear un modelo lineal generalizado. Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family** donde indicamos la distribución de probabilidades y la función **link** que vamos a utilizar en el modelo. 
+La funcíón `glm()` nos permite crear un modelo lineal generalizado. Al igual que la función `lm()` toma como argumentos una **fórmula** y los **datos** pero también se debe especificar el argumento **family** donde indicamos la distribución de probabilidades y la función **link** que vamos a utilizar en el modelo. 
 
 Algunos ejemplos:
 
@@ -125,8 +125,7 @@ $$
 \mu(0)=e^{-0.876}\approx 0.42
 $$
 
-Por lo tanto, el modelo estima aproximadamente
-0.42 mieleros cuando no hay eucaliptos.
+Por lo tanto, el modelo estima aproximadamente 0.42 mieleros cuando no hay eucaliptos.
 
 Interpretación de $\beta_1$:
 
@@ -140,8 +139,7 @@ $$
 e^{0.114}\approx 1.12
 $$
 
-Esto significa que por cada eucalipto adicional,
-la cantidad esperada de mieleros aumenta aproximadamente un 12%.
+Esto significa que por cada eucalipto adicional,la cantidad esperada de mieleros aumenta aproximadamente un 12%.
 
 ## Supuestos
 
@@ -325,7 +323,7 @@ g
 
 Cociente entre la probabilidad de éxito de un evento y la probabilidad de que no ocurra.
 
-$Odds = \frac{P(x)}{1-P(x)}$
+$Odds = \frac{P(x)}{1-P(x)}= \frac{\text{Nro Eventos a favor}}{\text{Nro Eventos en contra}}$
 
 Ej. si _Odds_ es 3 indica que por cada 4 repeticiones del evento se espera que ocurran 3 y que una no ocurra.
 
@@ -339,7 +337,7 @@ En nuestro caso:
 
 $Odds = \frac{391/800}{409/800}= 0.9558 \approx \frac{191}{200}$
 
-Por cada 191 pacientes con ECV, 200 no la tienen.
+Por cada 191 pacientes con ECV, hay 200 pacientes sin ECV.
 
 ## **Logit**
 
@@ -382,9 +380,6 @@ Esta función acota el resultado entre 0 y 1, lo cual es mucho más adecuado par
 Luego de hacer algunas operaciones, podemos llegar a la expresión:
 
 $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
-
-
-Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, lo especificamos en el parámetro **family**.
 
 Realizamos un modelo de regresión logística para predecir si el paciente tiene una ECV en función de **weight** y **gender**. 
 
