@@ -383,7 +383,7 @@ $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X_j$
 
 Realizamos un modelo de regresión logística para predecir si el paciente tiene una ECV en función de **weight** y **gender**. 
 
-$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_2 varón$
+$\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \beta_1 weight + \beta_2 age + \beta_3 varón$
 
 
 ```{r}
@@ -417,9 +417,9 @@ $\ Odds_{varón} = {\frac{Prob_{ECV} /varón}{Prob_{noECV}/varón}}$
 
 $\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}$
 
-$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{-0.02}$
+$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{-0.203}$
 
-El odds ratio para la variable género es 0.98, lo que indica que los varones tienen un 2 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un riesgo mayor riesgo relativo de ECV.
+El odds ratio para la variable género es 0.816, lo que indica que los varones tienen un 18,37 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un riesgo mayor riesgo relativo de ECV.
 
 #### Devianza
 
@@ -480,53 +480,41 @@ Analizamos la performance de los modelos generados
 ```{r}
 resultados <- tibble(
   formula = map_chr(formulas, format),
-  deviance = map_dbl(modelos, ~ .$deviance),
-  null_deviance = map_dbl(modelos, ~ .$null.deviance),
-  AIC = map_dbl(modelos, AIC)
+  modelo  = modelos
 ) %>%
-  mutate(dev_explicada = 1 - deviance / null_deviance)%>%
-  arrange(desc(dev_explicada))# se ordena segñun devianza explicada
+  mutate(
+    deviance      = map_dbl(modelo, ~ .x$deviance),
+    null_deviance = map_dbl(modelo, ~ .x$null.deviance),
+    AIC           = map_dbl(modelo, AIC),
+    dev_explicada = 1 - deviance / null_deviance,
+    roc_obj       = map(modelo, ~ roc(train$cardio,
+                                      predict(.x, type = "response"),
+                                      quiet = TRUE)),
+    AUC           = map_dbl(roc_obj, ~ as.numeric(auc(.x)))
+  ) %>%
+  arrange(desc(dev_explicada))
 
-resultados
+# Tabla para mostrar (sin las list-columns)
+resultados %>%
+  select(formula, deviance, null_deviance, AIC, dev_explicada, AUC)
 
 ```
 
 
 ```{r}
-prediction_full <- map2(modelos, formulas, ~ {
-  tibble(
-    .fitted = predict(.x, newdata = train, type = "response"),
-    cardio = train$cardio
-  )
-})
-
-```
-
-```{r}
-roc_df <- map2_dfr(modelos, resultados$formula, ~ {
-  roc_obj <- roc(train$cardio, predict(.x, type = "response"))
-  tibble(
-    tpr = roc_obj$sensitivities,
-    fpr = 1 - roc_obj$specificities,
-    formula = .y
-  )
-})
+roc_df <- resultados %>%
+  mutate(curva = map(roc_obj, ~ tibble(tpr = .x$sensitivities,
+                                       fpr = 1 - .x$specificities))) %>%
+  select(formula, curva) %>%
+  unnest(curva)
 
 ggplot(roc_df, aes(x = fpr, y = tpr, color = formula)) +
   geom_line(size = 1.2) +
   geom_abline(linetype = "dashed") +
-  labs(x = "1 - Especificidad", y = "Sensibilidad", title = "Curvas ROC de todos los modelos") +
+  labs(x = "1 - Especificidad", y = "Sensibilidad", title = "Curvas ROC de todos los modelos evaluado en TRAIN") +
   theme_minimal()
 ```
-```{r}
-auc_values <- map_dbl(modelos, ~ auc(roc(train$cardio, predict(.x, type = "response"))))
 
-resultados <- resultados %>%
-  mutate(AUC = auc_values)
-
-resultados
-
-```
 
 ### Buscando el umbral
 
@@ -554,14 +542,14 @@ $precision = \frac{TP}{TP+FP}$
 ```{r}
 # Supongamos que 'mejor_modelo'
 
-best_model <- glm(data = test,
+best_model <- glm(data = train,
                   cardio ~ weight + gender+ cholesterol, 
                   family = 'binomial')
 
 # generamos las predicciones para el mejor modelo
-test_model <- tibble(
-  .fitted = predict(best_model, newdata = test, type = "response"),
-  cardio = test$cardio
+train_model <- tibble(
+  .fitted = predict(best_model, newdata = train, type = "response"),
+  cardio = train$cardio
 )
 
 # generamos una funcion que evalua diferentes umbrales y calcula las metricas
@@ -588,7 +576,7 @@ prediction_metrics <- function(cutoff, predictions) {
 # se calculan las metricas para diferentes valores de umbrales
 
 cutoffs <- seq(0.05, 0.95, 0.05)
-metricas_df <- map_df(cutoffs, ~ prediction_metrics(.x, predictions = test_model)) %>%
+metricas_df <- map_df(cutoffs, ~ prediction_metrics(.x, predictions = train_model)) %>%
   mutate(term = as.factor(term), estimate = round(estimate, 3))
 
 #graficamos los resultados
@@ -639,17 +627,11 @@ table_test = table_test %>%
 # Creamos la matriz de confusión
 confusionMatrix(table(table_test$predicted_class, table_test$cardio), positive = "1")
 ```
+Sensibilidad: El 70.8 % de los casos con ECV fueron correctamente identificados por el modelo. (Probabilidad de que el modelo prediga ECV si la persona realmente la tiene.)
 
-El 69.8 % de los casos positivos reales fueron correctamente identificados.
-(Probabilidad de detectar correctamente una ECV si la persona realmente la tiene.)
+Especificidad: El 65.4 % de los casos sin ECV fueron correctamente identificados como tales. (Probabilidad de que el modelo prediga ausencia de ECV si la persona realmente no la tiene.)
 
-El 66.4 % de los casos negativos fueron correctamente identificados como tales.
-
-De todos los que el modelo predijo como negativos, el 70.4 % realmente no tienen ECV.
-
-```{r}
-best_model
-```
+De todos los pacientes que el modelo predijo como negativos, el 70.8 % realmente no tiene ECV.
 
 
 ### Gráfico de Hosmer Lemeshow
@@ -711,18 +693,22 @@ Hosmer_Lemeshow_plot <- function(dataset, predicted_column, class_column, bins =
 
 ```{r}
 # modelo completo
-Hosmer_Lemeshow_plot(test_model, '.fitted', 'cardio', 10, 1) +
+Hosmer_Lemeshow_plot(train_model, '.fitted', 'cardio', 10, 1) +
   labs(subtitle="Modelo final")
 ```
 
-La prueba de Hosmer Lemeshow permite evaluar el buen ajuste del modelo
+La prueba de Hosmer Lemeshow tiene la siguiente Ho
+
+Ho buen ajuste del modelo
 
 ```{r}
 library(ResourceSelection)
 
-h1 <- hoslem.test (test$cardio , 
-                   fitted(best_model), g=8)
+p_test <- predict(best_model, newdata = test, type = "response")
+
+h1 <- hoslem.test(test$cardio, p_test, g = 10)
 h1
+
 ```
 
 ## Interpretación del modelo final
@@ -741,7 +727,7 @@ results_ %>%
 
 **`weight`**
 
-Por cada aumento de una unidad de peso, los odds de presentar una ECV aumentan un 5%, manteniendo constantes el resto de las variables. Al no incluir el 1 se puede decir que el efecto es estadísticamente significativo
+Por cada aumento de una unidad de peso, los odds de presentar una ECV aumentan un 4%, manteniendo constantes el resto de las variables. Al no incluir el 1 se puede decir que el efecto es estadísticamente significativo
 
 Conclusión: el peso se asocia positivamente con la probabilidad de contraer ECV.
 
@@ -751,8 +737,8 @@ Aunque parece haber una tendencia a menor riesgo en varones, el intervalo incluy
 
 **`cholesterol`**
 
-Los pacientes con colesterol en nivel 3 tienen 3.56 veces más odds de presentar ECV que aquellos con colesterol normal (nivel base).
-Es decir, los odds de tener ECV se incrementan en un 256% en comparación con el grupo de referencia, manteniendo constantes las demás variables del modelo.
+Los pacientes con colesterol en nivel 3 tienen 2.71 veces más odds de presentar ECV que aquellos con colesterol normal (nivel base).
+Es decir, los odds de tener ECV se incrementan en un 171% en comparación con el grupo de referencia, manteniendo constantes las demás variables del modelo.
 
 A continuación se muestra las curvas que representan la probabilidad predicha de presentar una ECV en función del peso, comparando varones y mujeres y manteniendo fijo el colesterol en el nivel “1”.
 
