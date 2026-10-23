@@ -419,7 +419,7 @@ $\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}$
 
 $\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{-0.203}$
 
-El odds ratio para la variable género es 0.816, lo que indica que los varones tienen un 18,37 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un riesgo mayor riesgo relativo de ECV.
+El odds ratio para la variable género es 0.816, lo que indica que los varones tienen un 18,37 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un mayor factor de riesgo de ECV.
 
 #### Devianza
 

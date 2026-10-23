@@ -1,0 +1,751 @@
+---
+title: "GLM bayesianos y Regularización"
+author: "Pamela Eugenia Pairo"
+lang: es
+format:
+  html:
+    theme: flatly
+    code-fold: show
+    code-tools: true
+    toc: true
+    toc-location: left
+---
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Cargamos las librerías que vamos a utilizar
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+library(cowplot)
+library(glmnet)
+library(RColorBrewer)
+library(knitr)
+library(kableExtra)
+library (brms)
+
+set.seed(15)
+```
+
+# Modelo de regresión Poisson bayesiano
+
+Queremos estudiar la relación entre la cantidad de eucaliptos y la abundancia de mieleros (*honeyeaters*), unas aves nativas de Australia.
+
+Suponemos que la abundancia de mieleros en la unidad de observación $i$ sigue una distribución Poisson:
+
+$$
+Y_i \mid \beta_0, \beta_1 \sim \operatorname{Poisson}(\mu_i)
+$$
+
+donde $\mu_i = \mathbb{E}(Y_i \mid x_i)$ es la abundancia media esperada de mieleros.
+
+Relacionamos la media esperada con la cantidad de eucaliptos mediante una función de enlace logarítmica:
+
+$$
+\log(\mu_i) = \beta_0 + \beta_1 x_i
+$$
+
+Equivalentemente,
+
+$$
+\mu_i = \exp(\beta_0 + \beta_1 x_i)
+$$
+
+## Enfoque bayesiano
+
+Asignamos distribuciones *a priori* a los parámetros $\beta_0$ y $\beta_1$. Combinando estas distribuciones con la verosimilitud de los datos, obtenemos la distribución *a posteriori*:
+
+$$
+p(\beta_0, \beta_1 \mid \mathbf{y})
+\propto
+p(\mathbf{y} \mid \beta_0, \beta_1)
+\, p(\beta_0, \beta_1)
+$$
+
+La distribución *a posteriori* se aproxima mediante simulación MCMC, utilizando el algoritmo NUTS implementado en Stan a través de `brms`.
+
+## Interpretación de los coeficientes
+
+- $\beta_0$: logaritmo de la abundancia media esperada de mieleros cuando \(x_i = 0\), es decir, cuando no hay eucaliptos.
+- $\beta_1$: cambio en el logaritmo de la abundancia media esperada por cada eucalipto adicional.
+- $\exp(\beta_1)$: factor multiplicativo de la abundancia media esperada asociado a un eucalipto adicional.
+
+
+```{r}
+mieleros <- read.csv("nminer.csv")
+
+```
+
+
+```{r}
+model_poisson <- brm(Minerab~ Eucs, 
+               data=mieleros,
+               chain=4,
+               iter= 4000,
+               warmup = 1000,
+               family=poisson())
+```
+
+
+```{r}
+summary(model_poisson)
+```
+
+```{r}
+plot(model_poisson)
+```
+
+## Evaluando la convergencia
+
+### **R-hat (estimador de Gelman-Rubin)**
+
+Es una métrica que se utiliza para medir si las cadenas de Markov han convergido a la misma distribución posterior. El R-hat compara la varianza entre varias cadenas con la varianza dentro de cada cadena individual. Si todas las cadenas convergen correctamente, entonces las varianzas dentro y entre las cadenas deberían ser similares.
+
+### **Effective Sample Size (ESS)**
+
+Mide cuántas muestras independientes se han obtenido de la distribución posterior. A veces, en los métodos MCMC, las muestras pueden estar correlacionadas debido a la naturaleza de las cadenas de Markov, lo que significa que no todas las muestras son completamente "nuevas" o "independientes". El ESS ajusta por esta correlación y nos da una estimación de cuántas muestras útiles tenemos realmente.
+
+  - ESS alto: Significa que la mayoría de las muestras son independientes, lo cual es bueno. Cuanto más alto sea el ESS, más confiable será la inferencia.
+  -  ESS bajo: Indica que las muestras están fuertemente correlacionadas y, por lo tanto, menos confiables. A veces esto ocurre porque la cadena no está explorando el espacio de parámetros de manera eficiente o porque se necesita más muestreo.
+
+- **Bulk-ESS**: Evalúa la calidad de las muestras en el centro de la distribución.
+- **Tail-ESS**: Evalúa la calidad de las muestras en las colas de la distribución.
+  
+```{r}
+library(bayestestR)
+
+hdi(model_poisson, ci = 0.95)
+```
+
+```{r}
+brms::prior_summary(model_poisson)
+```
+
+```{r}
+brms::pp_check(model_poisson, type = "rootogram")
+```
+
+```{r}
+# Gráfico de predicciones
+brms::conditional_effects(model_poisson, effects = "Eucs") |>
+  plot(points = TRUE)
+```
+
+
+
+
+# Regularización: Presentación del caso de estudio
+
+Vamos a trabajar con la base de datos de los jugadores de FIFA 2024 MEN, la cual fue extraída de [Kaggle](https://www.kaggle.com/datasets/rehandl23/fifa-24-player-stats-dataset/data).
+
+El **objetivo** es predecir el precio de los jugadores de FIFA 2024 utilizando diferentes modelos de regresión y regularización.
+
+```{r}
+df <- read.csv("player_stats.csv")
+
+colSums(is.na(df))# chequeamos si hay datos faltantes
+```
+```{r}
+sum(duplicated(df))#chequeamos duplicados
+
+```
+```{r}
+glimpse(df)
+```
+
+Atributos de los jugadores:
+
+- Player: The name of the football player.
+- Country: The nationality or home country of the player.
+- Height: The height of the player in centimeters.
+- Weight: The weight of the player in kilograms.
+- Age: The age of the player.
+- Club: The club to which the player is currently affiliated.
+- Ball Control: Player's skill in controlling the ball.
+- Dribbling: Player's dribbling ability.
+- Marking: Player's marking skill.
+- Slide Tackle: Player's ability to perform slide tackles.
+- Stand Tackle: Player's ability to perform standing tackles.
+- Aggression: Player's aggression level.
+- Reactions: Player's reaction time.
+- Attacking Position: Player's positioning for attacking plays.
+- Interceptions: Player's skill in intercepting passes.
+- Vision: Player's vision on the field.
+- Composure: Player's composure under pressure.
+- Crossing: Player's ability to deliver crosses.
+- Short Pass: Player's short passing accuracy.
+- Long Pass: Player's ability in long passing.
+- Acceleration: Player's acceleration on the field.
+- Stamina: Player's stamina level.
+- Strength: Player's physical strength.
+- Balance: Player's balance while playing.
+- Sprint Speed: Player's speed in sprints.
+- Agility: Player's agility in maneuvering.
+- Jumping: Player's jumping ability.
+- Heading: Player's heading skills.
+- Shot Power: Player's power in shooting.
+- Finishing: Player's finishing skills.
+- Long Shots: Player's ability to make long-range shots.
+- Curve: Player's ability to curve the ball.
+- Free Kick Accuracy: Player's accuracy in free-kick situations.
+- Penalties: Player's penalty-taking skills.
+- Volleys: Player's volleying skills.
+- Goalkeeper Positioning: Goalkeeper's positioning attribute (specific to goalkeepers).
+- Goalkeeper Diving: Goalkeeper's diving ability (specific to goalkeepers).
+- Goalkeeper Handling: Goalkeeper's ball-handling skill (specific to goalkeepers).
+- Goalkeeper Kicking: Goalkeeper's kicking ability (specific to goalkeepers).
+- Goalkeeper Reflexes: Goalkeeper's reflexes (specific to goalkeepers).
+- Value: The estimated value of the player.
+
+Modificamos la variable `value`para que tenga el tipo de dato que le corresponde y agregamos un cero a los valores que terminan `.00 `.
+
+```{r}
+
+df <- df %>%
+  mutate(
+    new_value = value %>%
+      str_replace("\\.00\\s$", "000") %>%
+      str_replace_all("\\$", "") %>%
+      str_replace_all("\\.", "") %>%
+      str_trim() %>%
+      as.integer()
+  )
+
+df %>%
+  head() %>%
+  kable(format = "html") %>%
+  kable_styling(full_width = FALSE) 
+
+
+```
+
+# Análisis exploratorio
+
+A continuación se realizan algunos gráficos de análisis exploratorio con el fin de analizar la relación entre algunas variables y el comportamiento del precio de los jugadores.
+
+```{r}
+ggplot(df, aes(y = new_value)) +
+  geom_boxplot()
+```
+
+
+```{r}
+#paises con mas jugadores
+top_10 <- df %>%
+  count(country, sort = TRUE) %>% 
+  head(n=10)
+
+
+#barplot
+ggplot(top_10, aes(x = reorder(country, n), y = n)) +
+  geom_bar(stat = "identity", fill = "#FDB462") + 
+  coord_flip() +
+  labs(
+    x = "País",
+    y = "Cantidad de jugadores",
+    title = "Top 10 países con mas jugadores"
+  ) +
+  theme_minimal()
+
+```
+```{r}
+ggplot(df, aes(height)) +
+     geom_histogram(fill="#FDB462", colour="black")
+
+```
+```{r}
+    ggplot(data = df, aes(x = aggression, y = finishing, color = shot_power)) +
+      geom_point()+ scale_color_gradientn(colours = terrain.colors(8))
+```
+
+```{r}
+    ggplot(data = df, aes(x = heading, y = jumping, color = reactions)) +
+      geom_point()+ scale_color_gradientn(colours = terrain.colors(8))
+```
+
+```{r}
+    ggplot(data = df, aes(x = gk_handling, y = gk_diving, color = gk_kicking)) +
+      geom_point()+ scale_color_gradientn(colours = terrain.colors(8))
+```
+
+
+
+```{r}
+df %>% 
+  select_if(is.numeric) %>% # selección variables numéricas
+  ggcorr(., layout.exp = 5, hjust = 1, size = 3.5, nbreaks = 5, color = "grey50") + # graficamos correlacion pearson
+  labs(title='Correlograma de variables cuantitativas')
+```
+
+# Preparación de la base de datos
+
+Vamos a separar a los arqueros del resto de los jugadores.
+
+```{r}
+df_ <-df %>% filter(gk_positioning < 30 & gk_positioning < 30) %>% #saco arqueros
+  select(-c(value, marking, country, club, player)) %>% #saco ciertas columnas
+  select(-starts_with("gk_"))#elimino columnas que caracterizan a los arqueros
+```
+
+## Partición en train y test
+
+```{r}
+df_split <- initial_split(df_,
+                          prop = 0.8)
+
+train<- df_split %>%
+              training()
+
+test <- df_split %>%
+              testing()
+
+train_sc <- as.data.frame(scale(train))
+test_sc <- as.data.frame(scale(test))
+```
+
+
+
+```{r}
+train_sc %>% 
+  ggcorr(., layout.exp = 5, hjust = 1, size = 3.5, nbreaks = 5, color = "grey50") + # graficamos correlacion pearson
+  labs(title='Correlograma de variables cuantitativas en train')
+```
+# Regresión Lineal Múltiple
+
+```{r}
+# Modelo lineal
+modelo_lineal = train_sc %>% lm(formula = new_value ~ .)
+
+#Coeficientes
+lineal_coef = modelo_lineal %>% tidy(conf.int=TRUE)
+
+#graficamos los coeficientes estimados
+lineal_coef %>% filter(!is.na(estimate)) %>% 
+  ggplot(., aes(term, estimate))+
+  geom_point(color = "forestgreen")+
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high), color = "forestgreen")+
+  geom_hline(yintercept = 0, lty = 4, color = "black") +
+  labs(title = "Coeficientes de la regresión lineal", x="", y="Estimación e Int. Confianza") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=90))
+```
+
+
+Graficamos los p-valores de mayor a menor para evaluar la significatividad individual de los coeficientes estimados.
+
+
+```{r}
+lineal_coef %>% filter(!is.na(estimate)) %>% 
+  ggplot(., aes(reorder(term, -p.value), p.value, fill=p.value))+
+  geom_bar(stat = 'identity', aes(fill=p.value))+
+  geom_hline(yintercept = 0.05) +
+  labs(title = "P-valor de los regresores", x="", y="P-valor") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=90)) + 
+  scale_fill_gradient2(high='firebrick', low = 'forestgreen', mid='yellow2',midpoint = 0.5 )
+```
+Evaluamos la multicolinealidad de las regresoras.
+
+```{r}
+
+car::vif (modelo_lineal)
+```
+# Regularización
+
+La libreria `glmnet` nos permite trabajar con modelos Ridge, Lasso y Elastic Net. La función que vamos a utilizar es glmnet(). Es necesario que le pasemos un objeto matriz con los regresores y un vector con la variable a explicar (en este caso los salarios de los jugadores). Pueden chequear en el [este link](https://glmnet.stanford.edu/articles/glmnet.html) mas información sobre `glmnet`. 
+
+Fórmula:
+
+$ECM + \lambda{\left[\alpha\sum_{j}|\beta_j| +(1-\alpha)\sum_{j}\beta_j^2\right]}$
+
+* $\lambda$ regula la importancia de la penalización.
+* $\alpha$ controla la importancia relativa de la regularización L1 y L2 y sirve para indicar si deseamos realizar un modelo de tipo Lasso, Ridge o Elastic Net.
+
+
+  * Ridge:  $\alpha=0$
+  
+  * Lasso:  $\alpha=1$
+  
+  * Elastic Net:  $0<\alpha<1$
+
+## Ridge (L2 regularization)
+
+En este caso la penalización funciona añadiendo un término basado en la suma de los cuadrados de los coeficientes ($\sum \beta_j^2$) a la función de costo, lo que lleva la magnitud de los coeficientes hacia cero. Cuando $\lambda$ toma valores altos, aplica una penalización fuerte, resultando en coeficientes muy pequeños y siendo muy útil para mitigar la multicolinealidad al distribuir la importancia entre variables correlacionadas.
+
+$$\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} \beta_j^2 \right\}$$
+
+  
+```{r}
+# modelo ridge 
+ridge_model <- glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),  # predictoras
+  train$new_value,  # variable respuesta
+  standardize = T, #estandariza las variables
+  alpha = 0  # Ridge
+)
+```
+
+```{r}
+ridge_tidy <- ridge_model%>% tidy() %>% arrange(step)
+ridge_tidy
+```
+
+```{r}
+add_top_coef_labels_glmnet <- function(fit, s = NULL, top_n = 5,
+                                       offset_x = 0.5, cex = 0.8, col = "black",
+                                       pos = 4) {
+  # fit: objeto glmnet
+  # s: valor lambda (si NULL usa el último de fit$lambda)
+  # top_n: cuántas variables etiquetar (por valor absoluto)
+  # offset_x: desplazamiento horizontal en la escala de -log(lambda)
+  # cex, col, pos: parámetros de text()
+  
+  # elegir s (último lambda por defecto)
+  if (is.null(s)) s <- fit$lambda[length(fit$lambda)]
+  
+  # extraer coeficientes (sin intercepto)
+  coefs <- as.matrix(coef(fit, s = s))
+  if (nrow(coefs) <= 1) return(invisible(NULL))  # por si no hay predictores
+  coefs <- coefs[-1, , drop = FALSE]
+  
+  # seleccionar top_n por valor absoluto
+  vals <- abs(coefs[, 1])
+  ord <- order(vals, decreasing = TRUE)
+  top_idx <- ord[seq_len(min(top_n, length(ord)))]
+  top_coefs <- coefs[top_idx, 1, drop = FALSE]
+  labels <- rownames(top_coefs)
+  y <- as.numeric(top_coefs)
+  
+  # coordenada X en la escala del plot.glmnet (eje = -log(lambda))
+  x_desired <- -log(s) + offset_x
+  
+  # asegurar que el plot ya existe y obtener límites
+  usr <- par("usr")  # c(xmin, xmax, ymin, ymax)
+  if (is.null(usr) || length(usr) < 4) {
+    stop("No hay un plot activo. Llamá primero a plot(fit, xvar='lambda') antes de esta función.")
+  }
+  
+  # si x_desired queda fuera del plot, recolocamos en el borde derecho menos margen
+  x_min <- usr[1]; x_max <- usr[2]
+  if (x_desired > x_max) x <- x_max - 0.02 * (x_max - x_min) else if (x_desired < x_min) x <- x_min + 0.02 * (x_max - x_min) else x <- x_desired
+  
+  # si hay muchos labels que se pisan, usar offsets verticales pequeños
+  # calculamos desplazamientos verticales para evitar solapamiento simple
+  # (ordenamos por y y separamos ligeramente)
+  order_y <- order(y)
+  y_sorted <- y[order_y]
+  # simple jitter vertical proporcional al rango
+  yrng <- usr[4] - usr[3]
+  jitter_step <- 0.02 * yrng
+  y_jittered <- y_sorted + seq(-floor(length(y_sorted)/2), floor((length(y_sorted)-1)/2)) * jitter_step
+  # reordenar al orden original de top_idx
+  y_final <- numeric(length(y))
+  y_final[order_y] <- y_jittered
+  
+  # dibujar texto
+  text(rep(x, length(y_final)), y_final, labels = labels, cex = cex, col = col, pos = pos)
+  invisible(data.frame(label = labels, x = x, y = y_final))
+}
+
+
+```
+
+A continuación se muestra el gráfico de valores de $\lambda$ vs nivel de penalización. 
+
+- En el extremo izquierdo del gráfico se representan los **valores altos de $\lambda$**, donde la penalización es máxima y por ende los coeficientes del modelo son prácticamente cero.
+
+- En el extremo derecho se hayan **los valores mas bajos de $\lambda$**. En esta zona, la penalización es mínima. El modelo se acerca a una regresión como la presentada anteriormente, y los coeficientes alcanzan sus máximos valores (no hay prácticamente penalización).
+
+En una regresión Ridge, los coeficientes no llegan a ser cero, se acercan a cero (o se encojen) cuando $\lambda$ es alto. En el gráfico se muestran las 5 variables mas importantes. Ridge no realiza una selección de variables.
+
+`reactions` y `age` son las variables más importantes y con mayor impacto en el salario de los jugadores FIFA 2024.
+
+```{r}
+plot(ridge_model, 
+     xvar = "lambda", 
+     label=F,
+     xlim = c(-22, -11),
+     ylim= c(-2.5e05, 3.5e05))
+# Agregás etiquetas de las 5 variables más importantes
+
+add_top_coef_labels_glmnet(ridge_model, top_n = 5, offset_x = 0.2, col = "black")
+
+```
+
+## Búsqueda del lambda óptimo
+
+A partir de realizar validación cruzada se encuentra el lambda que minimiza el ECM.
+
+```{r}
+# CV para encontrar el mejor lambda
+cv_ridge <- cv.glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),
+  train$new_value,
+  standarize=T,
+  nfolds= 10,
+  type.measure = "mse",
+  alpha = 0  # ridge
+)
+
+cv_ridge$lambda.min  # este valor de lambda minimiza el ecm
+```
+
+ECM vs complejidad del modelo
+
+A medida que nos movemos de izquierda a derecha (disminuye $\lambda$), el error desciende progresivamente (el modelo se ajusta mejor) hasta que alcanza una meseta.
+
+Como se puede apreciar, aparecen dos lineas verticales en el gráfico. La línea punteada de la derecha corresponde al $\lambda_{min}$, es decir el valor de $\lambda$ que da el ECM promedio en la validación cruzada. La línea punteada de la izquierda corresponde al $\lambda_{1se}$, en el cual se selecciona el modelo más simple (más penalizado, con coeficientes más pequeños) que se considera estadísticamente indistinguible del modelo con el error mínimo.
+
+
+```{r}
+plot(cv_ridge)
+```
+
+### Modelo final
+
+```{r}
+# Selección lambda óptimo
+ridge_lambda_opt = cv_ridge$lambda.min
+
+# Entrenamiento modelo óptimo
+ridge_opt = glmnet(as.matrix(train[, !names(train) %in% "new_value"]),  # Predictor variables
+                  train$new_value,
+                   alpha = 0, # Indicador del tipo de regularizacion
+                   standardize = TRUE,  # Estandarizamos
+                   lambda = ridge_lambda_opt)
+# Salida estandar
+ridge_opt
+```
+
+El porcentaje de deviance explicado del modelo final es del 31,4%.
+
+```{r}
+# Tidy
+ridge_opt %>% tidy() %>% mutate(estimate = round(estimate, 4))
+```
+
+## Lasso (L1 regularization)
+
+La penalización en una regresión Lasso funciona añadiendo un término basado en la suma de los valores absolutos de los coeficientes ($\sum |\beta_j|$) a la función de costo, lo que reduce la magnitud de los coeficientes y puede forzar a los menos relevantes a ser exactamente cero, realizando selección de variables. 
+
+$$\min_{\beta_0, \beta} \left\{ \frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2 + \lambda \sum_{j=1}^{p} |\beta_j| \right\}$$
+
+```{r}
+lasso_model <- glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),  # Predictor variables
+  train$new_value,  # Response variable
+  standardize = T,
+  alpha = 1  # lasso
+)
+```
+
+```{r}
+
+plot(lasso_model, 
+     xvar = "lambda", 
+     label=F,
+     xlim = c(-15, -6),
+     ylim= c(-3e05, 4e05))
+# se agrega etiquetas de las 5 variables más importantes
+
+add_top_coef_labels_glmnet(lasso_model, top_n = 5, offset_x = 0.2, col = "black")
+```
+
+```{r}
+cv_lasso <- cv.glmnet(
+  as.matrix(train[, !names(train) %in% "new_value"]),
+  train$new_value,
+  standarize=T,
+  nfolds = 10
+)
+
+cv_lasso$lambda.min  # valor de lambda que minimiza el ecm
+```
+
+```{r}
+plot(cv_lasso)
+```
+
+```{r}
+# Selección lambda óptimo
+lasso_lambda_opt = cv_lasso$lambda.min
+# Entrenamiento modelo óptimo
+lasso_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
+                   y = train$new_value, #Vector de la variable a predecir
+                   alpha = 1, # Indicador del tipo de regularizacion
+                   standardize = TRUE,  # Estandarizamos
+                   lambda = lasso_lambda_opt)
+# Salida estandar
+lasso_opt
+```
+
+El porcentaje de deviance explicado del modelo final es del 30.35%. La regresión Lasso selecciona 27 variables.
+
+```{r}
+# Tidy
+lasso_opt %>% tidy() %>% mutate(estimate = round(estimate, 2))
+```
+
+## Elastic net
+
+La penalización Elastic Net combina las fortalezas de Ridge y Lasso al añadir a la función de costo una mezcla lineal de las penalizaciones $L_1$ y $L_2$, controlada por el parámetro $\alpha$. Un $\lambda$ (lambda) alto resulta en un modelo más penalizado. 
+
+$$
+\min_{\beta_0, \beta} \left\{
+\frac{1}{2N} \sum_{i=1}^{N} (y_i - \beta_0 - x_i^T \beta)^2
++ \lambda \left[
+(1 - \alpha)\frac{1}{2} \sum_{j=1}^{p} \beta_j^2
++ \alpha \sum_{j=1}^{p} |\beta_j|
+\right]
+\right\}
+$$
+
+
+```{r}
+models <- list()
+for (i in 0:20) {
+  name <- paste0("alpha", i/20)
+  
+
+  models[[name]] <-
+    cv.glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
+                   y = train$new_value, standarize=T, alpha=i/20)
+}
+```
+
+```{r}
+# Lista para guardar los modelos
+models <- list()
+
+# Vector para almacenar los resultados
+results <- data.frame(alpha = numeric(), lambda = numeric())
+
+for (i in 0:20) {
+  a <- i / 20
+  name <- paste0("alpha", a)
+  
+  # Ajuste del modelo con cv.glmnet
+  models[[name]] <- cv.glmnet(
+    x = as.matrix(train[, !names(train) %in% "new_value"]),
+    y = train$new_value,
+    standardize = TRUE,
+    nfolds= 10,
+    alpha = a
+  )
+  
+  # Guardar el alpha y el MSE mínimo
+  results <- rbind(
+    results,
+    data.frame(
+      alpha = a,
+      lambda = models[[name]]$lambda.min  # cvm contiene el MSE promedio por lambda
+    )
+  )
+}
+
+# Ver el data frame final
+results
+
+```
+
+### Mejor modelo
+
+
+```{r}
+elastic_opt = glmnet(x = as.matrix(train[, !names(train) %in% "new_value"]), # Matriz de regresores
+                   y = train$new_value, #Vector de la variable a predecir
+                   alpha = 0.95, 
+                   standardize = TRUE,
+                   lambda=min(results$lambda))
+# Salida estandar
+elastic_opt
+```
+
+```{r}
+# Tidy
+elastic_opt %>% tidy() %>% mutate(estimate = round(estimate, 2))
+```
+
+## Resumen
+
+```{r}
+# 1. Extraer los coeficientes del modelo Elastic Net óptimo
+# La función 'coef' devuelve una matriz 'dgCMatrix'
+elastic_coef <- coef(elastic_opt)
+
+# 2. Extraer los coeficientes de los modelos Ridge y Lasso óptimos
+# Asume que ya tienes 'ridge_opt' y 'lasso_opt' ajustados de manera similar
+ridge_coef <- coef(ridge_opt)
+lasso_coef <- coef(lasso_opt)
+```
+
+
+```{r}
+# Convertir y limpiar los coeficientes a un data.frame simple
+extract_and_clean <- function(model_coef, model_name) {
+  df <- data.frame(
+    Variable = rownames(model_coef),
+    Coeficiente = as.numeric(model_coef),
+    Modelo = model_name
+  )
+  # Quitar la columna del intercepto (Intercept) para simplificar la comparación si se desea
+  # df <- subset(df, Variable != "(Intercept)")
+  return(df)
+}
+
+# Aplicar la función de limpieza y combinación
+coef_ridge <- extract_and_clean(ridge_coef, "Ridge (α=0)")
+coef_lasso <- extract_and_clean(lasso_coef, "Lasso (α=1)")
+coef_elastic <- extract_and_clean(elastic_coef, "Elastic Net (α=0.95)")
+
+# Combinar todas las tablas en una sola
+tabla_final <- merge(coef_ridge[, c(1, 2)], coef_lasso[, c(1, 2)], by = "Variable", all = TRUE, suffixes = c(".Ridge", ".Lasso"))
+tabla_final <- merge(tabla_final, coef_elastic[, c(1, 2)], by = "Variable", all = TRUE)
+names(tabla_final)[4] <- "Coeficiente.ElasticNet"
+
+# Opcional: reemplazar NAs (si hubiera) con 0 para Lasso (aunque con tu ajuste no debería haber NAs)
+# tabla_final[is.na(tabla_final)] <- 0
+```
+
+```{r}
+tabla_final
+```
+
+# Evaluando en Test
+
+```{r}
+x_test <- as.matrix(test[, !names(test) %in% "new_value"])
+y_test <- test$new_value
+
+# === Ridge (alpha=0) ===
+pred_ridge <- predict(ridge_opt, x_test)
+mse_ridge <- mean((y_test - pred_ridge)^2)          # ECM
+rmse_ridge <- sqrt(mse_ridge)                       # RSME
+mae_ridge <- mean(abs(y_test - pred_ridge))         # MAE
+
+# === Lasso (alpha=1) ===
+pred_lasso <- predict(lasso_opt, x_test)
+mse_lasso <- mean((y_test - pred_lasso)^2)
+rmse_lasso <- sqrt(mse_lasso)
+mae_lasso <- mean(abs(y_test - pred_lasso))
+
+# === Elastic Net (alpha=0.95) ===
+pred_elastic <- predict(elastic_opt, x_test)
+mse_elastic <- mean((y_test - pred_elastic)^2)
+rmse_elastic <- sqrt(mse_elastic)
+mae_elastic <- mean(abs(y_test - pred_elastic))
+
+# === Tabla resumen ===
+results <- data.frame(
+  Modelo = c("Ridge", "Lasso", "Elastic Net"),
+  ECM_Test = c(mse_ridge, mse_lasso, mse_elastic),
+  RSME_Test = c(rmse_ridge, rmse_lasso, rmse_elastic),
+  MAE_Test = c(mae_ridge, mae_lasso, mae_elastic))
+
+print(results)
+
+```
+
+
+Ridge y Lasso reducen la magnitud de los coeficientes de las variables, lo cual atenúa pero no resuelve el impacto de outliers. Ridge suaviza la influencia, Lasso puede volverse inestable y seleccionar mal variables. La regularización controla varianza, no robustez; para outliers se necesitan técnicas robustas adicionales.

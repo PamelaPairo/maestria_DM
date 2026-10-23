@@ -693,7 +693,7 @@ $ cardio      &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 
 <p><span class="math inline">\(\ Odds_{varón} = {\frac{Prob_{ECV} /varón}{Prob_{noECV}/varón}}\)</span></p>
 <p><span class="math inline">\(\ Odds_{mujer} = {\frac{Prob_{ECV} /mujer}{Prob_{noECV}/mujer}}\)</span></p>
 <p><span class="math inline">\(\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{-0.203}\)</span></p>
-<p>El odds ratio para la variable género es 0.816, lo que indica que los varones tienen un 18,37 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un riesgo mayor riesgo relativo de ECV.</p>
+<p>El odds ratio para la variable género es 0.816, lo que indica que los varones tienen un 18,37 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un mayor factor de riesgo de ECV.</p>
 <section id="devianza" class="level4">
 <h4 class="anchored" data-anchor-id="devianza">Devianza</h4>
 <p>Es una medida de la falta de ajuste del modelo. Cuanto menor es la devianza residual, mejor se ajusta el modelo.</p>
@@ -752,31 +752,31 @@ $ cardio      &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 cardio ~ gender
-&lt;environment: 0x0000022c3d65ae78&gt;
+&lt;environment: 0x0000019fb7b87b30&gt;
 
 [[2]]
 cardio ~ weight
-&lt;environment: 0x0000022c324a2d68&gt;
+&lt;environment: 0x0000019fb7bb4d68&gt;
 
 [[3]]
 cardio ~ cholesterol
-&lt;environment: 0x0000022c2b91e1d0&gt;
+&lt;environment: 0x0000019fc251f708&gt;
 
 [[4]]
 cardio ~ gender + weight
-&lt;environment: 0x0000022c3fc33628&gt;
+&lt;environment: 0x0000019fc251aac8&gt;
 
 [[5]]
 cardio ~ gender + cholesterol
-&lt;environment: 0x0000022c3fb14518&gt;
+&lt;environment: 0x0000019fc2527c48&gt;
 
 [[6]]
 cardio ~ weight + cholesterol
-&lt;environment: 0x0000022c3fb76318&gt;
+&lt;environment: 0x0000019fc2530eb8&gt;
 
 [[7]]
 cardio ~ gender + weight + cholesterol
-&lt;environment: 0x0000022c3fa495c0&gt;</code></pre>
+&lt;environment: 0x0000019fc2539c10&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -2106,7 +2106,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb51-447"><a href="#cb51-447" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-448"><a href="#cb51-448" aria-hidden="true" tabindex="-1"></a>$\ OR = {\frac{Odds_{varón}}{Odds_{mujer}}}= e^{\beta_{género}}= e^{-0.203}$</span>
 <span id="cb51-449"><a href="#cb51-449" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-450"><a href="#cb51-450" aria-hidden="true" tabindex="-1"></a>El odds ratio para la variable género es 0.816, lo que indica que los varones tienen un 18,37 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un riesgo mayor riesgo relativo de ECV.</span>
+<span id="cb51-450"><a href="#cb51-450" aria-hidden="true" tabindex="-1"></a>El odds ratio para la variable género es 0.816, lo que indica que los varones tienen un 18,37 % menos de odds de presentar una ECV que las mujeres, manteniendo constante el peso. En consecuencia, ser mujer se asocia con un mayor factor de riesgo de ECV.</span>
 <span id="cb51-451"><a href="#cb51-451" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb51-452"><a href="#cb51-452" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Devianza</span></span>
 <span id="cb51-453"><a href="#cb51-453" aria-hidden="true" tabindex="-1"></a></span>
